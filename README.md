@@ -79,3 +79,16 @@ Never place an API key in HTML, JavaScript, a public GitHub file, or a message/c
 ## Prototype note
 
 Chat history and settings are stored in the browser. Usage counters are stored in server memory, which is suitable for a prototype but should use persistent storage for a larger public launch.
+
+
+## Public temporary website
+
+If `cloudflared` is installed, you can launch Alenaz and a temporary public Cloudflare URL together with one command:
+
+```bash
+bash public_mac.sh
+```
+
+The script starts Alenaz on port 5050, checks that it is healthy, and then creates a temporary `trycloudflare.com` tunnel. Keep the terminal open while the public site is online. Press Control+C to stop both.
+
+For a permanent custom domain, use a named Cloudflare Tunnel and connect a domain you control. Do not expose the OpenAI API key in browser-side code.
