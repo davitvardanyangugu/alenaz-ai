@@ -16,42 +16,49 @@ Alenaz is a full-featured AI assistant prototype built with Flask and the OpenAI
 - Hourly chat and daily image prototype limits
 - Mobile-responsive UI
 
-## Models
+## Recommended local Mac setup
 
-- Chat: `gpt-6-luna`
-- Images: `gpt-image-2.5-sunburst`
+Alenaz can store the OpenAI API key in **macOS Keychain** instead of putting the secret inside source code or GitHub.
 
-Both can be changed with environment variables.
+1. Clone/open this repo in VS Code.
+2. In the VS Code terminal run:
 
-## Local setup
+   `pip3 install -r requirements.txt`
 
-1. Install dependencies:
+3. Store your key securely:
 
-   `pip install -r requirements.txt`
+   `python3 setup_key.py`
 
-2. Copy `.env.example` to `.env`.
-3. Add your OpenAI API key:
+   Paste the key when prompted. The terminal intentionally hides what you type.
 
-   `OPENAI_API_KEY=your-secret-key`
+4. Optional check:
 
-4. Run:
+   `python3 check_key.py`
 
-   `python app.py`
+   It should print `configured` without printing the secret.
 
-5. Open `http://localhost:5050`.
+5. Start Alenaz:
 
-## Vercel
+   `python3 app.py`
 
-Import this repository into Vercel as a Flask project.
+6. Open:
 
-Add this secret environment variable in Vercel Project Settings:
+   `http://localhost:5050`
 
-`OPENAI_API_KEY`
+Alenaz checks for `OPENAI_API_KEY` in the process environment first. If it is not present, it reads the key from macOS Keychain.
 
-Do not commit the key to GitHub.
+To remove the saved key later:
 
-The included `vercel.json` configures the Flask function duration.
+`python3 remove_key.py`
+
+## .env fallback
+
+A local `.env` file is still supported, but Keychain is recommended on a Mac. `.env` is excluded by `.gitignore`.
+
+## Security
+
+Never commit an API key to GitHub, JavaScript, HTML, or any public file. The Keychain setup keeps the secret outside the repository.
 
 ## Prototype note
 
-Chat history and settings are stored in the browser. Usage counters are stored in server memory, which is fine for a prototype but should move to a persistent database or rate-limit store before a larger public launch.
+Chat history and settings are stored in the browser. Usage counters are stored in server memory, which is fine for a prototype but should move to persistent storage before a larger public launch.
