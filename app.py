@@ -6,18 +6,56 @@ from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, render_template, request, stream_with_context
 from openai import OpenAI
 
+try:
+    import keyring
+except ImportError:
+    keyring = None
+
 load_dotenv()
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 12 * 1024 * 1024
 
-API_KEY = os.getenv("OPENAI_API_KEY", "")
 CHAT_MODEL = os.getenv("ALENAZ_MODEL", "gpt-6-luna")
 IMAGE_MODEL = os.getenv("ALENAZ_IMAGE_MODEL", "gpt-image-2.5-sunburst")
 CHAT_LIMIT = int(os.getenv("ALENAZ_HOURLY_LIMIT", "30"))
 IMAGE_DAILY_LIMIT = int(os.getenv("ALENAZ_IMAGE_DAILY_LIMIT", "3"))
 
-client = OpenAI(api_key=API_KEY) if API_KEY else None
+KEYRING_SERVICE = "Alenaz AI"
+KEYRING_ACCOUNT = "OPENAI_API_KEY"
+
+_client = None
+_client_key = None
+
+
+def get_api_key():
+    """Read the API key from the environment first, then macOS Keychain."""
+    env_key = os.getenv("OPENAI_API_KEY", "").strip()
+    if env_key:
+        return env_key
+
+    if keyring is None:
+        return ""
+
+    try:
+        return (keyring.get_password(KEYRING_SERVICE, KEYRING_ACCOUNT) or "").strip()
+    except Exception:
+        return ""
+
+
+def get_client():
+    """Create/reuse an OpenAI client without ever exposing the secret."""
+    global _client, _client_key
+
+    api_key = get_api_key()
+    if not api_key:
+        return None
+
+    if _client is None or _client_key != api_key:
+        _client = OpenAI(api_key=api_key)
+        _client_key = api_key
+
+    return _client
 
 SYSTEM_PROMPT = """
 You are ALENAZ, a friendly, capable AI assistant.
@@ -61,11 +99,18 @@ def take_quota(kind, limit, window_seconds):
 
 
 def require_client():
-    if client is None:
-        return jsonify({
-            "error": "Alenaz is not connected to an API key yet. Add OPENAI_API_KEY to the server environment."
-        }), 503
-    return None
+    current_client = get_client()
+    if current_client is None:
+        return None, (
+            jsonify({
+                "error": (
+                    "Alenaz has no OpenAI API key. Run 'python3 setup_key.py' "
+                    "on your Mac, or set OPENAI_API_KEY in the environment."
+                )
+            }),
+            503,
+        )
+    return current_client, None
 
 
 def clean_history(history):
@@ -175,7 +220,7 @@ def home():
 def health():
     return jsonify({
         "name": "Alenaz",
-        "configured": bool(API_KEY),
+        "configured": bool(get_api_key()),
         "chat_model": CHAT_MODEL,
         "image_model": IMAGE_MODEL,
         "hourly_limit": CHAT_LIMIT,
@@ -185,7 +230,7 @@ def health():
 
 @app.post("/api/chat_stream")
 def chat_stream():
-    missing = require_client()
+    client, missing = require_client()
     if missing:
         return missing
 
@@ -231,7 +276,7 @@ def chat_stream():
 
 @app.post("/api/search")
 def search():
-    missing = require_client()
+    client, missing = require_client()
     if missing:
         return missing
 
@@ -266,7 +311,7 @@ def search():
 
 @app.post("/api/image")
 def image():
-    missing = require_client()
+    client, missing = require_client()
     if missing:
         return missing
 
