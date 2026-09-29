@@ -1,6 +1,6 @@
 # Alenaz AI
 
-Alenaz is a full-featured AI assistant prototype built with Flask and the OpenAI API.
+Alenaz is a ChatGPT-style AI assistant prototype built with Flask and the OpenAI API.
 
 ## Features
 
@@ -13,52 +13,69 @@ Alenaz is a full-featured AI assistant prototype built with Flask and the OpenAI
 - Local chat history
 - Auto, Study, Creative and Code modes
 - Dark/light themes
-- Hourly chat and daily image prototype limits
+- Prototype chat/image limits
 - Mobile-responsive UI
 
-## Recommended local Mac setup
+## Mac / VS Code setup
 
-Alenaz can store the OpenAI API key in **macOS Keychain** instead of putting the secret inside source code or GitHub.
+The easiest local setup is now:
 
-1. Clone/open this repo in VS Code.
-2. In the VS Code terminal run:
+```bash
+git clone https://github.com/davitvardanyangugu/alenaz-ai.git ALENAZ
+cd ALENAZ
+bash setup_mac.sh
+```
 
-   `pip3 install -r requirements.txt`
+The setup script automatically creates a virtual environment, installs dependencies, and opens the secure API-key setup if needed.
 
-3. Store your key securely:
+Your API key is stored in **macOS Keychain**. It is not written into GitHub or the source code.
 
-   `python3 setup_key.py`
+After the first setup, start Alenaz with:
 
-   Paste the key when prompted. The terminal intentionally hides what you type.
+```bash
+bash start_mac.sh
+```
 
-4. Optional check:
+Then open:
 
-   `python3 check_key.py`
+`http://localhost:5050`
 
-   It should print `configured` without printing the secret.
+To diagnose the local setup:
 
-5. Start Alenaz:
+```bash
+source venv/bin/activate
+python doctor.py
+```
 
-   `python3 app.py`
+To remove the saved API key:
 
-6. Open:
+```bash
+source venv/bin/activate
+python remove_key.py
+```
 
-   `http://localhost:5050`
+## Models
 
-Alenaz checks for `OPENAI_API_KEY` in the process environment first. If it is not present, it reads the key from macOS Keychain.
+Defaults:
 
-To remove the saved key later:
+- Chat: `gpt-6-luna`
+- Images: `gpt-image-2.5-sunburst`
 
-`python3 remove_key.py`
+They can be overridden with `ALENAZ_MODEL` and `ALENAZ_IMAGE_MODEL`.
 
-## .env fallback
+## Secret priority
 
-A local `.env` file is still supported, but Keychain is recommended on a Mac. `.env` is excluded by `.gitignore`.
+Alenaz checks for an API key in this order:
+
+1. `OPENAI_API_KEY` environment variable
+2. macOS Keychain entry for Alenaz
+
+A local `.env` file is also supported through `python-dotenv` and is ignored by Git.
 
 ## Security
 
-Never commit an API key to GitHub, JavaScript, HTML, or any public file. The Keychain setup keeps the secret outside the repository.
+Never place an API key in HTML, JavaScript, a public GitHub file, or a message/chat. Keep it in macOS Keychain or a private environment variable.
 
 ## Prototype note
 
-Chat history and settings are stored in the browser. Usage counters are stored in server memory, which is fine for a prototype but should move to persistent storage before a larger public launch.
+Chat history and settings are stored in the browser. Usage counters are stored in server memory, which is suitable for a prototype but should use persistent storage for a larger public launch.
