@@ -41,6 +41,23 @@
     if (key === "k") {event.preventDefault();byId("newChatButton")?.click();byId("promptInput")?.focus();}
     if (key === "/") {event.preventDefault();byId("promptInput")?.focus();}
   });
+  document.querySelectorAll(".dashboard-hero-buttons [data-prompt], .dashboard-hero-buttons [data-tool]").forEach(button => {
+    button.addEventListener("click", () => {
+      const prompt = button.getAttribute("data-prompt");
+      const tool = button.getAttribute("data-tool");
+      if (tool) {
+        const target = document.querySelector('.starter-card[data-tool="' + tool + '"]');
+        target?.click();
+      } else if (prompt) {
+        const input = byId("promptInput");
+        if (input) {
+          input.value = prompt;
+          input.dispatchEvent(new Event("input", {bubbles:true}));
+          input.focus();
+        }
+      }
+    });
+  });
   const messages = byId("messages");
   if (!messages) return;
   const attachActions = () => {
