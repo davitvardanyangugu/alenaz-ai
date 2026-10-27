@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=studio-1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=dashboard-2">
 </head>
 <body>
   <div class="app-shell">
@@ -75,32 +75,33 @@
       <div class="notice hidden" id="apiNotice"></div>
 
       <section class="conversation">
-        <div class="welcome" id="welcome">
-          <div class="hero-orb">
-            <div class="hero-letter">A</div>
+        <div class="welcome dashboard-home" id="welcome">
+          <div class="dashboard-topline"><span class="dashboard-live"><i></i> ALENAZ STUDIO</span><span class="dashboard-edition">YOUR CREATIVE COMMAND CENTER <span aria-hidden="true">✦</span></span></div>
+          <div class="dashboard-hero">
+            <div class="dashboard-hero-copy">
+              <p class="dashboard-kicker">WELCOME TO YOUR SPACE</p>
+              <h1>What will you <em>create today?</em></h1>
+              <p class="dashboard-description">One place for your biggest ideas. Ask anything, explore the world, build something amazing, or turn imagination into reality.</p>
+              <div class="dashboard-hero-buttons">
+                <button class="dashboard-primary" type="button" data-prompt="Let's start a new project. Help me turn my idea into a clear plan.">✦ Start creating <span>↗</span></button>
+                <button class="dashboard-secondary" type="button" data-tool="search">⌕ Explore the web</button>
+              </div>
+            </div>
+            <div class="dashboard-art" aria-hidden="true">
+              <div class="dashboard-art-ring ring-one"></div><div class="dashboard-art-ring ring-two"></div>
+              <div class="dashboard-art-core"><span>A</span></div>
+              <span class="dashboard-orbit orbit-one">✧</span><span class="dashboard-orbit orbit-two">✦</span>
+              <span class="dashboard-art-label">IDEAS INTO REALITY</span>
+            </div>
           </div>
-          <p class="eyebrow">✦ YOUR PERSONAL AI STUDIO</p>
-          <h1>Think bigger.<span class="gradient-tail"> Create anything.</span></h1>
-          <p class="welcome-copy">Your space to ask, discover, build, and imagine. From the first spark to the finished masterpiece.</p><div class="hero-features"><span>✦ AI Chat</span><span>⌕ Live search</span><span>◈ Image studio</span><span>⌘ Coding</span></div>
-
-          <div class="starter-grid">
-            <button class="starter-card" data-prompt="Teach me something difficult in a simple way">
-              <span class="starter-icon">◎</span>
-              <span><strong>Learn something</strong><small>Clear explanations, one step at a time</small></span>
-            </button>
-            <button class="starter-card" data-tool="search">
-              <span class="starter-icon">⌕</span>
-              <span><strong>Explore the web</strong><small>Find answers with useful sources</small></span>
-            </button>
-            <button class="starter-card" data-tool="image">
-              <span class="starter-icon">✦</span>
-              <span><strong>Imagine it</strong><small>Turn words into original artwork</small></span>
-            </button>
-            <button class="starter-card" data-prompt="Help me build a cool app from scratch">
-              <span class="starter-icon">⌘</span>
-              <span><strong>Build something</strong><small>Plan, code, debug and create</small></span>
-            </button>
+          <div class="dashboard-section-heading"><div><p class="dashboard-section-overline">EXPLORE WHAT'S POSSIBLE</p><h2>Your creative toolkit</h2></div><span class="dashboard-section-aside">Choose a direction <span>↘</span></span></div>
+          <div class="starter-grid dashboard-grid">
+            <button class="starter-card dashboard-tile tile-chat" data-prompt="Help me brainstorm a unique and exciting idea"><span class="tile-top"><span class="starter-icon">✧</span><span class="tile-arrow">↗</span></span><span class="tile-text"><strong>AI Chat</strong><small>Think, brainstorm, write and get answers.</small></span><span class="tile-tag">LET'S TALK</span></button>
+            <button class="starter-card dashboard-tile tile-search" data-tool="search"><span class="tile-top"><span class="starter-icon">⌕</span><span class="tile-arrow">↗</span></span><span class="tile-text"><strong>Deep Search</strong><small>Discover information from across the web.</small></span><span class="tile-tag">DISCOVER</span></button>
+            <button class="starter-card dashboard-tile tile-image" data-tool="image"><span class="tile-top"><span class="starter-icon">◈</span><span class="tile-arrow">↗</span></span><span class="tile-text"><strong>Image Studio</strong><small>Turn your wildest ideas into visuals.</small></span><span class="tile-tag">IMAGINE</span></button>
+            <button class="starter-card dashboard-tile tile-code" data-prompt="Help me build an awesome app or website. Start by asking what I want to create."><span class="tile-top"><span class="starter-icon">⌘</span><span class="tile-arrow">↗</span></span><span class="tile-text"><strong>Code Lab</strong><small>Build, debug and bring projects to life.</small></span><span class="tile-tag">BUILD</span></button>
           </div>
+          <div class="dashboard-bottom"><div><span class="dashboard-bottom-icon">✦</span><span><strong>Every big idea starts somewhere.</strong><small>Pick a tool above or just start typing below.</small></span></div><span class="dashboard-bottom-mark">POWERED BY CURIOSITY ✳</span></div>
         </div>
 
         <div class="messages" id="messages"></div>
