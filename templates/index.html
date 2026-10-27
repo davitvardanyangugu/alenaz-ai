@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0a0b10">
-  <title>Alenaz</title>
+  <meta name="theme-color" content="#080a12">
+  <meta name="description" content="Meet Alenaz AI — your creative space to learn, search, write, code, explore files, and turn ideas into images.">
+  <meta name="color-scheme" content="dark light">
+  <title>Alenaz AI — Your ideas, amplified</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,18 +18,18 @@
       <div class="brand-row">
         <button class="brand" id="brandButton" aria-label="Alenaz home">
           <span class="brand-mark">A</span>
-          <span>Alenaz</span>
+          <span>alenaz<span style="color:#9b8cff">.</span></span>
         </button>
         <button class="icon-button mobile-only" id="closeSidebar" aria-label="Close sidebar">×</button>
       </div>
 
       <button class="new-chat" id="newChatButton">
         <span>＋</span>
-        <span>New chat</span>
+        <span>New conversation</span>
       </button>
 
       <div class="sidebar-section">
-        <div class="section-label">Tools</div>
+        <div class="section-label">Your toolkit</div>
         <button class="sidebar-action" id="sidebarSearch">
           <span>⌕</span><span>Search the web</span>
         </button>
@@ -37,7 +39,7 @@
       </div>
 
       <div class="sidebar-section grow">
-        <div class="section-label">Recent</div>
+        <div class="section-label">Your conversations</div>
         <div class="history-list" id="historyList"></div>
       </div>
 
@@ -75,26 +77,26 @@
           <div class="hero-orb">
             <div class="hero-letter">A</div>
           </div>
-          <p class="eyebrow">MEET ALENAZ</p>
-          <h1>What can I help you create?</h1>
-          <p class="welcome-copy">Chat, search the web, understand images and files, or turn an idea into a picture.</p>
+          <p class="eyebrow">A LITTLE MORE POSSIBLE</p>
+          <h1>Your ideas, amplified.</h1>
+          <p class="welcome-copy">One thought can go a long way. Learn something new, untangle a tough problem, explore the web, or bring your next big idea to life.</p>
 
           <div class="starter-grid">
             <button class="starter-card" data-prompt="Teach me something difficult in a simple way">
               <span class="starter-icon">◎</span>
-              <span><strong>Learn</strong><small>Explain anything step by step</small></span>
+              <span><strong>Learn something</strong><small>Clear explanations, one step at a time</small></span>
             </button>
             <button class="starter-card" data-tool="search">
               <span class="starter-icon">⌕</span>
-              <span><strong>Search</strong><small>Find current information online</small></span>
+              <span><strong>Explore the web</strong><small>Find answers with useful sources</small></span>
             </button>
             <button class="starter-card" data-tool="image">
               <span class="starter-icon">✦</span>
-              <span><strong>Create image</strong><small>Turn a prompt into artwork</small></span>
+              <span><strong>Imagine it</strong><small>Turn words into original artwork</small></span>
             </button>
             <button class="starter-card" data-prompt="Help me build a cool app from scratch">
               <span class="starter-icon">⌘</span>
-              <span><strong>Build</strong><small>Code, debug and brainstorm</small></span>
+              <span><strong>Build something</strong><small>Plan, code, debug and create</small></span>
             </button>
           </div>
         </div>
@@ -122,7 +124,7 @@
           <button class="composer-icon" id="attachButton" aria-label="Attach a file">＋</button>
           <input type="file" id="fileInput" hidden accept="image/*,.pdf,.txt,.md,.csv,.json,.doc,.docx,.ppt,.pptx">
 
-          <textarea id="promptInput" rows="1" placeholder="Message Alenaz"></textarea>
+          <textarea id="promptInput" rows="1" placeholder="Ask anything. Start anywhere…"></textarea>
 
           <div class="composer-actions">
             <select id="modeSelect" aria-label="Alenaz mode">
@@ -135,7 +137,7 @@
             <button class="send-button" id="sendButton" aria-label="Send message">↑</button>
           </div>
         </div>
-        <p class="disclaimer">Alenaz can make mistakes. Check important information.</p>
+        <p class="disclaimer">Made for curious minds. AI can make mistakes, so verify important details.</p>
       </div>
     </main>
   </div>
