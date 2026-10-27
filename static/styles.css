@@ -737,3 +737,18 @@ body{
  .starter-card{min-height:80px;align-items:center}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Alenaz Studio — new usable workspace features */
+.gradient-tail{background:linear-gradient(105deg,#bca9ff,#65f4df);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-features{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;margin:23px auto 3px}
+.hero-features span{font-size:11px;font-weight:700;color:#b9b5df;padding:8px 13px;border:1px solid rgba(160,149,255,.22);background:rgba(135,115,255,.08);border-radius:99px}
+.history-search{display:block;width:calc(100% - 24px);margin:8px 12px 10px;background:rgba(10,13,30,.65);border:1px solid rgba(170,160,255,.2);border-radius:12px;padding:11px 12px;color:var(--text);font-size:12px;outline:none}
+.history-search:focus{border-color:#a592ff;box-shadow:0 0 0 3px rgba(158,134,255,.12)}
+.library-tools{display:flex;gap:6px;padding:0 12px 12px}
+.library-tools button{flex:1;padding:9px 6px;background:rgba(149,128,255,.08);border:1px solid rgba(157,143,255,.16);border-radius:10px;color:#b9b4d5;font-size:11px;cursor:pointer}
+.library-tools button:hover{background:rgba(149,128,255,.2);color:#fff}
+.message-toolbar{display:flex;align-items:center;gap:7px;margin-top:10px;opacity:.65}
+.message:hover .message-toolbar,.message-toolbar:focus-within{opacity:1}
+.message-toolbar button{border:1px solid rgba(168,154,255,.17);background:rgba(149,128,255,.06);color:#aaa6c5;border-radius:9px;padding:6px 10px;font-size:11px;cursor:pointer}
+.message-toolbar button:hover{color:#fff;background:rgba(149,128,255,.2)}
+@media(max-width:700px){.hero-features{gap:5px}.hero-features span{padding:6px 9px;font-size:10px}.message-toolbar{opacity:1}}
