@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=aurora-1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=studio-1">
 </head>
 <body>
   <div class="app-shell">
@@ -40,6 +40,8 @@
 
       <div class="sidebar-section grow">
         <div class="section-label">Your conversations</div>
+        <input id="historySearch" class="history-search" type="search" placeholder="Search chats…" aria-label="Search conversations" autocomplete="off">
+        <div class="library-tools"><button id="exportChats" type="button" title="Download a backup of your chats">↓ Export chats</button><button id="shortcutHelp" type="button" title="Keyboard shortcuts">⌨ Shortcuts</button></div>
         <div class="history-list" id="historyList"></div>
       </div>
 
@@ -77,9 +79,9 @@
           <div class="hero-orb">
             <div class="hero-letter">A</div>
           </div>
-          <p class="eyebrow">A LITTLE MORE POSSIBLE</p>
-          <h1>Your ideas, amplified.</h1>
-          <p class="welcome-copy">One thought can go a long way. Learn something new, untangle a tough problem, explore the web, or bring your next big idea to life.</p>
+          <p class="eyebrow">✦ YOUR PERSONAL AI STUDIO</p>
+          <h1>Think bigger.<span class="gradient-tail"> Create anything.</span></h1>
+          <p class="welcome-copy">Your space to ask, discover, build, and imagine. From the first spark to the finished masterpiece.</p><div class="hero-features"><span>✦ AI Chat</span><span>⌕ Live search</span><span>◈ Image studio</span><span>⌘ Coding</span></div>
 
           <div class="starter-grid">
             <button class="starter-card" data-prompt="Teach me something difficult in a simple way">
@@ -176,5 +178,6 @@
   </div>
 
   <script src="{{ url_for('static', filename='app.js') }}?v=aurora-1"></script>
+  <script src="{{ url_for('static', filename='studio.js') }}?v=studio-1" defer></script>
 </body>
 </html>
