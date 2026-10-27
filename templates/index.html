@@ -2,183 +2,184 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080a12">
-  <meta name="description" content="Meet Alenaz AI — your creative space to learn, search, write, code, explore files, and turn ideas into images.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101210">
+  <meta name="description" content="Alenaz is your creative AI workspace. Think, learn, research, build, and create—all in one place.">
   <meta name="color-scheme" content="dark light">
-  <title>Alenaz AI — Your ideas, amplified</title>
+  <title>Alenaz — Your creative AI workspace</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=dashboard-2">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=studio-v3">
 </head>
 <body>
+  <a class="skip-link" href="#promptInput">Skip to message input</a>
   <div class="app-shell">
-    <aside class="sidebar" id="sidebar">
-      <div class="brand-row">
-        <button class="brand" id="brandButton" aria-label="Alenaz home">
-          <span class="brand-mark">A</span>
-          <span>alenaz<span style="color:#9b8cff">.</span></span>
-        </button>
-        <button class="icon-button mobile-only" id="closeSidebar" aria-label="Close sidebar">×</button>
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-top">
+        <div class="brand-row">
+          <button class="brand" id="brandButton" aria-label="Alenaz home">
+            <span class="brand-mark" aria-hidden="true">a<span>.</span></span>
+            <span class="brand-word">alenaz<span class="brand-trademark">®</span></span>
+          </button>
+          <button class="icon-button mobile-only" id="closeSidebar" aria-label="Close sidebar">×</button>
+        </div>
+        <div class="workspace-chip"><span class="workspace-monogram">✳</span><span><strong>My workspace</strong><small>Personal space</small></span><span class="workspace-chevron">⌄</span></div>
+        <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span>New conversation</span><kbd>⌘ K</kbd></button>
       </div>
 
-      <button class="new-chat" id="newChatButton">
-        <span>＋</span>
-        <span>New conversation</span>
-      </button>
-
-      <div class="sidebar-section">
-        <div class="section-label">Your toolkit</div>
-        <button class="sidebar-action" id="sidebarSearch">
-          <span>⌕</span><span>Search the web</span>
-        </button>
-        <button class="sidebar-action" id="sidebarImage">
-          <span>✦</span><span>Create an image</span>
-        </button>
-      </div>
+      <nav class="sidebar-navigation" aria-label="Workspace">
+        <div class="section-label">WORKSPACE</div>
+        <button class="sidebar-action nav-home" id="homeNav" type="button"><span class="nav-icon" aria-hidden="true">⌂</span><span>Home</span><span class="nav-hint">↗</span></button>
+        <button class="sidebar-action" id="sidebarSearch" type="button"><span class="nav-icon" aria-hidden="true">⌕</span><span>Web search</span></button>
+        <button class="sidebar-action" id="sidebarImage" type="button"><span class="nav-icon" aria-hidden="true">◇</span><span>Image generation</span></button>
+        <button class="sidebar-action" id="openCommandFromSidebar" type="button"><span class="nav-icon" aria-hidden="true">⌘</span><span>Command center</span></button>
+      </nav>
 
       <div class="sidebar-section grow">
-        <div class="section-label">Your conversations</div>
-        <input id="historySearch" class="history-search" type="search" placeholder="Search chats…" aria-label="Search conversations" autocomplete="off">
-        <div class="library-tools"><button id="exportChats" type="button" title="Download a backup of your chats">↓ Export chats</button><button id="shortcutHelp" type="button" title="Keyboard shortcuts">⌨ Shortcuts</button></div>
+        <div class="history-head"><span class="section-label">RECENT CHATS</span><button class="mini-action" type="button" id="focusHistory" aria-label="Search recent chats">⌕</button></div>
+        <input id="historySearch" class="history-search" type="search" placeholder="Find a conversation..." aria-label="Search conversations" autocomplete="off">
         <div class="history-list" id="historyList"></div>
       </div>
 
       <div class="sidebar-footer">
-        <div class="usage-pill" id="usagePill">Prototype</div>
-        <button class="profile-button" id="settingsButton">
+        <div class="library-tools"><button id="exportChats" type="button">↓ Export</button><button id="shortcutHelp" type="button">⌘ Shortcuts</button></div>
+        <div class="usage-pill" id="usagePill">Checking AI status…</div>
+        <button class="profile-button" id="settingsButton" type="button">
           <span class="avatar" id="avatarLetter">G</span>
-          <span class="profile-copy">
-            <strong id="profileName">Guest</strong>
-            <small>Settings</small>
-          </span>
-          <span class="chevron">›</span>
+          <span class="profile-copy"><strong id="profileName">Guest</strong><small>Preferences & settings</small></span>
+          <span class="chevron" aria-hidden="true">⋯</span>
         </button>
       </div>
     </aside>
 
-    <main class="main">
+    <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+
+    <main class="main" id="mainContent">
       <header class="topbar">
-        <button class="icon-button menu-button" id="openSidebar" aria-label="Open sidebar">☰</button>
-        <button class="model-pill" id="modelPill">
-          <span class="status-dot"></span>
-          <span id="modelLabel">Alenaz</span>
-          <small id="modelName">loading…</small>
-        </button>
+        <div class="topbar-left">
+          <button class="icon-button menu-button" id="openSidebar" type="button" aria-label="Open sidebar">☰</button>
+          <span class="topbar-breadcrumb">Workspace</span>
+          <span class="topbar-divider">/</span>
+          <span class="topbar-current" id="viewTitle">Overview</span>
+        </div>
         <div class="topbar-actions">
-          <button class="topbar-button" id="searchToggle" aria-pressed="false">⌕ Search</button>
-          <button class="icon-button" id="themeButton" aria-label="Toggle theme">☼</button>
+          <button class="command-trigger" id="commandButton" type="button" aria-label="Open command center"><span>⌕</span> Quick actions <kbd>⌘ K</kbd></button>
+          <button class="topbar-button" id="searchToggle" type="button" aria-pressed="false">⌕ <span>Search</span></button>
+          <button class="icon-button theme-switch" id="themeButton" type="button" aria-label="Toggle light and dark theme">☼</button>
+          <button class="model-pill" id="modelPill" type="button" aria-label="Current AI model"><span class="status-dot"></span><span id="modelLabel">Alenaz</span><small id="modelName">loading…</small></button>
         </div>
       </header>
 
-      <div class="notice hidden" id="apiNotice"></div>
+      <div class="notice hidden" id="apiNotice" role="status"></div>
 
-      <section class="conversation">
-        <div class="welcome dashboard-home" id="welcome">
-          <div class="dashboard-topline"><span class="dashboard-live"><i></i> ALENAZ STUDIO</span><span class="dashboard-edition">YOUR CREATIVE COMMAND CENTER <span aria-hidden="true">✦</span></span></div>
-          <div class="dashboard-hero">
-            <div class="dashboard-hero-copy">
-              <p class="dashboard-kicker">WELCOME TO YOUR SPACE</p>
-              <h1>What will you <em>create today?</em></h1>
-              <p class="dashboard-description">One place for your biggest ideas. Ask anything, explore the world, build something amazing, or turn imagination into reality.</p>
-              <div class="dashboard-hero-buttons">
-                <button class="dashboard-primary" type="button" data-prompt="Let's start a new project. Help me turn my idea into a clear plan.">✦ Start creating <span>↗</span></button>
-                <button class="dashboard-secondary" type="button" data-tool="search">⌕ Explore the web</button>
+      <section class="conversation" id="conversation" aria-label="AI workspace">
+        <div class="welcome" id="welcome">
+          <div class="dashboard">
+            <div class="dashboard-overline"><span class="green-dot"></span> THE PERSONAL AI WORKSPACE <span class="overview-line"></span> <span class="dashboard-version">ALENAZ / 03</span></div>
+
+            <section class="hero-layout" aria-label="Welcome">
+              <div class="hero-editorial">
+                <p class="hero-eyebrow" id="timeGreeting">YOUR SPACE TO THINK BIG</p>
+                <h1>Where good ideas<br>become <span class="headline-highlight">great things<span class="headline-period">.</span></span></h1>
+                <p class="hero-intro">Meet your new creative sidekick. For the questions, the big plans, and everything you haven't imagined yet.</p>
+                <div class="hero-ctas">
+                  <button class="hero-start" id="heroStart" type="button">Start creating <span aria-hidden="true">↗</span></button>
+                  <button class="hero-explore" id="heroExplore" type="button">Explore ideas <span aria-hidden="true">↓</span></button>
+                </div>
+                <div class="hero-meta"><span class="hero-meta-circle">✳</span><span>YOUR IDEAS, WITHOUT LIMITS</span></div>
               </div>
-            </div>
-            <div class="dashboard-art" aria-hidden="true">
-              <div class="dashboard-art-ring ring-one"></div><div class="dashboard-art-ring ring-two"></div>
-              <div class="dashboard-art-core"><span>A</span></div>
-              <span class="dashboard-orbit orbit-one">✧</span><span class="dashboard-orbit orbit-two">✦</span>
-              <span class="dashboard-art-label">IDEAS INTO REALITY</span>
-            </div>
-          </div>
-          <div class="dashboard-section-heading"><div><p class="dashboard-section-overline">EXPLORE WHAT'S POSSIBLE</p><h2>Your creative toolkit</h2></div><span class="dashboard-section-aside">Choose a direction <span>↘</span></span></div>
-          <div class="starter-grid dashboard-grid">
-            <button class="starter-card dashboard-tile tile-chat" data-prompt="Help me brainstorm a unique and exciting idea"><span class="tile-top"><span class="starter-icon">✧</span><span class="tile-arrow">↗</span></span><span class="tile-text"><strong>AI Chat</strong><small>Think, brainstorm, write and get answers.</small></span><span class="tile-tag">LET'S TALK</span></button>
-            <button class="starter-card dashboard-tile tile-search" data-tool="search"><span class="tile-top"><span class="starter-icon">⌕</span><span class="tile-arrow">↗</span></span><span class="tile-text"><strong>Deep Search</strong><small>Discover information from across the web.</small></span><span class="tile-tag">DISCOVER</span></button>
-            <button class="starter-card dashboard-tile tile-image" data-tool="image"><span class="tile-top"><span class="starter-icon">◈</span><span class="tile-arrow">↗</span></span><span class="tile-text"><strong>Image Studio</strong><small>Turn your wildest ideas into visuals.</small></span><span class="tile-tag">IMAGINE</span></button>
-            <button class="starter-card dashboard-tile tile-code" data-prompt="Help me build an awesome app or website. Start by asking what I want to create."><span class="tile-top"><span class="starter-icon">⌘</span><span class="tile-arrow">↗</span></span><span class="tile-text"><strong>Code Lab</strong><small>Build, debug and bring projects to life.</small></span><span class="tile-tag">BUILD</span></button>
-          </div>
-          <div class="dashboard-bottom"><div><span class="dashboard-bottom-icon">✦</span><span><strong>Every big idea starts somewhere.</strong><small>Pick a tool above or just start typing below.</small></span></div><span class="dashboard-bottom-mark">POWERED BY CURIOSITY ✳</span></div>
-        </div>
 
-        <div class="messages" id="messages"></div>
+              <aside class="hero-display" aria-label="Workspace activity">
+                <div class="display-top"><span>YOUR CREATIVE SPACE</span><span class="display-top-symbol">✦ ✦</span></div>
+                <div class="display-orbit" aria-hidden="true"><div class="orbit-outline orbit-large"></div><div class="orbit-outline orbit-medium"></div><div class="orbit-outline orbit-small"></div><div class="orbit-center">a<span>.</span></div><div class="orbit-satellite sat-one">✳</div><div class="orbit-satellite sat-two">✺</div></div>
+                <div class="display-bottom"><div><span class="display-tiny">CHATS IN THIS BROWSER</span><strong id="dashboardChatsCount">0</strong></div><div><span class="display-tiny">MESSAGES SENT</span><strong id="dashboardMessagesCount">0</strong></div><div class="display-indicator" aria-hidden="true">↗</div></div>
+              </aside>
+            </section>
+
+            <section class="tools-section" id="toolsSection" aria-label="AI tools">
+              <div class="section-heading"><div><p class="eyebrow">THE TOOLKIT</p><h2>What do you feel like doing?</h2></div><span class="section-heading-side">FOUR WAYS TO GET STARTED <span aria-hidden="true">↙</span></span></div>
+              <div class="starter-grid">
+                <button class="starter-card tool-talk" data-prompt="Let's brainstorm. Help me come up with three original ideas for something exciting." type="button">
+                  <span class="tool-top"><span class="tool-symbol" aria-hidden="true">✳</span><span class="tool-arrow" aria-hidden="true">↗</span></span>
+                  <span class="tool-bottom"><strong>Ask anything</strong><small>Turn a question into your next breakthrough.</small></span>
+                  <span class="tool-index">01 / CHAT</span>
+                </button>
+                <button class="starter-card tool-research" data-tool="search" type="button">
+                  <span class="tool-top"><span class="tool-symbol" aria-hidden="true">⌕</span><span class="tool-arrow" aria-hidden="true">↗</span></span>
+                  <span class="tool-bottom"><strong>Go explore</strong><small>Search the web and get to the interesting stuff.</small></span>
+                  <span class="tool-index">02 / RESEARCH</span>
+                </button>
+                <button class="starter-card tool-art" data-tool="image" type="button">
+                  <span class="tool-top"><span class="tool-symbol" aria-hidden="true">◇</span><span class="tool-arrow" aria-hidden="true">↗</span></span>
+                  <span class="tool-bottom"><strong>Make some art</strong><small>Dream it up. Watch it come to life.</small></span>
+                  <span class="tool-index">03 / IMAGES</span>
+                </button>
+                <button class="starter-card tool-build" data-prompt="I want to build something cool. Help me plan and code a small working project." type="button">
+                  <span class="tool-top"><span class="tool-symbol" aria-hidden="true">⌘</span><span class="tool-arrow" aria-hidden="true">↗</span></span>
+                  <span class="tool-bottom"><strong>Build something</strong><small>From the first line to a finished project.</small></span>
+                  <span class="tool-index">04 / CODE</span>
+                </button>
+              </div>
+            </section>
+
+            <div class="dashboard-lower">
+              <section class="recent-panel" aria-labelledby="recentHeading">
+                <div class="section-heading compact-heading"><div><p class="eyebrow">PICK UP WHERE YOU LEFT OFF</p><h2 id="recentHeading">Recent work</h2></div><span class="recent-counter" id="recentCountLabel">0 chats</span></div>
+                <div class="recent-home-list" id="recentHomeList"><div class="recent-empty"><span>✳</span><p>Your next great idea starts here.</p><small>Conversations you create will appear in this space.</small></div></div>
+              </section>
+              <section class="inspiration-panel" id="inspirationSection" aria-labelledby="inspirationHeading">
+                <div class="section-heading compact-heading"><div><p class="eyebrow">NEED A SPARK?</p><h2 id="inspirationHeading">Try one of these.</h2></div></div>
+                <button class="inspiration-item" type="button" data-prompt="Be my personal tutor. Explain a difficult topic step by step, then quiz me." data-set-mode="study"><span class="inspiration-icon">◎</span><span><strong>Learn anything, faster</strong><small>Study mode · Guided learning</small></span><span>↗</span></button>
+                <button class="inspiration-item" type="button" data-prompt="Help me develop a unique visual concept with a distinctive style and memorable details." data-set-mode="creative"><span class="inspiration-icon">✿</span><span><strong>Find your next big idea</strong><small>Creative mode · Brainstorming</small></span><span>↗</span></button>
+                <button class="inspiration-item" type="button" data-prompt="Help me code a polished interactive website. Start by proposing a simple project structure." data-set-mode="code"><span class="inspiration-icon">⌁</span><span><strong>Make a new project</strong><small>Code mode · Start building</small></span><span>↗</span></button>
+              </section>
+            </div>
+            <footer class="dashboard-footer"><span>MADE FOR CURIOUS MINDS <span>✳</span></span><span>CREATE MORE. IMAGINE BIGGER.</span></footer>
+          </div>
+        </div>
+        <div class="messages" id="messages" aria-live="polite"></div>
       </section>
 
       <div class="composer-wrap">
-        <div class="mode-banner hidden" id="modeBanner">
-          <span id="modeBannerIcon">⌕</span>
-          <span id="modeBannerText">Web search enabled</span>
-          <button id="clearMode" aria-label="Clear mode">×</button>
-        </div>
-
-        <div class="attachment-preview hidden" id="attachmentPreview">
-          <div class="attachment-thumb" id="attachmentThumb">FILE</div>
-          <div class="attachment-meta">
-            <strong id="attachmentName"></strong>
-            <small id="attachmentType"></small>
-          </div>
-          <button class="icon-button small" id="removeAttachment" aria-label="Remove attachment">×</button>
-        </div>
-
+        <div class="mode-banner hidden" id="modeBanner"><span id="modeBannerIcon">⌕</span><span id="modeBannerText">Web search enabled</span><button id="clearMode" aria-label="Clear active tool">×</button></div>
+        <div class="attachment-preview hidden" id="attachmentPreview"><div class="attachment-thumb" id="attachmentThumb">FILE</div><div class="attachment-meta"><strong id="attachmentName"></strong><small id="attachmentType"></small></div><button class="icon-button small" id="removeAttachment" type="button" aria-label="Remove attachment">×</button></div>
         <div class="composer">
-          <button class="composer-icon" id="attachButton" aria-label="Attach a file">＋</button>
-          <input type="file" id="fileInput" hidden accept="image/*,.pdf,.txt,.md,.csv,.json,.doc,.docx,.ppt,.pptx">
-
-          <textarea id="promptInput" rows="1" placeholder="Ask anything. Start anywhere…"></textarea>
-
-          <div class="composer-actions">
-            <select id="modeSelect" aria-label="Alenaz mode">
-              <option value="auto">Auto</option>
-              <option value="study">Study</option>
-              <option value="creative">Creative</option>
-              <option value="code">Code</option>
-            </select>
-            <button class="composer-icon" id="voiceButton" aria-label="Voice input">◉</button>
-            <button class="send-button" id="sendButton" aria-label="Send message">↑</button>
+          <textarea id="promptInput" rows="1" placeholder="Ask Alenaz anything…" aria-label="Message Alenaz"></textarea>
+          <div class="composer-bottom">
+            <div class="composer-bottom-left">
+              <button class="composer-icon attach-action" id="attachButton" type="button" aria-label="Attach a file" title="Attach a file">＋</button>
+              <input type="file" id="fileInput" hidden accept="image/*,.pdf,.txt,.md,.csv,.json,.doc,.docx,.ppt,.pptx">
+              <select id="modeSelect" aria-label="AI mode"><option value="auto">✳ Auto mode</option><option value="study">◎ Study mode</option><option value="creative">✿ Creative mode</option><option value="code">⌘ Code mode</option></select>
+            </div>
+            <div class="composer-actions"><span class="composer-hint">ENTER ↵</span><button class="composer-icon" id="voiceButton" type="button" title="Dictate using microphone" aria-label="Voice input">◉</button><button class="send-button" id="sendButton" type="button" aria-label="Send message">↑</button></div>
           </div>
         </div>
-        <p class="disclaimer">Made for curious minds. AI can make mistakes, so verify important details.</p>
+        <p class="disclaimer">Alenaz can make mistakes. Verify information that matters.</p>
       </div>
     </main>
   </div>
 
   <div class="modal-backdrop hidden" id="settingsModal">
-    <div class="modal">
-      <div class="modal-head">
-        <div>
-          <p class="eyebrow">ALENAZ</p>
-          <h2>Settings</h2>
-        </div>
-        <button class="icon-button" id="closeSettings">×</button>
-      </div>
-
-      <label class="setting-field">
-        <span>Your display name</span>
-        <input id="displayNameInput" maxlength="30" placeholder="Guest">
-      </label>
-
-      <label class="setting-row">
-        <span><strong>Read answers aloud</strong><small>Uses your browser's text-to-speech voice.</small></span>
-        <input type="checkbox" id="speakToggle">
-      </label>
-
-      <label class="setting-row">
-        <span><strong>Compact messages</strong><small>Uses a tighter conversation layout.</small></span>
-        <input type="checkbox" id="compactToggle">
-      </label>
-
-      <div class="danger-zone">
-        <button class="secondary-button" id="clearHistoryButton">Clear chat history</button>
-      </div>
-
-      <button class="primary-button" id="saveSettings">Save settings</button>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-head"><div><p class="eyebrow">MY WORKSPACE</p><h2 id="settingsTitle">Preferences</h2></div><button class="icon-button" id="closeSettings" type="button" aria-label="Close settings">×</button></div>
+      <label class="setting-field"><span>What should Alenaz call you?</span><input id="displayNameInput" maxlength="30" placeholder="Guest"></label>
+      <label class="setting-row"><span><strong>Read answers aloud</strong><small>Use your device's built-in text-to-speech voice.</small></span><input type="checkbox" id="speakToggle"></label>
+      <label class="setting-row"><span><strong>Compact conversations</strong><small>Display messages closer together.</small></span><input type="checkbox" id="compactToggle"></label>
+      <div class="danger-zone"><button class="secondary-button" id="clearHistoryButton" type="button">Clear all local conversations</button></div>
+      <button class="primary-button" id="saveSettings" type="button">Save preferences</button>
     </div>
   </div>
 
-  <script src="{{ url_for('static', filename='app.js') }}?v=aurora-1"></script>
-  <script src="{{ url_for('static', filename='studio.js') }}?v=studio-1" defer></script>
+  <div class="command-overlay hidden" id="commandPalette" role="dialog" aria-modal="true" aria-label="Command center">
+    <div class="command-dialog">
+      <div class="command-input-row"><span>⌕</span><input id="commandInput" type="search" aria-label="Search commands and conversations" autocomplete="off" placeholder="What would you like to do?"><button type="button" id="closeCommand">ESC</button></div>
+      <div class="command-results" id="commandResults"></div>
+      <div class="command-foot"><span>↑↓ TO NAVIGATE</span><span>ENTER TO OPEN</span><span>ESC TO CLOSE</span></div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='app.js') }}?v=studio-v3"></script>
+  <script src="{{ url_for('static', filename='studio.js') }}?v=studio-v3" defer></script>
 </body>
 </html>
