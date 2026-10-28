@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=library-v1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=quality-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='library.css') }}?v=library-v1">
 </head>
 <body>
@@ -208,6 +208,10 @@
       <label class="setting-field"><span>What should Alenaz call you?</span><input id="displayNameInput" maxlength="30" placeholder="Guest"></label>
       <label class="setting-row"><span><strong>Read answers aloud</strong><small>Use your device's built-in text-to-speech voice.</small></span><input type="checkbox" id="speakToggle"></label>
       <label class="setting-row"><span><strong>Compact conversations</strong><small>Display messages closer together.</small></span><input type="checkbox" id="compactToggle"></label>
+      <div class="settings-privacy-note" role="note">
+        <strong>About Alenaz &amp; privacy</strong>
+        <p>Alenaz is an AI assistant application created by David Vardanyan and powered by an external AI provider. Your chat history and preferences are saved in this browser, not in a cloud account. When you send messages, use web search, or upload files, that content is processed by the configured AI service. You can export your chats from Saved Chats or clear locally saved conversations here.</p>
+      </div>
       <div class="danger-zone"><button class="secondary-button" id="clearHistoryButton" type="button">Clear all local conversations</button></div>
       <button class="primary-button" id="saveSettings" type="button">Save preferences</button>
     </div>
@@ -249,7 +253,7 @@
     </div>
   </div>
 
-  <script src="{{ url_for('static', filename='app.js') }}?v=library-v1"></script>
+  <script src="{{ url_for('static', filename='app.js') }}?v=quality-v1"></script>
   <script src="{{ url_for('static', filename='studio.js') }}?v=studio-v3" defer></script>
   <script src="{{ url_for('static', filename='library.js') }}?v=library-v1" defer></script>
 </body>
