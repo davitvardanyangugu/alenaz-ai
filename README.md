@@ -4,8 +4,8 @@ Alenaz is a ChatGPT-style AI assistant prototype built with Flask and the OpenAI
 
 ## Features
 
-- Streaming AI chat
-- Web search with source links
+- Streaming AI chat with Stop generating (client-side cancellation)
+- Web search with safe HTTP(S) source links
 - Image generation
 - Image understanding
 - PDF and document attachments
@@ -86,13 +86,40 @@ Alenaz checks for an API key in this order:
 
 A local `.env` file is also supported through `python-dotenv` and is ignored by Git.
 
-## Security
+## Security, privacy and current limitations
 
-Never place an API key in HTML, JavaScript, a public GitHub file, or a message/chat. Keep it in macOS Keychain or a private environment variable.
+- Alenaz was created by David Vardanyan. The underlying AI models are supplied by an external provider, not trained by the application creator.
+- **Chat history, folders, and settings are stored locally in the browser** using `localStorage`. These records are not encrypted or synchronized between devices. Someone with access to the same unlocked browser profile may be able to read them. Clearing browser data may erase them; export a backup if needed.
+- When you send a message, search query, generated-image prompt or attachment, the browser sends its content to the Flask API, which passes it to the configured external AI provider for processing. No application database is currently storing these requests, but the provider handles data under its own terms and policies. Do not assume end-to-end encryption or zero retention.
+- The interface loads web fonts from Google Fonts, which results in browser requests to Google. There is no separate analytics tracker added by this project.
+- Uploaded attachments must use supported image, PDF, text or Office formats and are limited to approximately 8 MB. Unsupported formats are rejected with a clear error.
+- Generated image bytes are intentionally excluded from persistent local history; reopening a previous chat may show an expired-image notice.
+- Server-side API keys stay in environment variables or the local macOS Keychain. Never place a secret in browser code, GitHub source, or chat messages.
+- The API validates request structure, file MIME/data URL consistency and citation URL schemes, blocks obvious cross-origin browser requests, and sets HTTP response security headers. These measures do **not** substitute for authenticated users or dedicated abuse protection.
+- The browser's **Stop generating** control cancels its request and saves any received partial reply. The external provider may still incur work or charges after a disconnect.
+- **Prototype usage quotas are held in per-process memory and keyed using request IP headers.** They are not a secure global limit across Vercel instances and can be unreliable behind proxies. Before a public release, use a shared rate limiter, abuse monitoring and per-user budgets.
+- Web-search citations still require verification by the user for consequential decisions. Citation filtering protects links; it does not independently prove the cited claim.
 
-## Prototype note
+## Testing
 
-Chat history and settings are stored in the browser. Usage counters are stored in server memory, which is suitable for a prototype but should use persistent storage for a larger public launch.
+Install dependencies with `python -m pip install -r requirements.txt`, then run:
+
+```bash
+python -m unittest discover -s tests -v
+python -m py_compile app.py
+node --check static/app.js
+node --check static/studio.js
+node --check static/library.js
+```
+
+The Python tests use mocked AI provider responses; they do not spend API credits. They cover request validation, upload handling, origin checks, identity instructions, citation link safety, error sanitization, and security headers. Browser interaction, accessibility, and actual provider performance require additional end-to-end testing.
+
+## Next infrastructure improvements
+
+1. Connect managed authentication and a private database before offering real online accounts or cross-device sync.
+2. Replace per-process quota counters with a shared, abuse-resistant rate limiter.
+3. Add browser end-to-end tests for chat, Stop generating, Saved Chats, mobile navigation, and keyboard accessibility.
+4. Add operational monitoring with appropriate data minimization and clear consent where necessary.
 
 
 ## Public temporary website
