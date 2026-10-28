@@ -403,6 +403,11 @@ def home():
     return render_template("index.html")
 
 
+@app.errorhandler(413)
+def request_too_large(error):
+    return jsonify({"error": "Request too large. Attachments must be 8 MB or smaller."}), 413
+
+
 @app.get("/api/health")
 def health():
     return jsonify({
