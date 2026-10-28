@@ -175,7 +175,7 @@ function renderConversation() {
 }
 
 function safeExternalUrl(raw) {
-  if (typeof raw !== "string" || raw.length > 2048 || [...raw].some(c => c.charCodeAt(0) < 32)) return null;
+  if (typeof raw !== "string" || raw.length > 2048 || [...raw].some(c => c.charCodeAt(0) <= 32 || c.charCodeAt(0) === 92)) return null;
   try {
     const parsed = new URL(raw);
     if (!["https:", "http:"].includes(parsed.protocol) || parsed.username || parsed.password) return null;
