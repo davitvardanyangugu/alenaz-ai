@@ -8,6 +8,7 @@ let currentId = null;
 let currentAttachment = null;
 let activeTool = null;
 let sending = false;
+let currentController = null;
 let health = null;
 
 let settings = Object.assign({
@@ -331,6 +332,17 @@ function scrollConversation() {
   });
 }
 
+// Avoid placing replies from a previous conversation in the currently open chat.
+function showReplyIfActive(conversation, message, live) {
+  if (currentId !== conversation.id) return;
+  if (live && live.row.isConnected) {
+    live.text.textContent = message.text;
+  } else {
+    $("messages").appendChild(createMessageElement(message));
+  }
+  scrollConversation();
+}
+
 function setTool(tool) {
   activeTool = tool;
   const banner = $("modeBanner");
@@ -372,7 +384,10 @@ function getHistoryForRequest(conversation) {
 }
 
 async function sendMessage() {
-  if (sending) return;
+  if (sending) {
+    if (currentController) currentController.abort();
+    return;
+  }
 
   const input = $("promptInput");
   const text = input.value.trim();
@@ -411,6 +426,7 @@ async function sendMessage() {
   updateAttachmentUI();
   resizeTextarea();
   setTool(null);
+  currentController = new AbortController();
   setSending(true);
 
   const payload = {
@@ -429,34 +445,34 @@ async function sendMessage() {
       await sendStream(conversation, payload);
     }
   } catch (error) {
+    const wasStopped = error && error.name === "AbortError";
     const errorMessage = {
       role: "assistant",
-      text: "I hit an error: " + error.message
+      text: wasStopped ? "Request stopped." : "I hit an error: " + (error.message || "Please retry.")
     };
     conversation.messages.push(errorMessage);
     conversation.updated = Date.now();
-    $("messages").appendChild(createMessageElement(errorMessage));
     saveConversations();
-    scrollConversation();
+    showReplyIfActive(conversation, errorMessage);
   } finally {
+    currentController = null;
     setSending(false);
   }
 }
 
 async function sendStream(conversation, payload) {
   const live = addLiveAssistant();
-
   const response = await fetch("/api/chat_stream", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
+    signal: currentController.signal
   });
 
   if (!response.ok) {
     live.row.remove();
     throw new Error(await responseError(response));
   }
-
   if (!response.body) {
     live.row.remove();
     throw new Error("Streaming is not available in this browser.");
@@ -467,35 +483,44 @@ async function sendStream(conversation, payload) {
   let answer = "";
   let started = false;
 
-  while (true) {
-    const chunk = await reader.read();
-    if (chunk.done) break;
-
-    if (!started) {
-      live.text.innerHTML = "";
-      started = true;
+  try {
+    while (true) {
+      const chunk = await reader.read();
+      if (chunk.done) break;
+      if (!started) {
+        live.text.replaceChildren();
+        started = true;
+      }
+      answer += decoder.decode(chunk.value, { stream: true });
+      live.text.textContent = answer;
+      if (currentId === conversation.id) scrollConversation();
     }
-
-    answer += decoder.decode(chunk.value, { stream: true });
-    live.text.textContent = answer;
-    scrollConversation();
-  }
-
-  answer += decoder.decode();
-
-  if (!started) {
-    live.text.innerHTML = "";
-    live.text.textContent = answer || "No response received.";
+    answer += decoder.decode();
+  } catch (error) {
+    if (error && error.name === "AbortError") {
+      const partial = answer.trim();
+      const stopped = {
+        role: "assistant",
+        text: partial ? partial + "\n\n[Generation stopped]" : "Request stopped."
+      };
+      conversation.messages.push(stopped);
+      conversation.updated = Date.now();
+      saveConversations();
+      showReplyIfActive(conversation, stopped, live);
+      return;
+    }
+    live.row.remove();
+    throw error;
   }
 
   const assistantMessage = {
     role: "assistant",
     text: answer || "No response received."
   };
-
   conversation.messages.push(assistantMessage);
   conversation.updated = Date.now();
   saveConversations();
+  showReplyIfActive(conversation, assistantMessage, live);
   speakIfEnabled(assistantMessage.text);
 }
 
@@ -505,7 +530,8 @@ async function sendSearch(conversation, payload) {
   const response = await fetch("/api/search", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
+    signal: currentController.signal
   });
 
   if (!response.ok) {
@@ -526,8 +552,7 @@ async function sendSearch(conversation, payload) {
   conversation.updated = Date.now();
   saveConversations();
 
-  $("messages").appendChild(createMessageElement(assistantMessage));
-  scrollConversation();
+  showReplyIfActive(conversation, assistantMessage);
   speakIfEnabled(assistantMessage.text);
 }
 
@@ -537,7 +562,8 @@ async function sendImage(conversation, prompt) {
   const response = await fetch("/api/image", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt: prompt })
+    body: JSON.stringify({ prompt: prompt }),
+    signal: currentController.signal
   });
 
   if (!response.ok) {
@@ -559,8 +585,7 @@ async function sendImage(conversation, prompt) {
   conversation.updated = Date.now();
   saveConversations();
 
-  $("messages").appendChild(createMessageElement(assistantMessage));
-  scrollConversation();
+  showReplyIfActive(conversation, assistantMessage);
 }
 
 async function responseError(response) {
@@ -587,8 +612,13 @@ function formatDuration(seconds) {
 
 function setSending(value) {
   sending = value;
-  $("sendButton").disabled = value;
+  const button = $("sendButton");
+  button.disabled = false;
+  button.textContent = value ? "■" : "↑";
+  button.title = value ? "Stop generating" : "Send message";
+  button.setAttribute("aria-label", value ? "Stop generating" : "Send message");
   $("voiceButton").disabled = value;
+  $("promptInput").setAttribute("aria-busy", value ? "true" : "false");
 }
 
 function resizeTextarea() {
@@ -818,7 +848,7 @@ $("promptInput").addEventListener("input", resizeTextarea);
 $("promptInput").addEventListener("keydown", function (event) {
   if (event.key === "Enter" && !event.shiftKey) {
     event.preventDefault();
-    sendMessage();
+    if (!sending) sendMessage();
   }
 });
 
