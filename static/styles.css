@@ -346,3 +346,9 @@ body.compact .message{margin:13px 0}body.compact .messages{max-width:950px}body.
 }
 @media(max-width:350px){.starter-grid{grid-template-columns:1fr}.starter-card{min-height:144px}.model-pill{display:none}.dashboard-version{display:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Quality pass: clear stop-generation state and transparent privacy help */
+.send-button.stop-button{background:linear-gradient(135deg,#b82b59,#eb4c74)!important;color:#fff!important}
+.settings-privacy-note{background:var(--surface-2);border:1px solid var(--stroke);padding:14px 15px;border-radius:11px;margin:7px 0 8px}
+.settings-privacy-note strong{display:block;font-size:12px;font-weight:800;color:var(--text);margin-bottom:7px}
+.settings-privacy-note p{margin:0;font-size:10px;line-height:1.75;color:var(--muted)}
