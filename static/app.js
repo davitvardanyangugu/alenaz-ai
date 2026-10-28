@@ -29,8 +29,11 @@ function loadJSON(key, fallback) {
 function saveJSON(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
+    return true;
   } catch (error) {
-    console.warn("Could not save local Alenaz data:", error);
+    // Do not log user content or browser storage details.
+    console.warn("Could not save local Alenaz data.");
+    return false;
   }
 }
 
@@ -50,8 +53,12 @@ function safeConversationsForStorage() {
 }
 
 function saveConversations() {
-  saveJSON(STORAGE_KEY, safeConversationsForStorage());
+  const saved = saveJSON(STORAGE_KEY, safeConversationsForStorage());
+  if (!saved) {
+    showNotice("Browser storage is full or unavailable. Your latest chat changes may not be saved. Export a backup from Saved Chats before closing this tab.");
+  }
   window.dispatchEvent(new CustomEvent("alenaz:chats-updated"));
+  return saved;
 }
 
 function uid() {
@@ -167,6 +174,17 @@ function renderConversation() {
   scrollConversation();
 }
 
+function safeExternalUrl(raw) {
+  if (typeof raw !== "string" || raw.length > 2048 || /[\\u0000-\\u001f]/.test(raw)) return null;
+  try {
+    const parsed = new URL(raw);
+    if (!["https:", "http:"].includes(parsed.protocol) || parsed.username || parsed.password) return null;
+    return parsed.href;
+  } catch (error) {
+    return null;
+  }
+}
+
 function createMessageElement(message) {
   const row = document.createElement("div");
   row.className = "message " + message.role;
@@ -219,10 +237,11 @@ function createMessageElement(message) {
     sourceRow.className = "source-row";
 
     message.sources.slice(0, 8).forEach(function (source, index) {
-      if (!source.url) return;
+      const url = source && safeExternalUrl(source.url);
+      if (!url) return;
       const link = document.createElement("a");
       link.className = "source-chip";
-      link.href = source.url;
+      link.href = url;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
       link.textContent = (index + 1) + " · " + (source.title || source.url);
@@ -239,7 +258,7 @@ function createMessageElement(message) {
 function renderCitedText(container, text, sources) {
   const usable = sources
     .filter(function (source) {
-      return source.url && Number.isInteger(source.end_index);
+      return source && safeExternalUrl(source.url) && Number.isInteger(source.end_index) && source.end_index >= 0;
     })
     .slice()
     .sort(function (a, b) {
@@ -260,7 +279,7 @@ function renderCitedText(container, text, sources) {
 
     const citation = document.createElement("a");
     citation.className = "citation-link";
-    citation.href = source.url;
+    citation.href = safeExternalUrl(source.url);
     citation.target = "_blank";
     citation.rel = "noopener noreferrer";
     citation.title = source.title || source.url;
@@ -649,6 +668,12 @@ async function handleFile(file) {
 
   if (file.size > 8 * 1024 * 1024) {
     showNotice("For this prototype, attachments must be 8 MB or smaller.");
+    return;
+  }
+
+  const supportedImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+  if (file.type.startsWith("image/") && !supportedImageTypes.includes(file.type)) {
+    showNotice("This image format isn't supported yet. Convert it to JPEG, PNG, GIF, or WebP.");
     return;
   }
 
