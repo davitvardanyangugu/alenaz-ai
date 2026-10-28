@@ -27,6 +27,7 @@
     return node;
   };
   const countText = n => n === 1 ? "1 chat" : n + " chats";
+  const messageText = n => n === 1 ? "1 message" : n + " messages";
   const newId = () => (typeof uid === "function" ? uid() : Date.now().toString(36) + Math.random().toString(36).slice(2));
   const byId = id => conversations.find(c => c.id === id);
   const folderName = id => folders.find(f => f.id === id)?.name || "Unfiled";
@@ -88,7 +89,7 @@
       mainBtn.append(make("span","library-folder-symbol","▧"),name,make("small","",conversations.filter(c=>c.folderId===folder.id).length));
       mainBtn.addEventListener("click",()=>chooseFilter(folder.id));
       const edit=make("button","library-folder-edit","⋯");
-      edit.type="button";edit.title="Folder options";edit.setAttribute("aria-label","Options for "+folder.name);
+      edit.type="button";edit.title="Rename folder";edit.setAttribute("aria-label","Rename folder "+folder.name);
       edit.addEventListener("click",()=>folderOptions(folder));
       const remove=make("button","library-folder-remove","×");
       remove.type="button";remove.title="Delete folder";remove.setAttribute("aria-label","Delete folder "+folder.name);
@@ -124,7 +125,7 @@
     const paragraph=make("span","library-card-preview",preview.replace(/\s+/g," ").slice(0,150));
     const bottom=make("span","library-card-bottom");
     bottom.append(make("span","library-folder-badge","▧ "+folderName(chat.folderId)));
-    bottom.append(make("span","library-message-count",countText(Array.isArray(chat.messages)?chat.messages.length:0)));
+    bottom.append(make("span","library-message-count",messageText(Array.isArray(chat.messages)?chat.messages.length:0)));
     openButton.append(header,heading,paragraph,bottom);
     openButton.addEventListener("click",()=>{loadConversation(chat.id);close();});
     const actions=make("div","library-card-actions");
