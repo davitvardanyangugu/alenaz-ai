@@ -62,7 +62,7 @@
     closeSidebar();
     render();
   };
-  window.AlenazLibrary = {open,close,refresh:()=>render()};
+  window.AlenazLibrary = {open,close,refresh:()=>render(),export:()=>exportAll()};
   const chooseFilter = name => {filter=name;render();};
   function drawRail() {
     if(!rail||!folderRail)return;
