@@ -51,6 +51,7 @@ function safeConversationsForStorage() {
 
 function saveConversations() {
   saveJSON(STORAGE_KEY, safeConversationsForStorage());
+  window.dispatchEvent(new CustomEvent("alenaz:chats-updated"));
 }
 
 function uid() {
@@ -83,6 +84,7 @@ function ensureConversation() {
 }
 
 function newChat() {
+  window.AlenazLibrary?.close();
   currentId = null;
   currentAttachment = null;
   setTool(null);
@@ -94,6 +96,7 @@ function newChat() {
 }
 
 function loadConversation(id) {
+  window.AlenazLibrary?.close();
   currentId = id;
   currentAttachment = null;
   setTool(null);
@@ -120,6 +123,7 @@ function renderHistory() {
   list.innerHTML = "";
 
   const ordered = conversations.slice().sort(function (a, b) {
+    if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
     return (b.updated || 0) - (a.updated || 0);
   });
 
@@ -134,8 +138,9 @@ function renderHistory() {
   ordered.forEach(function (conversation) {
     const button = document.createElement("button");
     button.className = "history-item" + (conversation.id === currentId ? " active" : "");
-    button.textContent = conversation.title || "New chat";
+    button.textContent = (conversation.pinned ? "★ " : "") + (conversation.title || "New chat");
     button.title = conversation.title || "New chat";
+    if (conversation.pinned) button.classList.add("pinned");
     button.addEventListener("click", function () {
       loadConversation(conversation.id);
     });
@@ -731,6 +736,7 @@ function saveSettings() {
 }
 
 function clearHistory() {
+  if (!window.confirm("Permanently delete all conversations saved in this browser? Export a backup first if you want to keep them.")) return;
   conversations = [];
   currentId = null;
   saveConversations();
@@ -754,14 +760,17 @@ function closeSidebarOnMobile() {
 $("newChatButton").addEventListener("click", newChat);
 $("brandButton").addEventListener("click", newChat);
 $("sidebarSearch").addEventListener("click", function () {
+  window.AlenazLibrary?.close();
   setTool("search");
   closeSidebarOnMobile();
 });
 $("sidebarImage").addEventListener("click", function () {
+  window.AlenazLibrary?.close();
   setTool("image");
   closeSidebarOnMobile();
 });
 $("searchToggle").addEventListener("click", function () {
+  window.AlenazLibrary?.close();
   setTool(activeTool === "search" ? null : "search");
 });
 $("clearMode").addEventListener("click", function () {
