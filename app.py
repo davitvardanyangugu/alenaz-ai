@@ -291,7 +291,7 @@ def safe_http_url(value):
     """Only permit normal HTTP(S) links to be displayed as citations."""
     if not isinstance(value, str) or len(value) > 2048:
         return False
-    if any(ord(char) < 32 for char in value):
+    if any(char.isspace() or ord(char) < 32 or ord(char) == 92 for char in value):
         return False
     try:
         parsed = urlsplit(value)
