@@ -10,11 +10,25 @@ Alenaz is a ChatGPT-style AI assistant prototype built with Flask and the OpenAI
 - Image understanding
 - PDF and document attachments
 - Voice input and browser text-to-speech
-- Local chat history
+- Saved Chats workspace: pin, rename, move, delete and search across chat content
+- Personal folders and organized conversation library
+- Browser-local JSON export/import backups (chats and folders)
+- Local profile name and account-status center (not an online login)
+- Command center with keyboard shortcuts and a recent chats dashboard
 - Auto, Study, Creative and Code modes
 - Dark/light themes
 - Prototype chat/image limits
 - Mobile-responsive UI
+
+## Saved Chats and local profiles
+
+Choose **Saved chats** in the sidebar to open a separate library with folders, pinned conversations, full-text search, and actions to rename, move or delete chats. Deleted chats require confirmation.
+
+Use **Export** to download a JSON backup and **Import** to restore it in this browser. Your backup may contain personal conversations, so store it somewhere private.
+
+**Account & sync** currently provides a local display-name profile only. This is **not a real login or account**, and it does not sync conversations between devices. Chats, folders and profile settings are stored in the current browser.
+
+For real sign-up/sign-in and cross-device sync, the deployed Flask app needs a trusted authentication provider (for example Clerk) plus a persistent database, with server-verified user sessions and per-user access controls. Those services have not yet been provisioned on Vercel. Do not expose cloud sync or password forms until this is implemented.
 
 ## Mac / VS Code setup
 
