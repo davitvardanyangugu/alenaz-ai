@@ -53,6 +53,15 @@ class AlenazAPITests(unittest.TestCase):
             self.assertEqual(response.status_code, 400)
         self.assertFalse(server.usage)
 
+    def test_oversize_json_has_clear_error(self):
+        response = self.client.post(
+            "/api/chat_stream",
+            data="x" * (12 * 1024 * 1024 + 1),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 413)
+        self.assertIn("too large", response.json["error"].lower())
+
     def test_cross_origin_requests_denied(self):
         response = self.client.post(
             "/api/image",
