@@ -630,6 +630,7 @@ function setSending(value) {
   const button = $("sendButton");
   button.disabled = false;
   button.textContent = value ? "■" : "↑";
+  button.classList.toggle("stop-button", value);
   button.title = value ? "Stop generating" : "Send message";
   button.setAttribute("aria-label", value ? "Stop generating" : "Send message");
   $("voiceButton").disabled = value;
