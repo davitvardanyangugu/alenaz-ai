@@ -467,6 +467,9 @@ async function sendStream(conversation, payload) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
     signal: currentController.signal
+  }).catch(error => {
+    live.row.remove();
+    throw error;
   });
 
   if (!response.ok) {
@@ -521,7 +524,7 @@ async function sendStream(conversation, payload) {
   conversation.updated = Date.now();
   saveConversations();
   showReplyIfActive(conversation, assistantMessage, live);
-  speakIfEnabled(assistantMessage.text);
+  if (currentId === conversation.id) speakIfEnabled(assistantMessage.text);
 }
 
 async function sendSearch(conversation, payload) {
@@ -532,6 +535,9 @@ async function sendSearch(conversation, payload) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
     signal: currentController.signal
+  }).catch(error => {
+    live.row.remove();
+    throw error;
   });
 
   if (!response.ok) {
@@ -539,7 +545,10 @@ async function sendSearch(conversation, payload) {
     throw new Error(await responseError(response));
   }
 
-  const data = await response.json();
+  const data = await response.json().catch(error => {
+    live.row.remove();
+    throw error;
+  });
   live.row.remove();
 
   const assistantMessage = {
@@ -553,7 +562,7 @@ async function sendSearch(conversation, payload) {
   saveConversations();
 
   showReplyIfActive(conversation, assistantMessage);
-  speakIfEnabled(assistantMessage.text);
+  if (currentId === conversation.id) speakIfEnabled(assistantMessage.text);
 }
 
 async function sendImage(conversation, prompt) {
@@ -564,6 +573,9 @@ async function sendImage(conversation, prompt) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt: prompt }),
     signal: currentController.signal
+  }).catch(error => {
+    live.row.remove();
+    throw error;
   });
 
   if (!response.ok) {
@@ -571,7 +583,10 @@ async function sendImage(conversation, prompt) {
     throw new Error(await responseError(response));
   }
 
-  const data = await response.json();
+  const data = await response.json().catch(error => {
+    live.row.remove();
+    throw error;
+  });
   live.row.remove();
 
   const assistantMessage = {
