@@ -25,7 +25,7 @@ app.config["JSON_SORT_KEYS"] = False
 MAX_MESSAGE_CHARS = 12000
 MAX_IMAGE_PROMPT_CHARS = 4000
 MAX_ATTACHMENT_BYTES = 8 * 1024 * 1024
-MAX_ATTACHMENT_ENCODED_CHARS = 11_000_000
+MAX_ATTACHMENT_ENCODED_CHARS = 11_200_000
 ACCEPTED_FILE_MIMES = {
     "application/pdf",
     "text/plain", "text/markdown", "text/csv",
@@ -202,7 +202,7 @@ def validated_attachment(attachment):
     if not isinstance(raw_name, str):
         raise ValueError("Attachment filename must be text.")
     # Strip path components and control characters before sending names to a model provider.
-    name = PurePath(raw_name.replace("\\\\", "/").split("/")[-1]).name
+    name = PurePath(raw_name.replace(chr(92), "/").split("/")[-1]).name
     name = "".join(char for char in name if char.isprintable()).strip()[:120]
     if not name:
         name = "attachment"
@@ -453,12 +453,12 @@ def chat_stream():
                 elif event_type == "error":
                     # Provider messages can include request details. Do not expose them.
                     app.logger.warning("Streaming provider reported an error.")
-                    yield "\\n\\n[Alenaz error: The AI service could not finish this reply. Please retry.]"
+                    yield "\n\n[Alenaz error: The AI service could not finish this reply. Please retry.]"
                     return
         except Exception as exc:
             # Only log the error category; avoid request contents and provider secrets.
             app.logger.warning("Chat service failed (%s)", type(exc).__name__)
-            yield "\\n\\n[Alenaz error: The AI service is temporarily unavailable. Please retry.]"
+            yield "\n\n[Alenaz error: The AI service is temporarily unavailable. Please retry.]"
 
     return Response(stream_with_context(generate()), mimetype="text/plain; charset=utf-8")
 
