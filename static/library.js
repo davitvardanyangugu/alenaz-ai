@@ -90,7 +90,10 @@
       const edit=make("button","library-folder-edit","⋯");
       edit.type="button";edit.title="Folder options";edit.setAttribute("aria-label","Options for "+folder.name);
       edit.addEventListener("click",()=>folderOptions(folder));
-      row.append(mainBtn,edit);folderRail.append(row);
+      const remove=make("button","library-folder-remove","×");
+      remove.type="button";remove.title="Delete folder";remove.setAttribute("aria-label","Delete folder "+folder.name);
+      remove.addEventListener("click",()=>removeFolder(folder));
+      row.append(mainBtn,edit,remove);folderRail.append(row);
     });
     if(!folders.length){
       const note=make("p","library-no-folders","Make a folder to group related chats.");
@@ -368,17 +371,7 @@
     if(event.key===FOLDERS_KEY){folders=readFolders();render();}
     if(event.key===STORAGE_KEY)render();
   });
-  // Dedicated folder deletion context via a second-click confirmation control.
-  folderRail?.addEventListener("contextmenu",event=>{
-    const target=event.target.closest(".library-folder-row");
-    if(!target)return;
-    event.preventDefault();
-    const index=[...folderRail.querySelectorAll(".library-folder-row")].indexOf(target);
-    const folder=folders[index];if(folder)removeFolder(folder);
-  });
-  // The folder-delete button is also available via long-press-independent options.
-  const originalOptions=folderOptions;
-  // Deliberately keep rename and delete separate; no accidental destructive actions.
+  // Rename and delete have separate, explicitly labeled controls on every device.
   el("librarySearch")?.addEventListener("keydown",event=>{
     if(event.key==="Escape"){event.target.value="";query="";render();}
   });
