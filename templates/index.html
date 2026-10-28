@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#090f25">
-  <meta name="description" content="Alenaz is your creative AI workspace. Think, learn, research, build, and create—all in one place.">
+  <meta name="description" content="Alenaz is your personal AI workspace for chat, research, images, coding and organized saved conversations.">
   <meta name="color-scheme" content="dark light">
   <title>Alenaz — Your creative AI workspace</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=midnight-v1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=library-v1">
 </head>
 <body>
   <a class="skip-link" href="#promptInput">Skip to message input</a>
@@ -34,6 +34,8 @@
         <button class="sidebar-action" id="sidebarSearch" type="button"><span class="nav-icon" aria-hidden="true">⌕</span><span>Web search</span></button>
         <button class="sidebar-action" id="sidebarImage" type="button"><span class="nav-icon" aria-hidden="true">◇</span><span>Image generation</span></button>
         <button class="sidebar-action" id="openCommandFromSidebar" type="button"><span class="nav-icon" aria-hidden="true">⌘</span><span>Command center</span></button>
+        <button class="sidebar-action" id="savedChatsNav" type="button"><span class="nav-icon" aria-hidden="true">▣</span><span>Saved chats</span><span class="nav-count" id="savedNavCount">0</span></button>
+        <button class="sidebar-action" id="accountCenterNav" type="button"><span class="nav-icon" aria-hidden="true">♙</span><span>Account &amp; sync</span></button>
       </nav>
 
       <div class="sidebar-section grow">
@@ -47,7 +49,7 @@
         <div class="usage-pill" id="usagePill">Checking AI status…</div>
         <button class="profile-button" id="settingsButton" type="button">
           <span class="avatar" id="avatarLetter">G</span>
-          <span class="profile-copy"><strong id="profileName">Guest</strong><small>Preferences & settings</small></span>
+          <span class="profile-copy"><strong id="profileName">Guest</strong><small>Local profile · Settings</small></span>
           <span class="chevron" aria-hidden="true">⋯</span>
         </button>
       </div>
@@ -76,7 +78,7 @@
       <section class="conversation" id="conversation" aria-label="AI workspace">
         <div class="welcome" id="welcome">
           <div class="dashboard">
-            <div class="dashboard-overline"><span class="green-dot"></span> THE PERSONAL AI WORKSPACE <span class="overview-line"></span> <span class="dashboard-version">ALENAZ / 03</span></div>
+            <div class="dashboard-overline"><span class="green-dot"></span> THE PERSONAL AI WORKSPACE <span class="overview-line"></span> <span class="dashboard-version">ALENAZ / 04</span></div>
 
             <section class="hero-layout" aria-label="Welcome">
               <div class="hero-editorial">
@@ -125,7 +127,7 @@
 
             <div class="dashboard-lower">
               <section class="recent-panel" aria-labelledby="recentHeading">
-                <div class="section-heading compact-heading"><div><p class="eyebrow">PICK UP WHERE YOU LEFT OFF</p><h2 id="recentHeading">Recent work</h2></div><span class="recent-counter" id="recentCountLabel">0 chats</span></div>
+                <div class="section-heading compact-heading"><div><p class="eyebrow">PICK UP WHERE YOU LEFT OFF</p><h2 id="recentHeading">Recent work</h2></div><button class="recent-counter recent-open-library" type="button" id="recentOpenLibrary" aria-label="Open saved chat library">All chats ↗</button></div>
                 <div class="recent-home-list" id="recentHomeList"><div class="recent-empty"><span>✳</span><p>Your next great idea starts here.</p><small>Conversations you create will appear in this space.</small></div></div>
               </section>
               <section class="inspiration-panel" id="inspirationSection" aria-labelledby="inspirationHeading">
@@ -138,7 +140,46 @@
             <footer class="dashboard-footer"><span>MADE FOR CURIOUS MINDS <span>✳</span></span><span>CREATE MORE. IMAGINE BIGGER.</span></footer>
           </div>
         </div>
-        <div class="messages" id="messages" aria-live="polite"></div>
+
+        <section class="library-view hidden" id="libraryView" aria-labelledby="libraryHeading">
+          <div class="library-topbar">
+            <div>
+              <p class="library-eyebrow">YOUR PERSONAL ARCHIVE <span>✦</span> AVAILABLE ON THIS DEVICE</p>
+              <h1 id="libraryHeading">Your conversations<span>.</span></h1>
+              <p class="library-subtitle">Everything you’ve explored, organized your way. Chats stay in this browser until cloud sync is connected.</p>
+            </div>
+            <button class="library-create" id="libraryCreateFolder" type="button">＋ New folder</button>
+          </div>
+          <div class="library-stats" aria-label="Library statistics">
+            <div class="library-stat"><span>CONVERSATIONS</span><strong id="libraryChatCount">0</strong></div>
+            <div class="library-stat"><span>PINNED</span><strong id="libraryPinCount">0</strong></div>
+            <div class="library-stat"><span>FOLDERS</span><strong id="libraryFolderCount">0</strong></div>
+          </div>
+          <div class="library-workspace">
+            <aside class="library-rail" aria-label="Conversation folders">
+              <p class="library-rail-label">LIBRARY</p>
+              <div id="libraryFilters"></div>
+              <div class="library-rail-divider"></div>
+              <div class="library-rail-head"><span>FOLDERS</span><button type="button" id="libraryQuickAddFolder" aria-label="Create folder">＋</button></div>
+              <div id="libraryFolders"></div>
+              <div class="library-rail-foot"><span>◎</span><span>Local-first. Your conversations are saved in this browser.</span></div>
+            </aside>
+            <div class="library-content">
+              <div class="library-content-toolbar">
+                <div class="library-content-title"><h2 id="libraryFilterHeading">All conversations</h2><span id="libraryResultCount">0 chats</span></div>
+                <div class="library-toolbar-actions">
+                  <label class="library-search"><span>⌕</span><input id="librarySearch" type="search" placeholder="Search your chats…" autocomplete="off" aria-label="Search saved conversations"></label>
+                  <button id="libraryImportButton" type="button" title="Import a saved JSON backup">↑ Import</button>
+                  <button id="libraryExportButton" type="button" title="Download a JSON backup">↓ Export</button>
+                  <input id="libraryImportInput" type="file" accept=".json,application/json" hidden>
+                </div>
+              </div>
+              <div id="libraryCards" class="library-cards" aria-live="polite"></div>
+            </div>
+          </div>
+        </section>
+
+                <div class="messages" id="messages" aria-live="polite"></div>
       </section>
 
       <div class="composer-wrap">
@@ -171,6 +212,34 @@
     </div>
   </div>
 
+  
+  <div class="library-modal-backdrop hidden" id="libraryModalBackdrop">
+    <div class="library-modal" role="dialog" aria-modal="true" aria-labelledby="libraryModalTitle">
+      <div class="library-modal-heading"><span>✦ ALENAZ STUDIO</span><button class="icon-button" type="button" id="libraryModalClose" aria-label="Close dialog">×</button></div>
+      <h2 id="libraryModalTitle">Create a folder</h2>
+      <p id="libraryModalDescription">Keep your ideas together.</p>
+      <label id="libraryModalTextLabel" for="libraryModalText">Name</label>
+      <input type="text" id="libraryModalText" maxlength="70" autocomplete="off" placeholder="Type a name…">
+      <label id="libraryModalSelectLabel" for="libraryModalSelect" class="hidden">Choose a folder</label>
+      <select id="libraryModalSelect" class="hidden"></select>
+      <div class="library-modal-actions"><button type="button" id="libraryModalCancel">Cancel</button><button type="button" id="libraryModalConfirm">Save changes</button></div>
+    </div>
+  </div>
+
+  <div class="account-backdrop hidden" id="accountBackdrop">
+    <div class="account-dialog" role="dialog" aria-modal="true" aria-labelledby="accountHeading">
+      <div class="account-dialog-top"><span>ALENAZ · YOUR SPACE</span><button type="button" class="icon-button" id="accountClose" aria-label="Close account center">×</button></div>
+      <div class="account-icon">a<span>.</span></div>
+      <h2 id="accountHeading">Make it yours<span>.</span></h2>
+      <p class="account-intro">Create a personal profile for this browser. A real online account and device-to-device sync require secure sign-in and a database.</p>
+      <div class="account-state"><span class="account-state-dot"></span><div><strong>Local mode</strong><small>Not signed in · Chats stay on this device</small></div></div>
+      <label class="account-name-label" for="accountNameInput">Your display name</label>
+      <input id="accountNameInput" type="text" maxlength="30" placeholder="What should we call you?" autocomplete="nickname">
+      <button class="account-save" id="accountSave" type="button">Save local profile ↗</button>
+      <p class="account-footnote">We don't ask for passwords here because online sign-in hasn't been configured. Avoid clearing browser data if you want to keep local conversations; export a backup from Saved chats.</p>
+    </div>
+  </div>
+
   <div class="command-overlay hidden" id="commandPalette" role="dialog" aria-modal="true" aria-label="Command center">
     <div class="command-dialog">
       <div class="command-input-row"><span>⌕</span><input id="commandInput" type="search" aria-label="Search commands and conversations" autocomplete="off" placeholder="What would you like to do?"><button type="button" id="closeCommand">ESC</button></div>
@@ -179,7 +248,8 @@
     </div>
   </div>
 
-  <script src="{{ url_for('static', filename='app.js') }}?v=studio-v3"></script>
+  <script src="{{ url_for('static', filename='app.js') }}?v=library-v1"></script>
   <script src="{{ url_for('static', filename='studio.js') }}?v=studio-v3" defer></script>
+  <script src="{{ url_for('static', filename='library.js') }}?v=library-v1" defer></script>
 </body>
 </html>
