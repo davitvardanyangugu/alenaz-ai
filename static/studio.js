@@ -9,7 +9,7 @@
       return Array.isArray(value) ? value.filter(c => c && typeof c === "object") : [];
     } catch (_) { return []; }
   };
-  const getSortedChats = () => readChats().sort((a,b) => (b.updated || 0) - (a.updated || 0));
+  const getSortedChats = () => readChats().sort((a,b) => Number(!!b.pinned)-Number(!!a.pinned) || (b.updated || 0) - (a.updated || 0));
   const labelTime = value => {
     if (!value) return "Previous conversation";
     const date = new Date(value);
@@ -21,6 +21,7 @@
     return date.toLocaleDateString(undefined, {month:"short",day:"numeric"});
   };
   const focusComposer = (value, mode) => {
+    window.AlenazLibrary?.close();
     if (mode && el("modeSelect")) el("modeSelect").value = mode;
     const input = el("promptInput");
     if (!input) return;
@@ -39,9 +40,11 @@
   const historySearch = el("historySearch");
   let lastSnapshot = "";
   const updateView = () => {
-    const homeVisible = welcome && !welcome.classList.contains("hidden");
-    if (el("viewTitle")) el("viewTitle").textContent = homeVisible ? "Overview" : "Conversation";
+    const inLibrary = !!el("libraryView") && !el("libraryView").classList.contains("hidden");
+    const homeVisible = welcome && !welcome.classList.contains("hidden") && !inLibrary;
+    if (el("viewTitle")) el("viewTitle").textContent = inLibrary ? "Saved chats" : homeVisible ? "Overview" : "Conversation";
     el("homeNav")?.classList.toggle("nav-active", !!homeVisible);
+    el("savedChatsNav")?.classList.toggle("nav-active", inLibrary);
   };
   function renderDashboard() {
     const chats = getSortedChats();
@@ -106,11 +109,13 @@
     filterHistory();renderDashboard();updateView();
   }).observe(history,{childList:true});
   if(welcome) new MutationObserver(updateView).observe(welcome,{attributes:true,attributeFilter:["class"]});
+  if(el("libraryView")) new MutationObserver(updateView).observe(el("libraryView"),{attributes:true,attributeFilter:["class"]});
   window.addEventListener("storage",event=>{
     if(event.key===STORAGE_KEY){lastSnapshot="";renderDashboard();}
   });
   // Export local chat data without sending it to any server.
   el("exportChats")?.addEventListener("click",()=>{
+    if (window.AlenazLibrary?.export) {window.AlenazLibrary.export();return;}
     const chats=readChats();
     if(!chats.length){alert("Create a conversation first—there is nothing to export yet.");return;}
     const content={app:"Alenaz AI",version:1,exportedAt:new Date().toISOString(),conversations:chats};
@@ -129,6 +134,8 @@
   let matches=[];
   const actions=[
     {label:"New conversation",hint:"Start with a blank chat",icon:"＋",run:()=>showHome()},
+    {label:"Saved chats",hint:"Open your organized conversation library",icon:"▣",run:()=>window.AlenazLibrary?.open()},
+    {label:"Account & sync",hint:"Manage your local profile",icon:"♙",run:()=>el("accountCenterNav")?.click()},
     {label:"Search the web",hint:"Use Alenaz web search",icon:"⌕",run:()=>{el("sidebarSearch")?.click();focusComposer();}},
     {label:"Generate an image",hint:"Create art from a description",icon:"◇",run:()=>{el("sidebarImage")?.click();focusComposer();}},
     {label:"Study mode",hint:"Get a guided explanation",icon:"◎",run:()=>focusComposer("Help me understand a tricky topic step by step.","study")},
