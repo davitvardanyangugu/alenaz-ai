@@ -89,3 +89,20 @@ test("languages from either section remain selectable with the same settings API
     assert.equal(document.documentElement.lang,code);
   }
 });
+
+test("15 common languages have instant core dashboard labels without waiting for AI",()=>{
+  const {window} = setup();
+  const expected={
+    fr:"Accueil",es:"Inicio",de:"Startseite",it:"Home",pt:"Início",
+    nl:"Start",pl:"Strona główna",uk:"Головна",ka:"მთავარი",
+    ar:"الرئيسية",zh:"主页",ja:"ホーム",ko:"홈",hi:"होम",el:"Αρχική",
+  };
+  for (const [code,label] of Object.entries(expected)) {
+    window.AlenazLanguages.choose(code);
+    assert.equal(window.AlenazLanguages.translate("home"),label,code);
+  }
+  window.AlenazLanguages.choose("az");
+  assert.equal(window.AlenazLanguages.translate("home"),"Home");
+  window.AlenazLanguages.choose("tr");
+  assert.equal(window.AlenazLanguages.translate("home"),"Home");
+});
