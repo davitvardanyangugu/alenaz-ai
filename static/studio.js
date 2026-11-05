@@ -2,6 +2,7 @@
 (function () {
   "use strict";
   const el = id => document.getElementById(id);
+  const t = (key,english) => window.AlenazLanguages?.translate?.(key) || english;
   const STORAGE_KEY = "alenaz_conversations_v1";
   const readChats = () => {
     try {
@@ -42,7 +43,7 @@
   const updateView = () => {
     const inLibrary = !!el("libraryView") && !el("libraryView").classList.contains("hidden");
     const homeVisible = welcome && !welcome.classList.contains("hidden") && !inLibrary;
-    if (el("viewTitle")) el("viewTitle").textContent = inLibrary ? "Saved chats" : homeVisible ? "Overview" : "Conversation";
+    if (el("viewTitle")) el("viewTitle").textContent = inLibrary ? t("savedChats","Saved chats") : homeVisible ? t("overview","Overview") : t("conversationTitle","Conversation");
     el("homeNav")?.classList.toggle("nav-active", !!homeVisible);
     el("savedChatsNav")?.classList.toggle("nav-active", inLibrary);
   };
@@ -62,8 +63,8 @@
       const empty=document.createElement("div");
       empty.className="recent-empty";
       const symbol=document.createElement("span");symbol.textContent="✳";
-      const title=document.createElement("p");title.textContent="Your next great idea starts here.";
-      const caption=document.createElement("small");caption.textContent="Conversations you create will appear in this space.";
+      const title=document.createElement("p");title.textContent=t("recentEmptyTitle","Your next great idea starts here.");
+      const caption=document.createElement("small");caption.textContent=t("recentEmptyDesc","Conversations you create will appear in this space.");
       empty.append(symbol,title,caption);list.appendChild(empty);return;
     }
     chats.slice(0,3).forEach(chat=>{
@@ -99,9 +100,17 @@
   });
   function updateGreeting(){
     const hour=new Date().getHours();
-    const text=hour<11?"GOOD MORNING · LET'S MAKE SOMETHING":hour<17?"GOOD AFTERNOON · MAKE TODAY COUNT":"GOOD EVENING · IDEAS DON'T SLEEP";
+    const text=hour<11?t("greetingMorning","GOOD MORNING · LET'S MAKE SOMETHING"):hour<17?t("greetingAfternoon","GOOD AFTERNOON · MAKE TODAY COUNT"):t("greetingEvening","GOOD EVENING · IDEAS DON'T SLEEP");
     if(el("timeGreeting"))el("timeGreeting").textContent=text;
   }
+  const refreshLocalizedDashboard = () => {
+    lastSnapshot = "";
+    updateGreeting();
+    renderDashboard();
+    updateView();
+  };
+  window.addEventListener("alenaz:language-changed",refreshLocalizedDashboard);
+  window.addEventListener("alenaz:ui-translated",refreshLocalizedDashboard);
   updateGreeting();
   renderDashboard();
   updateView();
