@@ -21,7 +21,8 @@ Alenaz is a ChatGPT-style AI assistant prototype built with Flask and the OpenAI
 - Auto, Study, Creative and Code modes
 - Dark/light themes
 - Languages dashboard control and settings picker with 184 ISO 639-1 choices and custom language names
-- VIP-priority Armenian (Հայերեն), Russian (Русский), and English interface translations
+- Equal priority display for 182 language options; Azerbaijani and Turkish remain available in a separate non-priority group
+- Existing Armenian, Russian and English main-interface translations remain available
 - Language preference sent to AI chat and web search and used where supported for voice
 - Prototype chat/image limits
 - Mobile-responsive UI
@@ -38,11 +39,11 @@ Drafts, prompt favorites and exported transcripts stay on your device unless you
 
 ## Language preferences — Alenaz 06
 
-Open **🌐 Languages** beside the light/dark theme control on the dashboard, or open **Preferences → Languages**. Armenian (Հայերեն), Russian (Русский) and English appear first as **VIP Priority** options; VIP means featured, **not** a paid tier. Search among 184 ISO 639-1 language codes, or enter an additional language name under **Can't find it?**.
+Open **🌐 Languages** beside the light/dark theme control on the dashboard, or open **Preferences → Languages**. All supported language options except Azerbaijani (`az`) and Turkish (`tr`) appear under **Priority Languages** with identical labels and styling. Azerbaijani and Turkish remain selectable under **Other Languages**. These are display preferences only: no language is disabled, and all selections follow the same chat/search API path. Search among 184 ISO 639-1 language codes, or enter an additional language name under **Can't find it?**.
 
 The chosen language is saved **in this browser** as a preference, and sent with chat and web-search requests so Alenaz is instructed to answer primarily in that language. The same choice controls browser speech language when the device supports it. Changing the preference does not automatically translate previously saved messages.
 
-The main navigation, dashboard controls and preferences have Armenian, Russian and English translations. For other choices, the interface falls back to English while AI responses are requested in the selected language. AI fluency, dialect recognition, reading direction, speech input and text-to-speech are **not guaranteed** for every language; rare and custom language names are best-effort. This does not provide independently verified translations for every language worldwide.
+The existing main navigation, dashboard controls and preferences translations are in Armenian, Russian and English; the display priority ranking does not imply that all interface translations or AI speech capabilities are equally complete. For other choices, the interface falls back to English while AI responses are requested in the selected language. AI fluency, dialect recognition, reading direction, speech input and text-to-speech are **not guaranteed** for every language; rare and custom language names are best-effort. This does not provide independently verified translations for every language worldwide.
 
 User-selected language values are validated on the server before being included in model instructions. No third-party translation widget or new cloud account is required.
 
