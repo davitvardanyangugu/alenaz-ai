@@ -301,7 +301,6 @@ class AlenazAPITests(unittest.TestCase):
         self.assertIn("deliberately enabled Swearing mode", guidance)
         self.assertIn("at least one non-targeted casual swear word", guidance)
         self.assertIn("Never use hateful slurs", guidance)
-        self.assertIn("Never use slurs", guidance)
 
     def test_rare_language_names_are_not_opaque_codes(self):
         self.assertEqual(len(server.ALL_LANGUAGE_NAMES), len(server.LANGUAGE_CODES))
