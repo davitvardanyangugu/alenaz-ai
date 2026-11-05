@@ -58,6 +58,9 @@ function setup() {
     saveJSON:(key,value)=>{store[key]=JSON.stringify(value);},
     SETTINGS_KEY:"alenaz_settings_v1",
     navigator:{language:"en-US"},
+    localStorage:{getItem:()=>null,setItem(){}},
+    AbortController,
+    fetch:async ()=>({ok:false}),
     Intl
   }, {filename:"languages.js"});
   return {elements, window, settings, document, store};
