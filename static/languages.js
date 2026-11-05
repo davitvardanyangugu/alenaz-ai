@@ -484,7 +484,7 @@
     const intro = $("langScreenDescription");
     if(intro) intro.textContent = ui("languageSub");
   }
-  const CACHE_PREFIX = "alenaz_dashboard_locale_v2_";
+  const CACHE_PREFIX = "alenaz_dashboard_locale_v3_";
   const I18N_EXCEPTIONS = new Set(["en","az","tr"]);
   let translationRequest = 0;
   let translationController = null;
@@ -503,14 +503,14 @@
     try {
       const raw = localStorage.getItem(CACHE_PREFIX + encodeURIComponent(language));
       const parsed = raw ? JSON.parse(raw) : null;
-      return parsed && parsed.version === 2 && parsed.translations && typeof parsed.translations === "object"
+      return parsed && parsed.version === 3 && parsed.translations && typeof parsed.translations === "object"
         ? parsed.translations : null;
     } catch (_) { return null; }
   }
   function saveTranslationCache(language,translations) {
     try {
       localStorage.setItem(CACHE_PREFIX + encodeURIComponent(language),
-        JSON.stringify({version:2,translations}));
+        JSON.stringify({version:3,translations}));
     } catch (_) { /* Browser storage is optional; the translation still works. */ }
   }
   function applyRemoteTranslations(language,values) {
