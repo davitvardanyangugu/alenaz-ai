@@ -133,7 +133,7 @@
   };
   const ALL = CODES.filter(code=>!isVip(code)).map(code=>({code,name:displayEn(code),native:displayNative(code)}))
     .sort((a,b)=>a.name.localeCompare(b.name,"en"));
-  let modal = $("languageModal"), lastFocused = null, search = $("languageSearch");
+  let modal = $("languageModal"), lastFocused = null, search = $("languageSearch"), returnToSettings = false;
   function setText(selector,key) {
     const el = document.querySelector(selector);
     if(el) el.textContent = ui(key);
@@ -264,11 +264,14 @@
   function closeModal() {
     modal?.classList.add("hidden");
     document.body.classList.remove("language-dialog-open");
+    if(returnToSettings) $("settingsModal")?.classList.remove("hidden");
+    returnToSettings = false;
     if(lastFocused && lastFocused.isConnected) lastFocused.focus();
   }
   function openModal() {
     if(!modal)return;
     lastFocused=document.activeElement;
+    returnToSettings = !!$("settingsModal") && !$("settingsModal").classList.contains("hidden");
     $("settingsModal")?.classList.add("hidden");
     modal.classList.remove("hidden");
     document.body.classList.add("language-dialog-open");
