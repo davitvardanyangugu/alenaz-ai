@@ -149,3 +149,18 @@ test("Stop generating aborts request and saves a stopped message", async () => {
   assert.equal(chats[0].messages.at(-1).text,"Request stopped.");
   assert.equal(elements.get("sendButton").attributes["aria-label"],"Send message");
 });
+
+test("selected language travels with a chat request", async () => {
+  let payload;
+  const {context,elements} = createRuntime((url, options) => {
+    assert.equal(url, "/api/chat_stream");
+    payload = JSON.parse(options.body);
+    return Promise.reject(new Error("Mock request complete"));
+  });
+  vm.runInContext('settings.language = "hy"', context);
+  elements.get("promptInput").value = "Բարև";
+  elements.get("modeSelect").value = "auto";
+  await vm.runInContext("sendMessage()", context);
+  assert.equal(payload.language, "hy");
+  assert.equal(payload.message, "Բարև");
+});
