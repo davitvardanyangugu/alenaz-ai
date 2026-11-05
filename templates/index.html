@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=quality-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='library.css') }}?v=library-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='features.css') }}?v=features-v1">
-  <link rel="stylesheet" href="{{ url_for('static', filename='languages.css') }}?v=languages-v2">
+  <link rel="stylesheet" href="{{ url_for('static', filename='languages.css') }}?v=languages-v3">
 </head>
 <body>
   <a class="skip-link" href="#promptInput">Skip to message input</a>
@@ -27,7 +27,7 @@
           </button>
           <button class="icon-button mobile-only" id="closeSidebar" aria-label="Close sidebar">×</button>
         </div>
-        <div class="workspace-chip"><span class="workspace-monogram">✳</span><span><strong>My workspace</strong><small>Personal space</small></span><span class="workspace-chevron">⌄</span></div>
+        <div class="workspace-chip"><span class="workspace-monogram">✳</span><span><strong data-alenaz-i18n="personalSpace">My workspace</strong><small data-alenaz-i18n="personalSpaceDesc">Personal space</small></span><span class="workspace-chevron">⌄</span></div>
         <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span>New conversation</span><kbd>⌘⇧N</kbd></button>
       </div>
 
@@ -36,6 +36,7 @@
         <button class="sidebar-action nav-home" id="homeNav" type="button"><span class="nav-icon" aria-hidden="true">⌂</span><span id="homeNavLabel">Home</span><span class="nav-hint">↗</span></button>
         <button class="sidebar-action" id="sidebarSearch" type="button"><span class="nav-icon" aria-hidden="true">⌕</span><span id="sidebarSearchLabel">Web search</span></button>
         <button class="sidebar-action" id="sidebarImage" type="button"><span class="nav-icon" aria-hidden="true">◇</span><span id="sidebarImageLabel">Image generation</span></button>
+        <button class="sidebar-action" id="sidebarSwear" type="button" aria-pressed="false" title="Allow casual swearing in AI replies"><span class="nav-icon" aria-hidden="true">⚡</span><span id="sidebarSwearLabel" data-alenaz-i18n="swearMode">Swearing mode</span></button>
         <button class="sidebar-action" id="openCommandFromSidebar" type="button"><span class="nav-icon" aria-hidden="true">⌘</span><span id="commandNavLabel">Command center</span></button>
         <button class="sidebar-action" id="promptLibraryNav" type="button"><span class="nav-icon" aria-hidden="true">✦</span><span id="promptLibraryNavLabel">Prompt library</span></button>
         <button class="sidebar-action" id="savedChatsNav" type="button"><span class="nav-icon" aria-hidden="true">▣</span><span id="savedChatsNavLabel">Saved chats</span><span class="nav-count" id="savedNavCount">0</span></button>
@@ -65,12 +66,12 @@
       <header class="topbar">
         <div class="topbar-left">
           <button class="icon-button menu-button" id="openSidebar" type="button" aria-label="Open sidebar">☰</button>
-          <span class="topbar-breadcrumb">Workspace</span>
+          <span class="topbar-breadcrumb" data-alenaz-i18n="workspace">Workspace</span>
           <span class="topbar-divider">/</span>
           <span class="topbar-current" id="viewTitle">Overview</span>
         </div>
         <div class="topbar-actions">
-          <button class="command-trigger" id="commandButton" type="button" aria-label="Open command center"><span>⌕</span> Quick actions <kbd>⌘ K</kbd></button>
+          <button class="command-trigger" id="commandButton" type="button" aria-label="Open command center"><span>⌕</span> <span data-alenaz-i18n="quickActionsLabel">Quick actions</span> <kbd>⌘ K</kbd></button>
           <button class="topbar-button" id="searchToggle" type="button" aria-pressed="false">⌕ <span>Search</span></button>
           <button class="language-switcher" id="languageButton" type="button" title="Languages" aria-label="Languages">🌐 <span id="languageButtonLabel">EN</span></button>
           <button class="icon-button theme-switch" id="themeButton" type="button" aria-label="Toggle light and dark theme">☼</button>
@@ -78,12 +79,17 @@
         </div>
       </header>
 
+      <div id="languageTranslationStatus" class="language-translation-status hidden" role="status" aria-live="polite">
+        <span id="languageTranslationMessage">Translating your dashboard…</span>
+        <button id="retryLanguageTranslation" class="hidden" type="button">Retry</button>
+      </div>
+
       <div class="notice hidden" id="apiNotice" role="status"></div>
 
       <section class="conversation" id="conversation" aria-label="AI workspace">
         <div class="welcome" id="welcome">
           <div class="dashboard">
-            <div class="dashboard-overline"><span class="green-dot"></span> THE PERSONAL AI WORKSPACE <span class="overview-line"></span> <span class="dashboard-version">ALENAZ / 04</span></div>
+            <div class="dashboard-overline"><span class="green-dot"></span> <span data-alenaz-i18n="dashboardKicker">THE PERSONAL AI WORKSPACE</span> <span class="overview-line"></span> <span class="dashboard-version">ALENAZ / 04</span></div>
 
             <section class="hero-layout" aria-label="Welcome">
               <div class="hero-editorial">
@@ -94,18 +100,18 @@
                   <button class="hero-start" id="heroStart" type="button"><span id="heroStartLabel">Start creating</span> <span aria-hidden="true">↗</span></button>
                   <button class="hero-explore" id="heroExplore" type="button"><span id="heroExploreLabel">Explore ideas</span> <span aria-hidden="true">↓</span></button>
                 </div>
-                <div class="hero-meta"><span class="hero-meta-circle">✳</span><span>YOUR IDEAS, WITHOUT LIMITS</span></div>
+                <div class="hero-meta"><span class="hero-meta-circle">✳</span><span data-alenaz-i18n="heroMeta">YOUR IDEAS, WITHOUT LIMITS</span></div>
               </div>
 
               <aside class="hero-display" aria-label="Workspace activity">
-                <div class="display-top"><span>YOUR CREATIVE SPACE</span><span class="display-top-symbol">✦ ✦</span></div>
+                <div class="display-top"><span data-alenaz-i18n="displayTop">YOUR CREATIVE SPACE</span><span class="display-top-symbol">✦ ✦</span></div>
                 <div class="display-orbit" aria-hidden="true"><div class="orbit-outline orbit-large"></div><div class="orbit-outline orbit-medium"></div><div class="orbit-outline orbit-small"></div><div class="orbit-center">a<span>.</span></div><div class="orbit-satellite sat-one">✳</div><div class="orbit-satellite sat-two">✺</div></div>
-                <div class="display-bottom"><div><span class="display-tiny">CHATS IN THIS BROWSER</span><strong id="dashboardChatsCount">0</strong></div><div><span class="display-tiny">MESSAGES SENT</span><strong id="dashboardMessagesCount">0</strong></div><div class="display-indicator" aria-hidden="true">↗</div></div>
+                <div class="display-bottom"><div><span class="display-tiny" data-alenaz-i18n="chatsCount">CHATS IN THIS BROWSER</span><strong id="dashboardChatsCount">0</strong></div><div><span class="display-tiny" data-alenaz-i18n="messagesCount">MESSAGES SENT</span><strong id="dashboardMessagesCount">0</strong></div><div class="display-indicator" aria-hidden="true">↗</div></div>
               </aside>
             </section>
 
             <section class="tools-section" id="toolsSection" aria-label="AI tools">
-              <div class="section-heading"><div><p class="eyebrow">THE TOOLKIT</p><h2 id="toolsHeading">What do you feel like doing?</h2></div><span class="section-heading-side">FOUR WAYS TO GET STARTED <span aria-hidden="true">↙</span></span></div>
+              <div class="section-heading"><div><p class="eyebrow" data-alenaz-i18n="toolkitLabel">THE TOOLKIT</p><h2 id="toolsHeading">What do you feel like doing?</h2></div><span class="section-heading-side"><span data-alenaz-i18n="toolkitHint">FOUR WAYS TO GET STARTED</span> <span aria-hidden="true">↙</span></span></div>
               <div class="starter-grid">
                 <button class="starter-card tool-talk" data-prompt="Let's brainstorm. Help me come up with three original ideas for something exciting." type="button">
                   <span class="tool-top"><span class="tool-symbol" aria-hidden="true">✳</span><span class="tool-arrow" aria-hidden="true">↗</span></span>
@@ -127,22 +133,27 @@
                   <span class="tool-bottom"><strong>Build something</strong><small>From the first line to a finished project.</small></span>
                   <span class="tool-index">04 / CODE</span>
                 </button>
+                <button class="starter-card tool-swear" data-set-mode="swear" type="button">
+                  <span class="tool-top"><span class="tool-symbol" aria-hidden="true">⚡</span><span class="tool-arrow" aria-hidden="true">↗</span></span>
+                  <span class="tool-bottom"><strong data-alenaz-i18n="swearCardTitle">Swearing mode</strong><small data-alenaz-i18n="swearCardDesc">Allow a playful, unfiltered tone—not harmful abuse.</small></span>
+                  <span class="tool-index">05 / TONE</span>
+                </button>
               </div>
             </section>
 
             <div class="dashboard-lower">
               <section class="recent-panel" aria-labelledby="recentHeading">
-                <div class="section-heading compact-heading"><div><p class="eyebrow">PICK UP WHERE YOU LEFT OFF</p><h2 id="recentHeading">Recent work</h2></div><button class="recent-counter recent-open-library" type="button" id="recentOpenLibrary" aria-label="Open saved chat library">All chats ↗</button></div>
-                <div class="recent-home-list" id="recentHomeList"><div class="recent-empty"><span>✳</span><p>Your next great idea starts here.</p><small>Conversations you create will appear in this space.</small></div></div>
+                <div class="section-heading compact-heading"><div><p class="eyebrow" data-alenaz-i18n="recentLabel">PICK UP WHERE YOU LEFT OFF</p><h2 id="recentHeading" data-alenaz-i18n="recentHeading">Recent work</h2></div><button class="recent-counter recent-open-library" type="button" id="recentOpenLibrary" aria-label="Open saved chat library"><span data-alenaz-i18n="recentAll">All chats</span> ↗</button></div>
+                <div class="recent-home-list" id="recentHomeList"><div class="recent-empty"><span>✳</span><p data-alenaz-i18n="recentEmptyTitle">Your next great idea starts here.</p><small data-alenaz-i18n="recentEmptyDesc">Conversations you create will appear in this space.</small></div></div>
               </section>
               <section class="inspiration-panel" id="inspirationSection" aria-labelledby="inspirationHeading">
-                <div class="section-heading compact-heading"><div><p class="eyebrow">NEED A SPARK?</p><h2 id="inspirationHeading">Try one of these.</h2></div></div>
-                <button class="inspiration-item" type="button" data-prompt="Be my personal tutor. Explain a difficult topic step by step, then quiz me." data-set-mode="study"><span class="inspiration-icon">◎</span><span><strong>Learn anything, faster</strong><small>Study mode · Guided learning</small></span><span>↗</span></button>
-                <button class="inspiration-item" type="button" data-prompt="Help me develop a unique visual concept with a distinctive style and memorable details." data-set-mode="creative"><span class="inspiration-icon">✿</span><span><strong>Find your next big idea</strong><small>Creative mode · Brainstorming</small></span><span>↗</span></button>
-                <button class="inspiration-item" type="button" data-prompt="Help me code a polished interactive website. Start by proposing a simple project structure." data-set-mode="code"><span class="inspiration-icon">⌁</span><span><strong>Make a new project</strong><small>Code mode · Start building</small></span><span>↗</span></button>
+                <div class="section-heading compact-heading"><div><p class="eyebrow" data-alenaz-i18n="inspirationLabel">NEED A SPARK?</p><h2 id="inspirationHeading">Try one of these.</h2></div></div>
+                <button class="inspiration-item" type="button" data-prompt="Be my personal tutor. Explain a difficult topic step by step, then quiz me." data-set-mode="study"><span class="inspiration-icon">◎</span><span><strong data-alenaz-i18n="inspirationStudyTitle">Learn anything, faster</strong><small data-alenaz-i18n="inspirationStudyDesc">Study mode · Guided learning</small></span><span>↗</span></button>
+                <button class="inspiration-item" type="button" data-prompt="Help me develop a unique visual concept with a distinctive style and memorable details." data-set-mode="creative"><span class="inspiration-icon">✿</span><span><strong data-alenaz-i18n="inspirationCreativeTitle">Find your next big idea</strong><small data-alenaz-i18n="inspirationCreativeDesc">Creative mode · Brainstorming</small></span><span>↗</span></button>
+                <button class="inspiration-item" type="button" data-prompt="Help me code a polished interactive website. Start by proposing a simple project structure." data-set-mode="code"><span class="inspiration-icon">⌁</span><span><strong data-alenaz-i18n="inspirationCodeTitle">Make a new project</strong><small data-alenaz-i18n="inspirationCodeDesc">Code mode · Start building</small></span><span>↗</span></button>
               </section>
             </div>
-            <footer class="dashboard-footer"><span>MADE FOR CURIOUS MINDS <span>✳</span></span><span>CREATE MORE. IMAGINE BIGGER.</span></footer>
+            <footer class="dashboard-footer"><span><span data-alenaz-i18n="footerLeft">MADE FOR CURIOUS MINDS</span> <span>✳</span></span><span data-alenaz-i18n="footerRight">CREATE MORE. IMAGINE BIGGER.</span></footer>
           </div>
         </div>
 
@@ -196,7 +207,7 @@
             <div class="composer-bottom-left">
               <button class="composer-icon attach-action" id="attachButton" type="button" aria-label="Attach a file" title="Attach a file">＋</button>
               <input type="file" id="fileInput" hidden accept="image/*,.pdf,.txt,.md,.csv,.json,.doc,.docx,.ppt,.pptx">
-              <select id="modeSelect" aria-label="AI mode"><option value="auto">✳ Auto mode</option><option value="study">◎ Study mode</option><option value="creative">✿ Creative mode</option><option value="code">⌘ Code mode</option></select>
+              <select id="modeSelect" aria-label="AI mode"><option value="auto">✳ Auto mode</option><option value="study">◎ Study mode</option><option value="creative">✿ Creative mode</option><option value="code">⌘ Code mode</option><option value="swear">⚡ Swearing mode</option></select>
             </div>
             <div class="composer-actions"><span class="composer-hint">ENTER ↵</span><button class="composer-icon" id="voiceButton" type="button" title="Dictate using microphone" aria-label="Voice input">◉</button><button class="send-button" id="sendButton" type="button" aria-label="Send message">↑</button></div>
           </div>
@@ -297,13 +308,13 @@
           <p id="languageCustomError" class="language-error hidden" role="alert"></p>
         </section>
       </div>
-      <footer class="language-dialog-foot"><p id="languageNote">Priority affects display order only; all languages remain available. Main interface translations currently cover Armenian, Russian and English; other languages use the English interface while requesting AI replies in the selected language. Voice and response quality can vary.</p><small id="languageCountLabel">184 choices, plus other languages by name</small><small id="languageFoundCount"></small></footer>
+      <footer class="language-dialog-foot"><p id="languageNote">Priority only controls menu order; all languages remain selectable. The dashboard offers on-demand translations for prioritized languages and may fall back to English if a translation fails. AI fluency and voice support vary.</p><small id="languageCountLabel">184 choices, plus other languages by name</small><small id="languageFoundCount"></small></footer>
     </section>
   </div>
 
-  <script src="{{ url_for('static', filename='app.js') }}?v=languages-v1"></script>
-  <script src="{{ url_for('static', filename='languages.js') }}?v=languages-v2"></script>
-  <script src="{{ url_for('static', filename='studio.js') }}?v=studio-v3" defer></script>
+  <script src="{{ url_for('static', filename='app.js') }}?v=tone-v1"></script>
+  <script src="{{ url_for('static', filename='languages.js') }}?v=languages-v3"></script>
+  <script src="{{ url_for('static', filename='studio.js') }}?v=studio-v4" defer></script>
   <script src="{{ url_for('static', filename='library.js') }}?v=library-v1" defer></script>
   <script src="{{ url_for('static', filename='features.js') }}?v=features-v1" defer></script>
 </body>

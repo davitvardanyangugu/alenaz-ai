@@ -127,7 +127,10 @@
     if (!input) return;
     input.value = input.value.trim() ? input.value.trimEnd() + "\n\n" + prompt.prompt : prompt.prompt;
     const mode = $("modeSelect");
-    if (mode) mode.value = prompt.mode;
+    if (mode) {
+      mode.value = prompt.mode;
+      mode.dispatchEvent(new Event("change",{bubbles:true}));
+    }
     input.dispatchEvent(new Event("input",{bubbles:true}));
     closePrompts();
     input.focus();

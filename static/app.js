@@ -358,7 +358,7 @@ function setTool(tool) {
 
   if (!tool) {
     banner.classList.add("hidden");
-    $("promptInput").placeholder = "Message Alenaz";
+    $("promptInput").placeholder = window.AlenazLanguages?.translate?.("promptPlaceholder") || "Message Alenaz";
     return;
   }
 
@@ -367,11 +367,17 @@ function setTool(tool) {
   if (tool === "search") {
     $("modeBannerIcon").textContent = "⌕";
     $("modeBannerText").textContent = "Web search enabled for your next message";
-    $("promptInput").placeholder = "Search with Alenaz";
+    $("promptInput").placeholder = window.AlenazLanguages?.translate?.("searchPlaceholder") || "Search with Alenaz";
   } else if (tool === "image") {
     $("modeBannerIcon").textContent = "✦";
     $("modeBannerText").textContent = "Image creation enabled for your next message";
-    $("promptInput").placeholder = "Describe the image you want";
+    $("promptInput").placeholder = window.AlenazLanguages?.translate?.("imagePlaceholder") || "Describe the image you want";
+  } else if (tool === "swear") {
+    $("modeBannerIcon").textContent = "⚡";
+    $("modeBannerText").textContent = window.AlenazLanguages?.translate?.("swearBanner") ||
+      "Swearing tone is on. Casual profanity is okay; harmful abuse is not.";
+    $("promptInput").placeholder = window.AlenazLanguages?.translate?.("swearPlaceholder") ||
+      "Ask anything — natural swearing is okay";
   }
 
   $("promptInput").focus();
@@ -850,6 +856,26 @@ $("sidebarImage").addEventListener("click", function () {
   setTool("image");
   closeSidebarOnMobile();
 });
+function syncSwearingMode() {
+  const enabled = $("modeSelect").value === "swear";
+  $("sidebarSwear").setAttribute("aria-pressed",String(enabled));
+  $("sidebarSwear").classList.toggle("swear-on",enabled);
+}
+function selectSwearingMode(enabled) {
+  $("modeSelect").value = enabled ? "swear" : "auto";
+  setTool(enabled ? "swear" : null);
+  syncSwearingMode();
+}
+$("sidebarSwear").addEventListener("click", function () {
+  window.AlenazLibrary?.close();
+  selectSwearingMode($("modeSelect").value !== "swear");
+  closeSidebarOnMobile();
+});
+$("modeSelect").addEventListener("change",function () {
+  if ($("modeSelect").value === "swear") setTool("swear");
+  else if (activeTool === "swear") setTool(null);
+  syncSwearingMode();
+});
 $("searchToggle").addEventListener("click", function () {
   window.AlenazLibrary?.close();
   setTool(activeTool === "search" ? null : "search");
@@ -882,7 +908,9 @@ document.querySelectorAll(".starter-card").forEach(function (card) {
   card.addEventListener("click", function () {
     const tool = card.getAttribute("data-tool");
     const prompt = card.getAttribute("data-prompt");
+    const selectedMode = card.getAttribute("data-set-mode");
 
+    if (selectedMode === "swear") selectSwearingMode(true);
     if (tool) setTool(tool);
     if (prompt) {
       $("promptInput").value = prompt;
@@ -908,6 +936,7 @@ $("closeSidebar").addEventListener("click", function () {
   $("sidebar").classList.remove("open");
 });
 
+syncSwearingMode();
 applySettings();
 renderHistory();
 renderConversation();

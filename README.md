@@ -18,11 +18,11 @@ Alenaz is a ChatGPT-style AI assistant prototype built with Flask and the OpenAI
 - Searchable prompt library with 14 editable starting prompts, categories and browser-local favorites
 - Per-conversation autosaved message drafts (browser-local only; never submitted automatically)
 - Markdown (.md) download of the currently opened conversation, including safe source URLs
-- Auto, Study, Creative and Code modes
+- Auto, Study, Creative, Code and opt-in Swearing modes (casual profanity allowed; no hateful or abusive content)
 - Dark/light themes
 - Languages dashboard control and settings picker with 184 ISO 639-1 choices and custom language names
 - Equal priority display for 182 language options; Azerbaijani and Turkish remain available in a separate non-priority group
-- Existing Armenian, Russian and English main-interface translations remain available
+- Existing Armenian, Russian and English interface translations, plus on-demand translated dashboard labels for other prioritized languages
 - Language preference sent to AI chat and web search and used where supported for voice
 - Prototype chat/image limits
 - Mobile-responsive UI
@@ -43,9 +43,19 @@ Open **🌐 Languages** beside the light/dark theme control on the dashboard, or
 
 The chosen language is saved **in this browser** as a preference, and sent with chat and web-search requests so Alenaz is instructed to answer primarily in that language. The same choice controls browser speech language when the device supports it. Changing the preference does not automatically translate previously saved messages.
 
-The existing main navigation, dashboard controls and preferences translations are in Armenian, Russian and English; the display priority ranking does not imply that all interface translations or AI speech capabilities are equally complete. For other choices, the interface falls back to English while AI responses are requested in the selected language. AI fluency, dialect recognition, reading direction, speech input and text-to-speech are **not guaranteed** for every language; rare and custom language names are best-effort. This does not provide independently verified translations for every language worldwide.
+Built-in interface translations cover Armenian, Russian and English. Other prioritized languages can request on-demand dashboard translations, subject to provider reliability and availability; display priority is not a guarantee of equal model fluency. For other choices, the interface falls back to English while AI responses are requested in the selected language. AI fluency, dialect recognition, reading direction, speech input and text-to-speech are **not guaranteed** for every language; rare and custom language names are best-effort. This does not provide independently verified translations for every language worldwide.
 
 User-selected language values are validated on the server before being included in model instructions. No third-party translation widget or new cloud account is required.
+
+## Swearing mode
+
+Choose **⚡ Swearing mode** from the dashboard tool cards, sidebar, composer mode selector, or command center. Alenaz may use casual profanity in replies when it fits the conversation. Users can type swear words normally in any mode. This is a style choice, **not** permission for hate speech, threats, targeted harassment, or unsafe content. Select another AI mode or tap the sidebar toggle again to turn the swearing tone off.
+
+## Dashboard translations
+
+Most languages previously changed only the AI reply preference while the dashboard stayed in English. The app now requests localized dashboard text when you select a language beyond the built-in UI translations. Only a fixed, public set of UI labels is sent to the AI translation service; private chats, drafts and profile details are never submitted for this purpose. Successful translations are cached in your current browser, and a visible Retry option appears if translation is unavailable.
+
+A language's translation may fail when its AI model is unavailable, fails to produce usable strings, or usage limits are reached; the dashboard falls back to English until the user retries. Main interface text for Armenian, Russian and English remains built in. Azerbaijani and Turkish remain selectable in the separate non-priority section, but do not trigger the optional dashboard translation service. Rare-language AI responses and device speech voices are best-effort rather than universally guaranteed.
 
 ## Saved Chats and local profiles
 

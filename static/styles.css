@@ -352,3 +352,9 @@ body.compact .message{margin:13px 0}body.compact .messages{max-width:950px}body.
 .settings-privacy-note{background:var(--surface-2);border:1px solid var(--stroke);padding:14px 15px;border-radius:11px;margin:7px 0 8px}
 .settings-privacy-note strong{display:block;font-size:12px;font-weight:800;color:var(--text);margin-bottom:7px}
 .settings-privacy-note p{margin:0;font-size:10px;line-height:1.75;color:var(--muted)}
+
+/* ALENAZ: swearing tone is a selectable voice style, never a safety bypass. */
+.sidebar-action.swear-on{background:#483158;border-color:#ac6dba;color:#ffcfef}
+.tool-swear{--tone:#ef99d3}
+@media(min-width:1050px){.starter-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(min-width:821px) and (max-width:1049px){.starter-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
