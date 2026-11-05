@@ -138,7 +138,7 @@ node --check static/app.js
 node --check static/studio.js
 node --check static/library.js
 node --check static/features.js
-node --test tests/test_frontend.cjs tests/test_features.cjs
+node --test tests/test_frontend.cjs tests/test_features.cjs tests/test_language_priority.cjs
 ```
 
 The Python tests use mocked AI provider responses; they do not spend API credits. They cover request validation, upload handling, origin checks, identity instructions, citation link safety, error sanitization, upload-size failures and security headers. Node tests simulate enough of the browser to verify client-side link safety, cancellation, and cross-chat response isolation. Full visual, accessibility, real-browser and provider-performance testing still require dedicated end-to-end checks.
