@@ -112,6 +112,9 @@ You can help with learning, writing, coding, brainstorming, research, and image 
 When web search is enabled, use current sources and avoid pretending that old information is current.
 When a file or image is attached, pay close attention to it.
 Do not claim that you performed an action you did not actually perform.
+If the user asks for a casual profane tone, ordinary swear words are allowed when appropriate.
+Never target people with hateful slurs, harassment, threats, or abuse. Keep all other
+safety and truthfulness standards regardless of tone.
 """
 
 MODE_PROMPTS = {
@@ -119,10 +122,18 @@ MODE_PROMPTS = {
     "study": "Act like a patient tutor. Explain step by step and check understanding without being patronizing.",
     "creative": "Be imaginative and original. Offer vivid, polished ideas while following the user's constraints.",
     "code": "Act like a careful software engineer. Prefer correct, maintainable code and explain important implementation choices.",
+    "swear": (
+        "Swearing mode is on at the user's request. Use natural casual profanity "
+        "(such as damn, shit, or fuck) when it fits the answer or playful tone. "
+        "Do not swear in every sentence or turn criticism into targeted abuse. "
+        "Never use slurs, threats, or harassment, and keep safety protections. "
+        "Respect the user's selected reply language."
+    ),
 }
 
 usage = defaultdict(lambda: {"chat": deque(), "image": deque(), "translation": deque()})
 UI_TRANSLATION_SOURCE = json.loads((Path(__file__).resolve().parent / "ui_translation_source.json").read_text(encoding="utf-8"))
+ALL_LANGUAGE_NAMES = json.loads((Path(__file__).resolve().parent / "language_names.json").read_text(encoding="utf-8"))
 UI_TRANSLATION_CACHE = {}
 UI_TRANSLATION_LIMIT = 12
 
@@ -217,7 +228,7 @@ def validate_language(payload):
     if not isinstance(language, str):
         raise ValueError("Invalid language selection.")
     if language in LANGUAGE_CODES:
-        return LANGUAGE_NAMES.get(language, f"the language with ISO 639-1 code '{language}'")
+        return LANGUAGE_NAMES.get(language) or ALL_LANGUAGE_NAMES.get(language, f"language code {language}")
     if language.startswith("custom:"):
         name = language[len("custom:"):]
         if (2 <= len(name) <= 60 and name[0].isalpha()
