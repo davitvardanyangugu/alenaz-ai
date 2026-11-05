@@ -4,6 +4,7 @@ Run with: python -m unittest discover -s tests -v
 All AI calls are mocked; no credentials or paid provider requests are needed.
 """
 import base64
+import json
 import unittest
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
@@ -16,6 +17,7 @@ class AlenazAPITests(unittest.TestCase):
         server.app.config["TESTING"] = True
         self.client = server.app.test_client()
         server.usage.clear()
+        server.UI_TRANSLATION_CACHE.clear()
 
     def fake_client(self, *, response=None, error=None):
         client = SimpleNamespace(
@@ -225,6 +227,66 @@ class AlenazAPITests(unittest.TestCase):
                 })
                 self.assertEqual(response.status_code, 400)
         self.assertFalse(server.usage)
+
+    def test_ui_translation_uses_only_fixed_public_copy_and_caches(self):
+        translated = {
+            key: "Traduction: " + value
+            for key, value in server.UI_TRANSLATION_SOURCE.items()
+        }
+        fake = self.fake_client(response=SimpleNamespace(
+            output_text=json.dumps(translated, ensure_ascii=False)
+        ))
+        with patch.object(server, "require_client", return_value=(fake, None)):
+            first = self.client.post("/api/ui_translations", json={"language": "fr"})
+            second = self.client.post("/api/ui_translations", json={"language": "fr"})
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(first.json["language"], "fr")
+        self.assertEqual(first.json["translations"]["home"], translated["home"])
+        fake.responses.create.assert_called_once()
+        options = fake.responses.create.call_args.kwargs
+        self.assertIn("French", options["instructions"])
+        self.assertEqual(json.loads(options["input"]), server.UI_TRANSLATION_SOURCE)
+        self.assertEqual(len(server.usage), 1)
+
+    def test_ui_translation_rejects_invalid_and_extra_payloads(self):
+        for payload in [
+            {"language": "invalid!!"},
+            {"language": ["fr"]},
+            {"language": "fr", "chat_history": "do not upload"},
+            {"language": "custom:hello;evil"},
+        ]:
+            with self.subTest(payload=payload):
+                response = self.client.post("/api/ui_translations", json=payload)
+                self.assertEqual(response.status_code, 400)
+        self.assertFalse(server.usage)
+
+    def test_nonpriority_languages_still_available_without_translation_calls(self):
+        for code in ["az", "tr", "en"]:
+            with self.subTest(code=code):
+                response = self.client.post("/api/ui_translations", json={"language": code})
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.json["translations"], {})
+        self.assertFalse(server.usage)
+
+    def test_ui_translation_provider_errors_are_sanitized(self):
+        fake = self.fake_client(error=RuntimeError("secret provider traceback"))
+        with patch.object(server, "require_client", return_value=(fake, None)):
+            response = self.client.post("/api/ui_translations", json={"language": "es"})
+        self.assertEqual(response.status_code, 502)
+        self.assertNotIn(b"secret provider traceback", response.data)
+
+    def test_ui_translation_quota_and_origin_checks(self):
+        cross_site = self.client.post(
+            "/api/ui_translations", json={"language": "de"},
+            headers={"Origin": "https://not-alenaz.example"},
+        )
+        self.assertEqual(cross_site.status_code, 403)
+        with patch.object(server, "require_client", return_value=(self.fake_client(), None)):
+            with patch.object(server, "take_quota", return_value=(False, 45)):
+                limited = self.client.post("/api/ui_translations", json={"language": "de"})
+        self.assertEqual(limited.status_code, 429)
+        self.assertEqual(limited.json["retry_after"], 45)
 
     def test_provider_failures_do_not_expose_exception_text(self):
         secret = "SECRET_TEST_DO_NOT_EXPOSE"
