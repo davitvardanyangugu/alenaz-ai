@@ -5,7 +5,9 @@
   const $ = id => document.getElementById(id);
   const CODES = "aa ab ae af ak am an ar as av ay az ba be bg bi bm bn bo br bs ca ce ch co cr cs cu cv cy da de dv dz ee el en eo es et eu fa ff fi fj fo fr fy ga gd gl gn gu gv ha he hi ho hr ht hu hy hz ia id ie ig ii ik io is it iu ja jv ka kg ki kj kk kl km kn ko kr ks ku kv kw ky la lb lg li ln lo lt lu lv mg mh mi mk ml mn mr ms mt my na nb nd ne ng nl nn no nr nv ny oc oj om or os pa pi pl ps pt qu rm rn ro ru rw sa sc sd se sg sh si sk sl sm sn so sq sr ss st su sv sw ta te tg th ti tk tl tn to tr ts tt tw ty ug uk ur uz ve vi vo wa wo xh yi yo za zh zu".split(" ");
   const VALID = new Set(CODES);
-  const VIP = [
+  // Display ranking only. Both non-priority languages remain selectable.
+  const NON_PRIORITY = new Set(["az","tr"]);
+  const NATIVE_LABELS = [
     {code:"hy",name:"Armenian",native:"Հայերեն",flag:"🇦🇲"},
     {code:"ru",name:"Russian",native:"Русский",flag:"🇷🇺"},
     {code:"en",name:"English",native:"English",flag:"🇬🇧"}
@@ -24,10 +26,10 @@
   };
   const STRINGS = {
     en: {
-      languages:"Languages", languageSub:"Choose the language Alenaz speaks with you.", vip:"VIP PRIORITY", allLanguages:"ALL LANGUAGES",
+      languages:"Languages", languageSub:"Choose the language Alenaz speaks with you.", vip:"PRIORITY LANGUAGES", allLanguages:"OTHER LANGUAGES",
       search:"Search languages by name or code…", custom:"Can't find it? Enter another language", customPlaceholder:"e.g. Western Armenian, Hmong, K'iche'",
       useCustom:"Choose language", close:"Close", selected:"Selected", count:"standard language options",
-      languageNote:"Armenian, Russian and English have priority interface translations. Other languages change AI replies; some interface text stays in English. Model accuracy and voice support may vary.",
+      languageNote:"Priority determines display order only, not AI capabilities. All languages remain selectable. Armenian, Russian and English have translations for the main interface; other choices use the English interface with AI responses requested in the selected language. Quality and voice support may vary.",
       current:"Current language", newChat:"New conversation", home:"Home", webSearch:"Web search", images:"Image generation",
       command:"Command center", promptLibrary:"Prompt library", savedChats:"Saved chats", account:"Account & sync",
       overview:"Overview", quickActions:"Quick actions", searchButton:"Search", recentChats:"RECENT CHATS",
@@ -49,10 +51,10 @@
       allCount:"184 standard choices, plus other languages by name"
     },
     hy: {
-      languages:"Լեզուներ", languageSub:"Ընտրիր, թե ինչ լեզվով խոսի քեզ հետ Alenaz-ը։",vip:"VIP ԱՌԱՋՆԱՀԵՐԹ",allLanguages:"ԲՈԼՈՐ ԼԵԶՈՒՆԵՐԸ",
+      languages:"Լեզուներ", languageSub:"Ընտրիր, թե ինչ լեզվով խոսի քեզ հետ Alenaz-ը։",vip:"ԱՌԱՋՆԱՀԵՐԹ ԼԵԶՈՒՆԵՐ",allLanguages:"ԱՅԼ ԼԵԶՈՒՆԵՐ",
       search:"Որոնել լեզու՝ անունով կամ կոդով…",custom:"Չկա՞ ցանկում։ Մուտքագրիր այլ լեզու",customPlaceholder:"օրինակ՝ Արևմտահայերեն, Hmong",
       useCustom:"Ընտրել լեզուն",close:"Փակել",selected:"Ընտրված է",count:"ստանդարտ լեզու",
-      languageNote:"Հայերենը, ռուսերենը և անգլերենը ունեն առաջնահերթ միջերեսային թարգմանություններ։ Մյուս լեզուները փոխում են AI-ի պատասխանների լեզուն․ միջերեսի որոշ մասեր մնում են անգլերեն։ Որակը և ձայնային աջակցությունը կարող են տարբերվել։",
+      languageNote:"Առաջնահերթությունը վերաբերում է միայն ցանկում դասավորությանը, ոչ թե AI-ի հնարավորություններին։ Բոլոր լեզուները հասանելի են։ Հիմնական միջերեսը թարգմանված է հայերեն, ռուսերեն և անգլերեն, իսկ մյուս լեզուների դեպքում այն հիմնականում անգլերեն է։ Պատասխանների ու ձայնի որակը կարող է տարբերվել։",
       current:"Ընտրված լեզու",newChat:"Նոր զրույց",home:"Գլխավոր",webSearch:"Որոնում համացանցում",images:"Նկարների ստեղծում",
       command:"Հրամանների կենտրոն",promptLibrary:"Հուշումների գրադարան",savedChats:"Պահված զրույցներ",account:"Հաշիվ և համաժամեցում",
       overview:"Գլխավոր",quickActions:"Արագ գործողություններ",searchButton:"Որոնել",recentChats:"ՎԵՐՋԻՆ ԶՐՈՒՅՑՆԵՐ",
@@ -74,10 +76,10 @@
       allCount:"184 ստանդարտ տարբերակ և լրացուցիչ լեզուներ՝ ըստ անվան"
     },
     ru: {
-      languages:"Языки",languageSub:"Выбери язык, на котором Alenaz будет общаться с тобой.",vip:"VIP · ПРИОРИТЕТ",allLanguages:"ВСЕ ЯЗЫКИ",
+      languages:"Языки",languageSub:"Выбери язык, на котором Alenaz будет общаться с тобой.",vip:"ПРИОРИТЕТНЫЕ ЯЗЫКИ",allLanguages:"ДРУГИЕ ЯЗЫКИ",
       search:"Поиск языка по названию или коду…",custom:"Не нашёл язык? Введи его название",customPlaceholder:"Например: западноармянский, Hmong",
       useCustom:"Выбрать язык",close:"Закрыть",selected:"Выбрано",count:"стандартных языков",
-      languageNote:"Для армянского, русского и английского есть приоритетные переводы интерфейса. Другие языки меняют язык ответов ИИ, но часть интерфейса остаётся на английском. Качество и поддержка озвучивания могут отличаться.",
+      languageNote:"Приоритет влияет только на порядок показа, а не на возможности ИИ. Все языки доступны. Основной интерфейс переведён на армянский, русский и английский; для других языков интерфейс остаётся в основном на английском, а ответы запрашиваются на выбранном языке. Качество и озвучивание могут различаться.",
       current:"Текущий язык",newChat:"Новый чат",home:"Главная",webSearch:"Поиск в интернете",images:"Генерация изображений",
       command:"Командный центр",promptLibrary:"Библиотека запросов",savedChats:"Сохранённые чаты",account:"Аккаунт и синхронизация",
       overview:"Обзор",quickActions:"Быстрые действия",searchButton:"Поиск",recentChats:"НЕДАВНИЕ ЧАТЫ",
@@ -112,27 +114,29 @@
     return "en";
   }
   settings.language = normalize(settings.language || "en");
-  const isVip = code => VIP.some(v=>v.code===code);
+  const isPriority = code => !NON_PRIORITY.has(code);
   const displayEn = (code) => {
-    const priority = VIP.find(v=>v.code===code);
+    const priority = NATIVE_LABELS.find(v=>v.code===code);
     if (priority) return priority.name;
     try { return new Intl.DisplayNames(["en"],{type:"language"}).of(code) || FALLBACK_NAMES[code] || code; }
     catch (_) { return FALLBACK_NAMES[code] || code; }
   };
   const displayNative = code => {
-    const priority = VIP.find(v=>v.code===code);
+    const priority = NATIVE_LABELS.find(v=>v.code===code);
     if(priority) return priority.native;
     try {return new Intl.DisplayNames([code],{type:"language"}).of(code) || displayEn(code);}
     catch (_) {return displayEn(code);}
   };
   const labelFor = code => {
     if (code.startsWith("custom:")) return code.slice(7);
-    const vip = VIP.find(v=>v.code===code);
-    if(vip) return vip.native;
+    const known = NATIVE_LABELS.find(v=>v.code===code);
+    if(known) return known.native;
     return displayNative(code);
   };
-  const ALL = CODES.filter(code=>!isVip(code)).map(code=>({code,name:displayEn(code),native:displayNative(code)}))
+  const SORTED_LANGUAGES = CODES.map(code=>({code,name:displayEn(code),native:displayNative(code)}))
     .sort((a,b)=>a.name.localeCompare(b.name,"en"));
+  const PRIORITY = SORTED_LANGUAGES.filter(item=>isPriority(item.code));
+  const OTHER = SORTED_LANGUAGES.filter(item=>!isPriority(item.code));
   let modal = $("languageModal"), lastFocused = null, search = $("languageSearch"), returnToSettings = false;
   function setText(selector,key) {
     const el = document.querySelector(selector);
@@ -220,46 +224,43 @@
     if(intro) intro.textContent = ui("languageSub");
   }
   const matches = (value,query)=> !query || value.toLocaleLowerCase().includes(query);
-  function createOption(item, vip) {
+  function createOption(item, priority) {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "language-option" + (vip ? " vip-language" : "") +
+    button.className = "language-option" + (priority ? " priority-language" : "") +
       (settings.language === item.code ? " selected" : "");
-    button.setAttribute("aria-pressed",String(settings.language===item.code));
+    button.setAttribute("aria-pressed", String(settings.language === item.code));
     const lead = document.createElement("span");
     lead.className = "language-native";
-    lead.textContent = (vip ? item.flag+" " : "")+item.native;
+    lead.textContent = item.native;
     const subtitle = document.createElement("span");
     subtitle.className = "language-english";
     subtitle.textContent = item.name + " · " + item.code.toUpperCase();
     const check = document.createElement("span");
     check.className = "language-check";
-    check.textContent = settings.language === item.code ? "✓" : (vip ? "✦" : "");
-    button.append(lead,subtitle,check);
-    button.addEventListener("click",()=>chooseLanguage(item.code));
+    check.textContent = settings.language === item.code ? "✓" : (priority ? "✦" : "");
+    button.append(lead, subtitle, check);
+    button.addEventListener("click", () => chooseLanguage(item.code));
     return button;
   }
   function renderOptions() {
-    const q=(search?.value||"").trim().toLocaleLowerCase();
-    const vipList=$("languageVipList"), allList=$("languageAllList");
-    if(vipList){
-      vipList.replaceChildren();
-      VIP.filter(item=>matches(item.name,q)||matches(item.native,q)||matches(item.code,q))
-        .forEach(item=>vipList.appendChild(createOption(item,true)));
-      const group=$("languageVipSection");
-      if(group) group.classList.toggle("hidden",vipList.children.length===0);
+    const q = (search?.value || "").trim().toLocaleLowerCase();
+    const priorityList = $("languageVipList"), otherList = $("languageAllList");
+    const visible = item => matches(item.name,q) || matches(item.native,q) || matches(item.code,q);
+    if (priorityList) {
+      priorityList.replaceChildren();
+      PRIORITY.filter(visible).forEach(item => priorityList.appendChild(createOption(item, true)));
+      $("languageVipSection")?.classList.toggle("hidden", priorityList.children.length === 0);
     }
-    if(allList) {
-      allList.replaceChildren();
-      ALL.filter(item=>matches(item.name,q)||matches(item.native,q)||matches(item.code,q))
-        .forEach(item=>allList.appendChild(createOption(item,false)));
-      const empty=$("languageEmpty");
-      if(empty) empty.classList.toggle("hidden",allList.children.length>0 || (vipList && vipList.children.length>0));
+    if (otherList) {
+      otherList.replaceChildren();
+      OTHER.filter(visible).forEach(item => otherList.appendChild(createOption(item, false)));
+      $("languageOtherSection")?.classList.toggle("hidden", otherList.children.length === 0);
     }
-    if($("languageFoundCount")) {
-      const count = (vipList?.children?.length||0)+(allList?.children?.length||0);
-      $("languageFoundCount").textContent = count+" / "+CODES.length+" "+ui("count");
-    }
+    const count = (priorityList?.children.length || 0) + (otherList?.children.length || 0);
+    $("languageEmpty")?.classList.toggle("hidden", count !== 0);
+    if ($("languageFoundCount")) $("languageFoundCount").textContent =
+      count + " / " + CODES.length + " " + ui("count");
   }
   function closeModal() {
     modal?.classList.add("hidden");
