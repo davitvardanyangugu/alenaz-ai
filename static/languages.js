@@ -160,7 +160,7 @@
     ["#commandNavLabel","command"],["#promptLibraryNavLabel","promptLibrary"],
     ["#savedChatsNavLabel","savedChats"],["#accountCenterLabel","account"],
     ["#homeNavLabel","home"],["#sidebarHistoryTitle","recentChats"],
-    ["#viewTitle","overview"],["#heroIntro","intro"],["#toolsHeading","toolkit"],
+    ["#heroIntro","intro"],["#toolsHeading","toolkit"],
     ["#inspirationHeading","inspiration"],["#alDisclaimer","disclaimer"],
     [".tool-talk .tool-bottom strong","ask"],[".tool-research .tool-bottom strong","research"],
     [".tool-art .tool-bottom strong","art"],[".tool-build .tool-bottom strong","build"],
@@ -320,5 +320,11 @@
   updateLanguageUI();
   renderOptions();
   window.AlenazLanguages = {catalogSize:CODES.length,get:()=>settings.language,choose:chooseLanguage,
-    open:openModal,display:labelFor,locale:()=>VIP.find(v=>v.code===settings.language)?.code || (VALID.has(settings.language) ? settings.language : navigator.language || "en-US")};
+    open:openModal,display:labelFor,translate:ui,
+    speechLocale:()=>{
+      if(settings.language==="hy")return "hy-AM";
+      if(settings.language==="ru")return "ru-RU";
+      if(settings.language==="en")return "en-US";
+      return VALID.has(settings.language) ? settings.language : (navigator.language || "en-US");
+    }};
 })();
