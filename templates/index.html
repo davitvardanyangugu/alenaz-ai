@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=quality-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='library.css') }}?v=library-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='features.css') }}?v=features-v1">
-  <link rel="stylesheet" href="{{ url_for('static', filename='languages.css') }}?v=languages-v1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='languages.css') }}?v=languages-v2">
 </head>
 <body>
   <a class="skip-link" href="#promptInput">Skip to message input</a>
@@ -287,9 +287,9 @@
       <div class="language-selected-pill"><span id="languageCurrentTitle">Current language</span><strong id="languageCurrent">English</strong></div>
       <label class="language-search"><span aria-hidden="true">⌕</span><input id="languageSearch" type="search" autocomplete="off" placeholder="Search languages by name or code…" aria-label="Search languages"></label>
       <div class="language-scroll">
-        <section id="languageVipSection" aria-labelledby="languageVipTitle"><h3 class="language-group-title language-vip-title" id="languageVipTitle">✦ VIP PRIORITY</h3><div class="language-vip-grid" id="languageVipList"></div></section>
-        <h3 class="language-group-title" id="languageAllTitle">ALL LANGUAGES</h3>
-        <div class="language-standard-grid" id="languageAllList"></div>
+        <section id="languageVipSection" aria-labelledby="languageVipTitle"><h3 class="language-group-title language-vip-title" id="languageVipTitle">✦ PRIORITY LANGUAGES</h3><div class="language-vip-grid" id="languageVipList"></div></section>
+        <section id="languageOtherSection" aria-labelledby="languageAllTitle"><h3 class="language-group-title" id="languageAllTitle">OTHER LANGUAGES</h3>
+        <div class="language-standard-grid" id="languageAllList"></div></section>
         <p class="language-empty hidden" id="languageEmpty">No matches. Enter another language below.</p>
         <section class="language-custom"><label id="languageCustomTitle" for="customLanguageInput">Can't find it? Enter another language</label>
           <div class="language-custom-row"><input id="customLanguageInput" type="text" maxlength="60" placeholder="e.g. Western Armenian, Hmong" autocomplete="off">
@@ -297,12 +297,12 @@
           <p id="languageCustomError" class="language-error hidden" role="alert"></p>
         </section>
       </div>
-      <footer class="language-dialog-foot"><p id="languageNote">Armenian, Russian and English have priority interface translations. Other languages change AI replies; some interface text stays in English. Model accuracy and voice support may vary.</p><small id="languageCountLabel">184 standard choices, plus other languages by name</small><small id="languageFoundCount"></small></footer>
+      <footer class="language-dialog-foot"><p id="languageNote">Priority affects display order only; all languages remain available. Main interface translations currently cover Armenian, Russian and English; other languages use the English interface while requesting AI replies in the selected language. Voice and response quality can vary.</p><small id="languageCountLabel">184 choices, plus other languages by name</small><small id="languageFoundCount"></small></footer>
     </section>
   </div>
 
   <script src="{{ url_for('static', filename='app.js') }}?v=languages-v1"></script>
-  <script src="{{ url_for('static', filename='languages.js') }}?v=languages-v1"></script>
+  <script src="{{ url_for('static', filename='languages.js') }}?v=languages-v2"></script>
   <script src="{{ url_for('static', filename='studio.js') }}?v=studio-v3" defer></script>
   <script src="{{ url_for('static', filename='library.js') }}?v=library-v1" defer></script>
   <script src="{{ url_for('static', filename='features.js') }}?v=features-v1" defer></script>
