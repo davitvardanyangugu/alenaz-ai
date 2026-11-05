@@ -23,7 +23,10 @@
   };
   const focusComposer = (value, mode) => {
     window.AlenazLibrary?.close();
-    if (mode && el("modeSelect")) el("modeSelect").value = mode;
+    if (mode && el("modeSelect")) {
+      el("modeSelect").value = mode;
+      el("modeSelect").dispatchEvent(new Event("change",{bubbles:true}));
+    }
     const input = el("promptInput");
     if (!input) return;
     if (typeof value === "string") {
@@ -150,6 +153,10 @@
     {label:"Study mode",hint:"Get a guided explanation",icon:"◎",run:()=>focusComposer("Help me understand a tricky topic step by step.","study")},
     {label:"Creative mode",hint:"Brainstorm something original",icon:"✿",run:()=>focusComposer("Help me brainstorm something original and exciting.","creative")},
     {label:"Code mode",hint:"Build and debug software",icon:"⌘",run:()=>focusComposer("Help me build a useful app.","code")},
+    {label:"Swearing mode",hint:"Natural profanity in chat, without harassment",icon:"⚡",run:()=>{
+      if(el("modeSelect")?.value !== "swear") el("sidebarSwear")?.click();
+      focusComposer();
+    }},
     {label:"Preferences",hint:"Appearance and settings",icon:"⚙",run:()=>el("settingsButton")?.click()},
     {label:"Export conversations",hint:"Download a private backup",icon:"↓",run:()=>el("exportChats")?.click()}
   ];
