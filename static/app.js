@@ -92,6 +92,7 @@ function ensureConversation() {
 }
 
 function newChat() {
+  window.dispatchEvent(new CustomEvent("alenaz:before-chat-switch", {detail:{reason:"new"}}));
   window.AlenazLibrary?.close();
   currentId = null;
   currentAttachment = null;
@@ -100,10 +101,12 @@ function newChat() {
   $("promptInput").value = "";
   resizeTextarea();
   renderConversation();
+  window.dispatchEvent(new CustomEvent("alenaz:after-chat-switch", {detail:{reason:"new"}}));
   closeSidebarOnMobile();
 }
 
 function loadConversation(id) {
+  window.dispatchEvent(new CustomEvent("alenaz:before-chat-switch", {detail:{reason:"load"}}));
   window.AlenazLibrary?.close();
   currentId = id;
   currentAttachment = null;
@@ -111,6 +114,7 @@ function loadConversation(id) {
   updateAttachmentUI();
   renderHistory();
   renderConversation();
+  window.dispatchEvent(new CustomEvent("alenaz:after-chat-switch", {detail:{reason:"load"}}));
   closeSidebarOnMobile();
 }
 
@@ -422,6 +426,7 @@ async function sendMessage() {
   scrollConversation();
 
   input.value = "";
+  window.dispatchEvent(new CustomEvent("alenaz:message-sent", {detail:{conversationId:conversation.id}}));
   currentAttachment = null;
   updateAttachmentUI();
   resizeTextarea();
@@ -810,6 +815,9 @@ function clearHistory() {
   if (!window.confirm("Permanently delete all conversations saved in this browser? Export a backup first if you want to keep them.")) return;
   conversations = [];
   currentId = null;
+  $("promptInput").value = "";
+  resizeTextarea();
+  window.dispatchEvent(new CustomEvent("alenaz:chats-cleared"));
   saveConversations();
   renderHistory();
   renderConversation();
@@ -877,6 +885,7 @@ document.querySelectorAll(".starter-card").forEach(function (card) {
     if (prompt) {
       $("promptInput").value = prompt;
       resizeTextarea();
+      $("promptInput").dispatchEvent(new Event("input", {bubbles:true}));
       $("promptInput").focus();
     }
   });

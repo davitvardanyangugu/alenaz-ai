@@ -15,10 +15,23 @@ Alenaz is a ChatGPT-style AI assistant prototype built with Flask and the OpenAI
 - Browser-local JSON export/import backups (chats and folders)
 - Local profile name and account-status center (not an online login)
 - Command center with keyboard shortcuts and a recent chats dashboard
+- Searchable prompt library with 14 editable starting prompts, categories and browser-local favorites
+- Per-conversation autosaved message drafts (browser-local only; never submitted automatically)
+- Markdown (.md) download of the currently opened conversation, including safe source URLs
 - Auto, Study, Creative and Code modes
 - Dark/light themes
 - Prototype chat/image limits
 - Mobile-responsive UI
+
+## Prompt library, drafts and Markdown export
+
+Choose **Prompt library** in the sidebar to browse study, creative, code and everyday prompts. Search and favorite templates; selecting **Use prompt** adds editable text to the message composer without sending an API request.
+
+Unsent message drafts are saved in this browser as you type and restored when you switch back to a conversation (or refresh the page while composing a new chat). Clicking **New conversation** starts a blank message. Sending a message clears the relevant draft; clearing all chats clears local drafts.
+
+Choose **Chat .md** in the bottom-left sidebar while a conversation is open to download a readable Markdown transcript. It includes text, attachment filenames, and validated source URLs, but not image bytes. **Backup** still saves your full browser-local conversation library as JSON and supports restoring it through Saved Chats.
+
+Drafts, prompt favorites and exported transcripts stay on your device unless you choose to share them. They are not online accounts or cloud sync, and browser storage is not encrypted. Protect exported chat files because they may contain personal information.
 
 ## Saved Chats and local profiles
 
@@ -110,7 +123,8 @@ python -m py_compile app.py
 node --check static/app.js
 node --check static/studio.js
 node --check static/library.js
-node --test tests/test_frontend.cjs
+node --check static/features.js
+node --test tests/test_frontend.cjs tests/test_features.cjs
 ```
 
 The Python tests use mocked AI provider responses; they do not spend API credits. They cover request validation, upload handling, origin checks, identity instructions, citation link safety, error sanitization, upload-size failures and security headers. Node tests simulate enough of the browser to verify client-side link safety, cancellation, and cross-chat response isolation. Full visual, accessibility, real-browser and provider-performance testing still require dedicated end-to-end checks.

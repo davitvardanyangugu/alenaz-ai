@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=quality-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='library.css') }}?v=library-v1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='features.css') }}?v=features-v1">
 </head>
 <body>
   <a class="skip-link" href="#promptInput">Skip to message input</a>
@@ -35,6 +36,7 @@
         <button class="sidebar-action" id="sidebarSearch" type="button"><span class="nav-icon" aria-hidden="true">⌕</span><span>Web search</span></button>
         <button class="sidebar-action" id="sidebarImage" type="button"><span class="nav-icon" aria-hidden="true">◇</span><span>Image generation</span></button>
         <button class="sidebar-action" id="openCommandFromSidebar" type="button"><span class="nav-icon" aria-hidden="true">⌘</span><span>Command center</span></button>
+        <button class="sidebar-action" id="promptLibraryNav" type="button"><span class="nav-icon" aria-hidden="true">✦</span><span>Prompt library</span></button>
         <button class="sidebar-action" id="savedChatsNav" type="button"><span class="nav-icon" aria-hidden="true">▣</span><span>Saved chats</span><span class="nav-count" id="savedNavCount">0</span></button>
         <button class="sidebar-action" id="accountCenterNav" type="button"><span class="nav-icon" aria-hidden="true">♙</span><span>Account &amp; sync</span></button>
       </nav>
@@ -46,7 +48,7 @@
       </div>
 
       <div class="sidebar-footer">
-        <div class="library-tools"><button id="exportChats" type="button">↓ Export</button><button id="shortcutHelp" type="button">⌘ Shortcuts</button></div>
+        <div class="library-tools"><button id="exportChats" type="button" title="Back up all local conversations as JSON">↓ Backup</button><button id="exportMarkdown" type="button" title="Download the open conversation as a Markdown file">↓ Chat .md</button><button id="shortcutHelp" type="button" title="Keyboard shortcuts">⌘ Keys</button></div>
         <div class="usage-pill" id="usagePill">Checking AI status…</div>
         <button class="profile-button" id="settingsButton" type="button">
           <span class="avatar" id="avatarLetter">G</span>
@@ -253,8 +255,26 @@
     </div>
   </div>
 
-  <script src="{{ url_for('static', filename='app.js') }}?v=quality-v1"></script>
+  <div class="feature-overlay hidden" id="promptLibraryModal" role="dialog" aria-modal="true" aria-labelledby="promptLibraryTitle">
+    <section class="feature-dialog">
+      <header class="feature-header">
+        <div>
+          <p class="feature-eyebrow">ALENAZ · YOUR TOOLKIT</p>
+          <h2 id="promptLibraryTitle">Prompt library<span>.</span></h2>
+          <p class="feature-subtitle">Find a starting point, favorite it, and customize before sending.</p>
+        </div>
+        <button type="button" class="icon-button" id="promptLibraryClose" aria-label="Close prompt library">×</button>
+      </header>
+      <label class="prompt-search-wrap"><span aria-hidden="true">⌕</span><input id="promptLibrarySearch" type="search" placeholder="Search prompts…" aria-label="Search prompt templates" autocomplete="off"></label>
+      <div class="prompt-filters" id="promptLibraryFilters" role="group" aria-label="Prompt categories"></div>
+      <div class="prompt-cards" id="promptLibraryCards" aria-live="polite"></div>
+      <p class="feature-foot">Prompts are added to your message box, never sent automatically. Favorites and drafts stay in this browser.</p>
+    </section>
+  </div>
+
+  <script src="{{ url_for('static', filename='app.js') }}?v=features-v1"></script>
   <script src="{{ url_for('static', filename='studio.js') }}?v=studio-v3" defer></script>
   <script src="{{ url_for('static', filename='library.js') }}?v=library-v1" defer></script>
+  <script src="{{ url_for('static', filename='features.js') }}?v=features-v1" defer></script>
 </body>
 </html>

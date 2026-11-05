@@ -1,0 +1,41 @@
+/* Alenaz productivity upgrade — reuses the app's color tokens. */
+.library-tools{grid-template-columns:repeat(3,minmax(0,1fr))}
+.library-tools button{font-size:9px;min-width:0;padding:9px 3px}
+.feature-overlay{position:fixed;inset:0;z-index:180;display:grid;place-items:center;background:rgba(4,8,27,.78);backdrop-filter:blur(10px);padding:18px}
+.feature-dialog{display:flex;flex-direction:column;width:min(795px,100%);max-height:min(88dvh,890px);overflow:hidden;border:1px solid var(--stroke-strong);background:var(--sidebar-bg);color:var(--text);border-radius:18px;box-shadow:0 28px 100px rgba(0,0,0,.45)}
+.feature-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 24px 14px}
+.feature-eyebrow{font:500 10px var(--mono);letter-spacing:1.5px;color:var(--accent);margin:0 0 9px}
+.feature-header h2{font-size:27px;letter-spacing:-1px;font-weight:800;margin:0 0 6px}
+.feature-subtitle{font-size:11px;color:var(--muted);line-height:1.6;margin:0}
+.prompt-search-wrap{display:flex;align-items:center;gap:9px;margin:0 24px 12px;background:var(--surface);border:1px solid var(--stroke);border-radius:10px;padding:0 13px}
+.prompt-search-wrap:focus-within{border-color:var(--accent)}
+.prompt-search-wrap>span{font-size:22px;color:var(--accent)}
+.prompt-search-wrap input{width:100%;border:0;background:transparent;color:var(--text);font-size:12px;outline:none;padding:13px 0}
+.prompt-search-wrap input::placeholder{color:var(--soft)}
+.prompt-filters{display:flex;flex-wrap:wrap;gap:7px;padding:0 24px 15px;border-bottom:1px solid var(--stroke)}
+.prompt-filter{border:1px solid var(--stroke);background:var(--surface);color:var(--muted);font-size:10px;font-weight:700;padding:8px 11px;border-radius:999px;cursor:pointer}
+.prompt-filter:hover,.prompt-filter.selected{background:#493878;border-color:#a685fa;color:#fff}
+.prompt-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;overflow-y:auto;overscroll-behavior:contain;padding:18px 24px 23px;min-height:150px;scrollbar-color:var(--stroke-strong) transparent}
+.prompt-card{min-width:0;border:1px solid var(--stroke);background:var(--surface);border-radius:13px;padding:15px;display:flex;flex-direction:column;gap:9px}
+.prompt-card:hover{border-color:var(--accent)}
+.prompt-card-header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.prompt-tag{font:500 9px var(--mono);letter-spacing:.65px;color:var(--accent);text-transform:uppercase}
+.prompt-star{background:none;border:0;color:var(--warm);font-size:23px;line-height:1;cursor:pointer;padding:3px 6px;border-radius:7px}
+.prompt-card h3{font-size:15px;font-weight:800;letter-spacing:-.3px;margin:0}
+.prompt-card>p{font-size:11px;line-height:1.6;color:var(--muted);margin:0}
+.prompt-card .prompt-example{color:var(--soft);font-size:10px;line-height:1.6;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden;flex:1}
+.prompt-use{align-self:flex-start;background:#483470;border:1px solid #7861aa;color:#f6f1ff;font-size:11px;font-weight:800;padding:9px 13px;border-radius:8px;cursor:pointer}
+.prompt-use:hover{background:#6845aa}
+.prompt-empty{grid-column:1/-1;text-align:center;padding:40px 14px;font-size:12px;color:var(--muted)}
+.feature-foot{border-top:1px solid var(--stroke);margin:0;padding:12px 24px 15px;font-size:10px;line-height:1.6;color:var(--soft)}
+@media(max-width:620px){
+ .feature-overlay{padding:8px}
+ .feature-dialog{max-height:94dvh;border-radius:14px}
+ .feature-header{padding:18px 17px 12px}
+ .feature-header h2{font-size:23px}
+ .prompt-search-wrap{margin:0 17px 10px}
+ .prompt-filters{padding:0 17px 13px}
+ .prompt-cards{grid-template-columns:1fr;gap:10px;padding:14px 17px}
+ .feature-foot{padding:11px 17px}
+}
+@media(prefers-reduced-motion:reduce){.feature-dialog,.prompt-card{scroll-behavior:auto}}
