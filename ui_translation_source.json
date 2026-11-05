@@ -99,5 +99,14 @@
   "personalSpace": "My workspace",
   "personalSpaceDesc": "Personal space",
   "recentChatsCount": "chats",
-  "searchLabel": "Search"
+  "searchLabel": "Search",
+  "modeSwear": "⚡ Swearing mode",
+  "swearMode": "Swearing mode",
+  "swearCardTitle": "Swearing mode",
+  "swearCardDesc": "Playful profanity is welcome. Abuse and slurs aren't.",
+  "swearBanner": "Swearing tone is on. Casual profanity is okay; harmful abuse is not.",
+  "swearPlaceholder": "Ask anything — natural swearing is okay",
+  "imageCreated": "Here is the image I created from your prompt.",
+  "searchPlaceholder": "Search with Alenaz",
+  "imagePlaceholder": "Describe the image you want"
 }
