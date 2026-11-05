@@ -315,14 +315,20 @@
     }
     return true;
   }
+  const remoteLoaded = new Set();
   async function ensureDashboardTranslation(language,force=false) {
     translationRequest++;
     const generation = translationRequest;
     if (translationController) translationController.abort();
     translationController = null;
     if (I18N_EXCEPTIONS.has(language)) { translationStatus(null); return; }
-    if (!force && (STRINGS[language] || readTranslationCache(language))) {
-      if (!STRINGS[language]) applyRemoteTranslations(language,readTranslationCache(language));
+    if (!force && remoteLoaded.has(language)) {
+      if (settings.language === language) translationStatus(null);
+      return;
+    }
+    const cached = !force ? readTranslationCache(language) : null;
+    if (cached && applyRemoteTranslations(language,cached)) {
+      remoteLoaded.add(language);
       if (settings.language === language) translationStatus(null);
       return;
     }
@@ -340,6 +346,7 @@
       if (data.language !== language || !applyRemoteTranslations(language,data.translations))
         throw new Error("Incomplete translation");
       saveTranslationCache(language,data.translations);
+      remoteLoaded.add(language);
       if (generation === translationRequest && settings.language === language) translationStatus(null);
     } catch (error) {
       if (generation === translationRequest && settings.language === language && error.name !== "AbortError")
