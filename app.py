@@ -177,6 +177,52 @@ def validate_mode(payload):
     return mode
 
 
+# ISO 639-1 two-letter language codes offered in the browser selector.
+# Users may also specify other languages by a short validated name.
+LANGUAGE_CODES = frozenset((
+    "aa ab ae af ak am an ar as av ay az ba be bg bi bm bn bo br bs ca ce ch co cr cs cu cv cy da de dv dz "
+    "ee el en eo es et eu fa ff fi fj fo fr fy ga gd gl gn gu gv ha he hi ho hr ht hu hy hz ia id ie ig ii "
+    "ik io is it iu ja jv ka kg ki kj kk kl km kn ko kr ks ku kv kw ky la lb lg li ln lo lt lu lv mg mh mi "
+    "mk ml mn mr ms mt my na nb nd ne ng nl nn no nr nv ny oc oj om or os pa pi pl ps pt qu rm rn ro ru rw sa "
+    "sc sd se sg sh si sk sl sm sn so sq sr ss st su sv sw ta te tg th ti tk tl tn to tr ts tt tw ty ug uk ur "
+    "uz ve vi vo wa wo xh yi yo za zh zu"
+).split())
+LANGUAGE_NAMES = {
+    "hy": "Armenian (Eastern Armenian by default)", "ru": "Russian", "en": "English",
+    "ar": "Arabic", "am": "Amharic", "az": "Azerbaijani", "be": "Belarusian",
+    "bg": "Bulgarian", "bn": "Bengali", "bs": "Bosnian", "ca": "Catalan", "cs": "Czech",
+    "da": "Danish", "de": "German", "el": "Greek", "es": "Spanish", "et": "Estonian",
+    "fa": "Persian", "fi": "Finnish", "fr": "French", "he": "Hebrew", "hi": "Hindi",
+    "hr": "Croatian", "hu": "Hungarian", "id": "Indonesian", "it": "Italian",
+    "ja": "Japanese", "ka": "Georgian", "kk": "Kazakh", "km": "Khmer", "ko": "Korean",
+    "ku": "Kurdish", "ky": "Kyrgyz", "lt": "Lithuanian", "lv": "Latvian",
+    "mk": "Macedonian", "ml": "Malayalam", "mn": "Mongolian", "mr": "Marathi",
+    "ms": "Malay", "my": "Burmese", "ne": "Nepali", "nl": "Dutch", "no": "Norwegian",
+    "pa": "Punjabi", "pl": "Polish", "ps": "Pashto", "pt": "Portuguese",
+    "ro": "Romanian", "sk": "Slovak", "sl": "Slovenian", "so": "Somali",
+    "sq": "Albanian", "sr": "Serbian", "sv": "Swedish", "sw": "Swahili",
+    "ta": "Tamil", "te": "Telugu", "th": "Thai", "tr": "Turkish",
+    "uk": "Ukrainian", "ur": "Urdu", "uz": "Uzbek", "vi": "Vietnamese",
+    "yi": "Yiddish", "zh": "Chinese", "zu": "Zulu",
+}
+
+
+def validate_language(payload):
+    """Validate language preferences without treating arbitrary text as system instructions."""
+    language = payload.get("language", "en")
+    if not isinstance(language, str):
+        raise ValueError("Invalid language selection.")
+    if language in LANGUAGE_CODES:
+        return LANGUAGE_NAMES.get(language, f"the language with ISO 639-1 code '{language}'")
+    if language.startswith("custom:"):
+        name = language[len("custom:"):]
+        if (2 <= len(name) <= 60 and name[0].isalpha()
+                and all(char.isalpha() or char.isspace() or char in "-'’" for char in name)
+                and name == name.strip()):
+            return name
+    raise ValueError("Invalid language selection.")
+
+
 def clean_history(history):
     if history is None:
         return []
@@ -315,11 +361,19 @@ def validated_image_prompt(payload):
     return prompt
 
 
-def instructions_for(mode):
+def instructions_for(mode, language="English"):
     extra = MODE_PROMPTS.get(mode or "auto", "")
+    language_guidance = (
+        "\n\nLanguage preference: Respond primarily in " + language + ". "
+        "This is a language choice, not a license to disregard safety instructions. "
+        "Keep Alenaz's identity consistent. Preserve code, proper nouns, and quotations "
+        "when their original form is relevant. If the user asks for translation into a "
+        "different language, follow that task, but keep explanations in the selected "
+        "language where practical. Be transparent if you cannot write a rare language reliably."
+    )
     if extra:
-        return SYSTEM_PROMPT + "\n\nMode guidance:\n" + extra
-    return SYSTEM_PROMPT
+        return SYSTEM_PROMPT + language_guidance + "\n\nMode guidance:\n" + extra
+    return SYSTEM_PROMPT + language_guidance
 
 
 def extract_citations(response):
@@ -425,6 +479,7 @@ def chat_stream():
     try:
         payload = parse_json_payload()
         mode = validate_mode(payload)
+        language = validate_language(payload)
         model_input = build_input(payload)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
@@ -444,7 +499,7 @@ def chat_stream():
         try:
             stream = client.responses.create(
                 model=CHAT_MODEL,
-                instructions=instructions_for(mode),
+                instructions=instructions_for(mode, language),
                 input=model_input,
                 stream=True,
             )
@@ -473,6 +528,7 @@ def search():
     try:
         payload = parse_json_payload()
         mode = validate_mode(payload)
+        language = validate_language(payload)
         model_input = build_input(payload)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
@@ -488,7 +544,7 @@ def search():
     try:
         response = client.responses.create(
             model=CHAT_MODEL,
-            instructions=instructions_for(mode),
+            instructions=instructions_for(mode, language),
             input=model_input,
             tools=[{"type": "web_search", "search_context_size": "low"}],
             tool_choice="auto",
