@@ -164,3 +164,23 @@ test("selected language travels with a chat request", async () => {
   assert.equal(payload.language, "hy");
   assert.equal(payload.message, "Բարև");
 });
+
+test("Swearing mode selects a real chat style and can be switched off", async () => {
+  let payload;
+  const {context,elements} = createRuntime((url,options) => {
+    assert.equal(url, "/api/chat_stream");
+    payload = JSON.parse(options.body);
+    return Promise.reject(new Error("Test request complete"));
+  });
+  elements.get("sidebarSwear").click();
+  assert.equal(elements.get("modeSelect").value,"swear");
+  assert.equal(elements.get("sidebarSwear").attributes["aria-pressed"],"true");
+  assert.ok(elements.get("modeBannerText").textContent.includes("Casual profanity"));
+  elements.get("promptInput").value = "Explain this with some swearing, please.";
+  await vm.runInContext("sendMessage()",context);
+  assert.equal(payload.mode,"swear");
+  assert.equal(payload.message,"Explain this with some swearing, please.");
+  elements.get("sidebarSwear").click();
+  assert.equal(elements.get("modeSelect").value,"auto");
+  assert.equal(elements.get("sidebarSwear").attributes["aria-pressed"],"false");
+});
