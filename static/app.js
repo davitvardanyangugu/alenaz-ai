@@ -349,6 +349,9 @@ function showReplyIfActive(conversation, message, live) {
 }
 
 function setTool(tool) {
+  // Swearing is a persistent chat mode, not a one-message tool. When a search
+  // or image request finishes, return to its visible enabled state.
+  if (!tool && $("modeSelect").value === "swear") tool = "swear";
   activeTool = tool;
   const banner = $("modeBanner");
   const searchToggle = $("searchToggle");
@@ -881,7 +884,8 @@ $("searchToggle").addEventListener("click", function () {
   setTool(activeTool === "search" ? null : "search");
 });
 $("clearMode").addEventListener("click", function () {
-  setTool(null);
+  if (activeTool === "swear") selectSwearingMode(false);
+  else setTool(null);
 });
 $("sendButton").addEventListener("click", sendMessage);
 $("voiceButton").addEventListener("click", startVoice);
