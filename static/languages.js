@@ -101,8 +101,46 @@
       allCount:"184 стандартных языка и дополнительные по названию"
     }
   };
+  // Additional dashboard strings share the same fixed source as the server.
+  Object.assign(STRINGS.en, {
+  "workspace": "Workspace",
+  "quickActionsLabel": "Quick actions",
+  "dashboardKicker": "THE PERSONAL AI WORKSPACE",
+  "heroMeta": "YOUR IDEAS, WITHOUT LIMITS",
+  "displayTop": "YOUR CREATIVE SPACE",
+  "chatsCount": "CHATS IN THIS BROWSER",
+  "messagesCount": "MESSAGES SENT",
+  "toolkitLabel": "THE TOOLKIT",
+  "toolkitHint": "FOUR WAYS TO GET STARTED",
+  "recentLabel": "PICK UP WHERE YOU LEFT OFF",
+  "recentHeading": "Recent work",
+  "recentAll": "All chats",
+  "inspirationLabel": "NEED A SPARK?",
+  "inspirationStudyTitle": "Learn anything, faster",
+  "inspirationStudyDesc": "Study mode · Guided learning",
+  "inspirationCreativeTitle": "Find your next big idea",
+  "inspirationCreativeDesc": "Creative mode · Brainstorming",
+  "inspirationCodeTitle": "Make a new project",
+  "inspirationCodeDesc": "Code mode · Start building",
+  "footerLeft": "MADE FOR CURIOUS MINDS",
+  "footerRight": "CREATE MORE. IMAGINE BIGGER.",
+  "recentEmptyTitle": "Your next great idea starts here.",
+  "recentEmptyDesc": "Conversations you create will appear in this space.",
+  "greetingMorning": "GOOD MORNING · LET'S MAKE SOMETHING",
+  "greetingAfternoon": "GOOD AFTERNOON · MAKE TODAY COUNT",
+  "greetingEvening": "GOOD EVENING · IDEAS DON'T SLEEP",
+  "conversationTitle": "Conversation",
+  "languagesLoading": "Translating your dashboard…",
+  "languagesError": "Dashboard translation is unavailable. Alenaz can still reply in your chosen language.",
+  "languagesReady": "Dashboard translated",
+  "languagesRetry": "Retry",
+  "personalSpace": "My workspace",
+  "personalSpaceDesc": "Personal space",
+  "recentChatsCount": "chats",
+  "searchLabel": "Search"
+});
   const ui = (key) => (STRINGS[activeUi()] || STRINGS.en)[key] || STRINGS.en[key] || key;
-  const activeUi = () => ["hy","ru","en"].includes(settings.language) ? settings.language : "en";
+  const activeUi = () => STRINGS[settings.language] ? settings.language : "en";
   function validCustom(name) {
     return typeof name === "string" && name.length >= 2 && name.length <= 60 &&
       /^[\p{L}\p{M}][\p{L}\p{M}\p{Zs}'’\-]{1,59}$/u.test(name);
@@ -183,6 +221,11 @@
       if(key === "profileName") continue;
       setText(selector,key);
     }
+    // Additional dashboard labels are mapped declaratively, including on mobile.
+    document.querySelectorAll?.("[data-alenaz-i18n]").forEach(node => {
+      const key = node.getAttribute("data-alenaz-i18n");
+      if (key && Object.prototype.hasOwnProperty.call(STRINGS.en,key)) node.textContent = ui(key);
+    });
     const p = document.querySelector(".hero-editorial h1");
     if(p) {
       const textNodes = Array.from(p.childNodes).filter(n=>n.nodeType===3);
@@ -223,6 +266,90 @@
     const intro = $("langScreenDescription");
     if(intro) intro.textContent = ui("languageSub");
   }
+  const CACHE_PREFIX = "alenaz_dashboard_locale_v1_";
+  const I18N_EXCEPTIONS = new Set(["en","az","tr"]);
+  let translationRequest = 0;
+  let translationController = null;
+  function translationStatus(kind) {
+    const box = $("languageTranslationStatus");
+    const message = $("languageTranslationMessage");
+    const retry = $("retryLanguageTranslation");
+    if (!box || !message) return;
+    box.classList.toggle("hidden", !kind);
+    if (!kind) return;
+    message.textContent = kind === "loading"
+      ? "Translating your dashboard…"
+      : "Dashboard translation is unavailable right now. AI replies still use your chosen language.";
+    if (retry) retry.classList.toggle("hidden",kind !== "error");
+  }
+  function readTranslationCache(language) {
+    try {
+      const raw = localStorage.getItem(CACHE_PREFIX + encodeURIComponent(language));
+      const parsed = raw ? JSON.parse(raw) : null;
+      return parsed && parsed.version === 1 && parsed.translations && typeof parsed.translations === "object"
+        ? parsed.translations : null;
+    } catch (_) { return null; }
+  }
+  function saveTranslationCache(language,translations) {
+    try {
+      localStorage.setItem(CACHE_PREFIX + encodeURIComponent(language),
+        JSON.stringify({version:1,translations}));
+    } catch (_) { /* Browser storage is optional; the translation still works. */ }
+  }
+  function applyRemoteTranslations(language,values) {
+    const source = STRINGS.en;
+    if (!values || typeof values !== "object" || Array.isArray(values)) return false;
+    const translated = {};
+    Object.entries(values).forEach(([key,value]) => {
+      if (Object.prototype.hasOwnProperty.call(source,key)
+          && typeof value === "string" && value.trim().length > 0 && value.length <= 900) {
+        translated[key] = value;
+      }
+    });
+    if (Object.keys(translated).length < 50) return false;
+    // Existing reviewed translations for Armenian/Russian take precedence.
+    STRINGS[language] = Object.assign({},source,translated,STRINGS[language] || {});
+    if (settings.language === language) {
+      updateLanguageUI();
+      window.dispatchEvent(new CustomEvent("alenaz:ui-translated",{detail:{language}}));
+    }
+    return true;
+  }
+  async function ensureDashboardTranslation(language,force=false) {
+    translationRequest++;
+    const generation = translationRequest;
+    if (translationController) translationController.abort();
+    translationController = null;
+    if (I18N_EXCEPTIONS.has(language)) { translationStatus(null); return; }
+    if (!force && (STRINGS[language] || readTranslationCache(language))) {
+      if (!STRINGS[language]) applyRemoteTranslations(language,readTranslationCache(language));
+      if (settings.language === language) translationStatus(null);
+      return;
+    }
+    if (settings.language === language) translationStatus("loading");
+    translationController = new AbortController();
+    try {
+      const response = await fetch("/api/ui_translations",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({language}),
+        signal:translationController.signal
+      });
+      if (!response.ok) throw new Error("Translation request failed");
+      const data = await response.json();
+      if (data.language !== language || !applyRemoteTranslations(language,data.translations))
+        throw new Error("Incomplete translation");
+      saveTranslationCache(language,data.translations);
+      if (generation === translationRequest && settings.language === language) translationStatus(null);
+    } catch (error) {
+      if (generation === translationRequest && settings.language === language && error.name !== "AbortError")
+        translationStatus("error");
+    } finally {
+      if (generation === translationRequest) translationController = null;
+    }
+  }
+  $("retryLanguageTranslation")?.addEventListener("click",()=>ensureDashboardTranslation(settings.language,true));
+
   const matches = (value,query)=> !query || value.toLocaleLowerCase().includes(query);
   function createOption(item, priority) {
     const button = document.createElement("button");
@@ -287,6 +414,7 @@
     saveJSON(SETTINGS_KEY,settings);
     updateLanguageUI();
     window.dispatchEvent(new CustomEvent("alenaz:language-changed",{detail:{language:code}}));
+    ensureDashboardTranslation(code);
     closeModal();
   }
   $("languageButton")?.addEventListener("click",openModal);
@@ -323,6 +451,7 @@
   });
   updateLanguageUI();
   renderOptions();
+  ensureDashboardTranslation(settings.language);
   window.AlenazLanguages = {catalogSize:CODES.length,get:()=>settings.language,choose:chooseLanguage,
     open:openModal,display:labelFor,translate:ui,
     speechLocale:()=>{
