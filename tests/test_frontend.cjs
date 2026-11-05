@@ -175,7 +175,7 @@ test("Swearing mode selects a real chat style and can be switched off", async ()
   elements.get("sidebarSwear").click();
   assert.equal(elements.get("modeSelect").value,"swear");
   assert.equal(elements.get("sidebarSwear").attributes["aria-pressed"],"true");
-  assert.ok(elements.get("modeBannerText").textContent.includes("Casual profanity"));
+  assert.ok(elements.get("modeBannerText").textContent.includes("Strong swearing is ON"));
   elements.get("promptInput").value = "Explain this with some swearing, please.";
   await vm.runInContext("sendMessage()",context);
   assert.equal(payload.mode,"swear");

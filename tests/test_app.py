@@ -298,9 +298,43 @@ class AlenazAPITests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Damn", response.get_data(as_text=True))
         guidance = fake.responses.create.call_args.kwargs["instructions"]
-        self.assertIn("deliberately enabled Swearing mode", guidance)
-        self.assertIn("at least one non-targeted casual swear word", guidance)
-        self.assertIn("Never use hateful slurs", guidance)
+        self.assertIn("Strong Swearing mode is explicitly enabled", guidance)
+        self.assertIn("at least one clear strong swear", guidance)
+        self.assertIn("No hateful slurs", guidance)
+
+    def test_translation_uses_lightweight_model(self):
+        translated = {
+            key: "Translated " + value
+            for key, value in server.UI_TRANSLATION_SOURCE.items()
+        }
+        fake = self.fake_client(response=SimpleNamespace(
+            output_text=json.dumps(translated, ensure_ascii=False)
+        ))
+        with patch.object(server, "require_client", return_value=(fake, None)):
+            response = self.client.post("/api/ui_translations", json={"language": "de"})
+        self.assertEqual(response.status_code, 200)
+        args = fake.responses.create.call_args.kwargs
+        self.assertEqual(args["model"], server.TRANSLATION_MODEL)
+        self.assertEqual(json.loads(args["input"]), server.UI_TRANSLATION_SOURCE)
+
+    def test_fast_translation_model_has_safe_fallback(self):
+        translated = {
+            key: "Translated " + value
+            for key, value in server.UI_TRANSLATION_SOURCE.items()
+        }
+        failure = RuntimeError("not available")
+        failure.status_code = 404
+        fake = self.fake_client(response=SimpleNamespace(
+            output_text=json.dumps(translated, ensure_ascii=False)
+        ))
+        fake.responses.create.side_effect = [failure, SimpleNamespace(
+            output_text=json.dumps(translated, ensure_ascii=False)
+        )]
+        with patch.object(server, "require_client", return_value=(fake, None)):
+            response = self.client.post("/api/ui_translations", json={"language": "fr"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(fake.responses.create.call_count, 2)
+        self.assertEqual(fake.responses.create.call_args.kwargs["model"], server.CHAT_MODEL)
 
     def test_rare_language_names_are_not_opaque_codes(self):
         self.assertEqual(len(server.ALL_LANGUAGE_NAMES), len(server.LANGUAGE_CODES))

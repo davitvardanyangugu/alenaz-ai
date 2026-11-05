@@ -324,32 +324,39 @@
   "personalSpaceDesc": "Personal space",
   "recentChatsCount": "chats",
   "searchLabel": "Search",
-  "modeSwear": "⚡ Swearing mode",
-  "swearMode": "Swearing mode",
-  "swearCardTitle": "Swearing mode",
-  "swearCardDesc": "Playful profanity is welcome. Abuse and slurs aren't.",
-  "swearBanner": "Swearing tone is on. Casual profanity is okay; harmful abuse is not.",
-  "swearPlaceholder": "Ask anything — natural swearing is okay",
+  "modeSwear": "⚡ Strong swearing mode",
+  "swearMode": "Strong swearing mode",
+  "swearCardTitle": "Strong swearing mode",
+  "swearCardDesc": "Bold, uncensored profanity and playful banter. No hate or threats.",
+  "swearBanner": "Strong swearing is ON — no censored curses or pointless apologies.",
+  "swearPlaceholder": "Say whatever the fuck you want…",
   "imageCreated": "Here is the image I created from your prompt.",
   "searchPlaceholder": "Search with Alenaz",
   "imagePlaceholder": "Describe the image you want"
 });
   Object.assign(STRINGS.hy,{
-    modeSwear:"⚡ Հայհոյանքի ռեժիմ",swearMode:"Հայհոյանքի ռեժիմ",
-    swearCardTitle:"Հայհոյանքի ռեժիմ",swearCardDesc:"Ազատ խոսիր՝ առանց վիրավորանքի կամ ատելության։",
-    swearBanner:"Հայհոյանքի ռեժիմը միացված է։ Կարելի է ազատ արտահայտվել՝ առանց վիրավորանքների։",
+    modeSwear:"⚡ Ուժեղ հայհոյանքներ",swearMode:"Ուժեղ հայհոյանքներ",
+    swearCardTitle:"Ուժեղ հայհոյանքներ",swearCardDesc:"Ազատ ու համարձակ խոսք, առանց ատելության կամ սպառնալիքների։",
+    swearBanner:"Ուժեղ հայհոյանքներն ակտիվ են՝ առանց անհարկի ներողությունների։",
     swearPlaceholder:"Հարցրու ինչ ուզում ես՝ ազատ ոճով",
     imageCreated:"Ահա քո նկարագրությամբ ստեղծված նկարը։",
     searchPlaceholder:"Որոնել Alenaz-ի օգնությամբ",imagePlaceholder:"Նկարագրիր ցանկալի նկարը"
   });
   Object.assign(STRINGS.ru,{
-    modeSwear:"⚡ Режим с матом",swearMode:"Режим с матом",
-    swearCardTitle:"Режим с матом",swearCardDesc:"Допустима разговорная ругань, но не травля и не угрозы.",
-    swearBanner:"Режим с матом включён. Ругаться можно, оскорблять и угрожать нельзя.",
+    modeSwear:"⚡ Жёсткий мат",swearMode:"Жёсткий мат",
+    swearCardTitle:"Жёсткий мат",swearCardDesc:"Свободная матерная речь без ненависти и угроз.",
+    swearBanner:"Жёсткий мат включён — без цензуры и лишних извинений.",
     swearPlaceholder:"Спроси что угодно — ругательства допустимы",
     imageCreated:"Вот изображение, которое я создал по твоему запросу.",
     searchPlaceholder:"Поиск с Alenaz",imagePlaceholder:"Опиши изображение, которое хочешь создать"
   });
+  // Instant core dashboard labels for common languages, before the full async translation.
+  const QUICK_KEYS = ["home","newChat","webSearch","images","savedChats","languages","preferences","toolkit","ask","research","art","build","swearMode","modeSwear","overview","quickActionsLabel","searchButton","start","explore","promptPlaceholder"];
+  const QUICK_PACKS = {"es":["Inicio","Nueva conversación","Buscar en la web","Crear imágenes","Chats guardados","Idiomas","Preferencias","¿Qué te gustaría hacer?","Pregunta lo que quieras","Explorar","Crear arte","Crear un proyecto","Modo con palabrotas","⚡ Modo con palabrotas","Resumen","Acciones rápidas","Buscar","Empezar a crear","Explorar ideas","Pregúntale a Alenaz…"],"fr":["Accueil","Nouvelle conversation","Recherche web","Créer des images","Conversations enregistrées","Langues","Préférences","Que voulez-vous faire ?","Poser une question","Explorer","Créer une image","Créer un projet","Mode gros mots","⚡ Mode gros mots","Aperçu","Actions rapides","Rechercher","Commencer à créer","Explorer des idées","Demandez à Alenaz…"],"de":["Startseite","Neuer Chat","Websuche","Bilder erstellen","Gespeicherte Chats","Sprachen","Einstellungen","Was möchtest du tun?","Alles fragen","Entdecken","Kunst erstellen","Etwas bauen","Fluchmodus","⚡ Fluchmodus","Übersicht","Schnellaktionen","Suchen","Jetzt loslegen","Ideen entdecken","Frag Alenaz etwas…"],"it":["Home","Nuova conversazione","Ricerca web","Genera immagini","Chat salvate","Lingue","Preferenze","Che cosa vuoi fare?","Chiedi qualsiasi cosa","Esplora","Crea immagini","Crea un progetto","Modalità parolacce","⚡ Modalità parolacce","Panoramica","Azioni rapide","Cerca","Inizia a creare","Esplora idee","Chiedi ad Alenaz…"],"pt":["Início","Nova conversa","Pesquisa na web","Gerar imagens","Conversas salvas","Idiomas","Preferências","O que você quer fazer?","Pergunte qualquer coisa","Explorar","Criar arte","Criar um projeto","Modo palavrões","⚡ Modo palavrões","Visão geral","Ações rápidas","Buscar","Começar a criar","Explorar ideias","Pergunte ao Alenaz…"],"nl":["Start","Nieuw gesprek","Zoeken op internet","Afbeeldingen maken","Opgeslagen chats","Talen","Voorkeuren","Wat wil je doen?","Vraag maar raak","Ontdekken","Kunst maken","Iets bouwen","Vloekmodus","⚡ Vloekmodus","Overzicht","Snelle acties","Zoeken","Begin met maken","Ideeën ontdekken","Vraag Alenaz iets…"],"pl":["Strona główna","Nowa rozmowa","Wyszukiwanie w sieci","Tworzenie obrazów","Zapisane czaty","Języki","Ustawienia","Co chcesz zrobić?","Zapytaj o wszystko","Odkrywaj","Twórz obrazy","Zbuduj coś","Tryb przekleństw","⚡ Tryb przekleństw","Przegląd","Szybkie działania","Szukaj","Zacznij tworzyć","Poznaj pomysły","Zapytaj Alenaz o cokolwiek…"],"uk":["Головна","Новий чат","Пошук в інтернеті","Створення зображень","Збережені чати","Мови","Налаштування","Що хочете зробити?","Запитайте будь-що","Досліджуйте","Створюйте зображення","Створіть проєкт","Режим лайки","⚡ Режим лайки","Огляд","Швидкі дії","Пошук","Почати творити","Переглянути ідеї","Запитайте Alenaz…"],"ka":["მთავარი","ახალი საუბარი","ვებძიება","სურათების შექმნა","შენახული ჩატები","ენები","პარამეტრები","რისი გაკეთება გსურს?","იკითხე რაც გინდა","გამოიკვლიე","შექმენი სურათი","შექმენი პროექტი","გინების რეჟიმი","⚡ გინების რეჟიმი","მიმოხილვა","სწრაფი მოქმედებები","ძიება","შექმნის დაწყება","იდეების ნახვა","ჰკითხე Alenaz-ს…"],"ar":["الرئيسية","محادثة جديدة","البحث على الويب","إنشاء صور","المحادثات المحفوظة","اللغات","التفضيلات","ماذا تريد أن تفعل؟","اسأل عن أي شيء","استكشف","أنشئ صورًا","أنشئ مشروعًا","وضع الألفاظ النابية","⚡ وضع الألفاظ النابية","نظرة عامة","إجراءات سريعة","بحث","ابدأ الإبداع","استكشف الأفكار","اسأل Alenaz أي شيء…"],"zh":["主页","新对话","网页搜索","生成图片","已保存的聊天","语言","偏好设置","你想做什么？","随便问","探索","创作图片","创建项目","脏话模式","⚡ 脏话模式","概览","快捷操作","搜索","开始创作","探索灵感","向 Alenaz 提问…"],"ja":["ホーム","新しい会話","ウェブ検索","画像を生成","保存したチャット","言語","設定","何をしたいですか？","何でも質問","調べる","画像を作る","何かを作る","暴言モード","⚡ 暴言モード","概要","クイック操作","検索","作成を始める","アイデアを探す","Alenaz に質問…"],"ko":["홈","새 대화","웹 검색","이미지 생성","저장된 채팅","언어","설정","무엇을 하고 싶나요?","무엇이든 질문","탐색하기","이미지 만들기","프로젝트 만들기","욕설 모드","⚡ 욕설 모드","개요","빠른 작업","검색","만들기 시작","아이디어 탐색","Alenaz에게 질문…"],"hi":["होम","नई बातचीत","वेब पर खोजें","चित्र बनाएँ","सहेजी गई चैट","भाषाएँ","सेटिंग्स","आप क्या करना चाहेंगे?","कुछ भी पूछें","खोजें","चित्र बनाएँ","प्रोजेक्ट बनाएँ","गाली मोड","⚡ गाली मोड","अवलोकन","त्वरित कार्य","खोजें","बनाना शुरू करें","विचार खोजें","Alenaz से कुछ भी पूछें…"],"el":["Αρχική","Νέα συνομιλία","Αναζήτηση στον ιστό","Δημιουργία εικόνων","Αποθηκευμένες συνομιλίες","Γλώσσες","Προτιμήσεις","Τι θέλετε να κάνετε;","Ρωτήστε οτιδήποτε","Εξερευνήστε","Δημιουργήστε εικόνες","Φτιάξτε ένα έργο","Λειτουργία βρισιών","⚡ Λειτουργία βρισιών","Επισκόπηση","Γρήγορες ενέργειες","Αναζήτηση","Ξεκινήστε να δημιουργείτε","Εξερευνήστε ιδέες","Ρωτήστε το Alenaz…"]};
+  for (const [language, labels] of Object.entries(QUICK_PACKS)) {
+    STRINGS[language] = Object.assign({},STRINGS.en,
+      Object.fromEntries(QUICK_KEYS.map((key,index)=>[key,labels[index]])));
+  }
   const ui = (key) => (STRINGS[activeUi()] || STRINGS.en)[key] || STRINGS.en[key] || key;
   const activeUi = () => STRINGS[settings.language] ? settings.language : "en";
   function validCustom(name) {
@@ -477,7 +484,7 @@
     const intro = $("langScreenDescription");
     if(intro) intro.textContent = ui("languageSub");
   }
-  const CACHE_PREFIX = "alenaz_dashboard_locale_v2_";
+  const CACHE_PREFIX = "alenaz_dashboard_locale_v3_";
   const I18N_EXCEPTIONS = new Set(["en","az","tr"]);
   let translationRequest = 0;
   let translationController = null;
@@ -496,14 +503,14 @@
     try {
       const raw = localStorage.getItem(CACHE_PREFIX + encodeURIComponent(language));
       const parsed = raw ? JSON.parse(raw) : null;
-      return parsed && parsed.version === 2 && parsed.translations && typeof parsed.translations === "object"
+      return parsed && parsed.version === 3 && parsed.translations && typeof parsed.translations === "object"
         ? parsed.translations : null;
     } catch (_) { return null; }
   }
   function saveTranslationCache(language,translations) {
     try {
       localStorage.setItem(CACHE_PREFIX + encodeURIComponent(language),
-        JSON.stringify({version:2,translations}));
+        JSON.stringify({version:3,translations}));
     } catch (_) { /* Browser storage is optional; the translation still works. */ }
   }
   function applyRemoteTranslations(language,values) {
@@ -518,7 +525,8 @@
     });
     if (Object.keys(translated).length < 50) return false;
     // Existing reviewed translations for Armenian/Russian take precedence.
-    STRINGS[language] = Object.assign({},source,translated,STRINGS[language] || {});
+    const reviewed = (language==="hy" || language==="ru") ? (STRINGS[language] || {}) : {};
+    STRINGS[language] = Object.assign({},source,STRINGS[language] || {},translated,reviewed);
     if (settings.language === language) {
       updateLanguageUI();
       window.dispatchEvent(new CustomEvent("alenaz:ui-translated",{detail:{language}}));

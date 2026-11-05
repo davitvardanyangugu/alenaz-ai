@@ -378,9 +378,9 @@ function setTool(tool) {
   } else if (tool === "swear") {
     $("modeBannerIcon").textContent = "⚡";
     $("modeBannerText").textContent = window.AlenazLanguages?.translate?.("swearBanner") ||
-      "Swearing tone is on. Casual profanity is okay; harmful abuse is not.";
+      "Strong swearing is ON — no censored curses or pointless apologies.";
     $("promptInput").placeholder = window.AlenazLanguages?.translate?.("swearPlaceholder") ||
-      "Ask anything — natural swearing is okay";
+      "Say whatever the fuck you want…";
   }
 
   $("promptInput").focus();
