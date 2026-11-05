@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=quality-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='library.css') }}?v=library-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='features.css') }}?v=features-v1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='languages.css') }}?v=languages-v1">
 </head>
 <body>
   <a class="skip-link" href="#promptInput">Skip to message input</a>
@@ -32,17 +33,17 @@
 
       <nav class="sidebar-navigation" aria-label="Workspace">
         <div class="section-label">WORKSPACE</div>
-        <button class="sidebar-action nav-home" id="homeNav" type="button"><span class="nav-icon" aria-hidden="true">⌂</span><span>Home</span><span class="nav-hint">↗</span></button>
-        <button class="sidebar-action" id="sidebarSearch" type="button"><span class="nav-icon" aria-hidden="true">⌕</span><span>Web search</span></button>
-        <button class="sidebar-action" id="sidebarImage" type="button"><span class="nav-icon" aria-hidden="true">◇</span><span>Image generation</span></button>
-        <button class="sidebar-action" id="openCommandFromSidebar" type="button"><span class="nav-icon" aria-hidden="true">⌘</span><span>Command center</span></button>
-        <button class="sidebar-action" id="promptLibraryNav" type="button"><span class="nav-icon" aria-hidden="true">✦</span><span>Prompt library</span></button>
-        <button class="sidebar-action" id="savedChatsNav" type="button"><span class="nav-icon" aria-hidden="true">▣</span><span>Saved chats</span><span class="nav-count" id="savedNavCount">0</span></button>
-        <button class="sidebar-action" id="accountCenterNav" type="button"><span class="nav-icon" aria-hidden="true">♙</span><span>Account &amp; sync</span></button>
+        <button class="sidebar-action nav-home" id="homeNav" type="button"><span class="nav-icon" aria-hidden="true">⌂</span><span id="homeNavLabel">Home</span><span class="nav-hint">↗</span></button>
+        <button class="sidebar-action" id="sidebarSearch" type="button"><span class="nav-icon" aria-hidden="true">⌕</span><span id="sidebarSearchLabel">Web search</span></button>
+        <button class="sidebar-action" id="sidebarImage" type="button"><span class="nav-icon" aria-hidden="true">◇</span><span id="sidebarImageLabel">Image generation</span></button>
+        <button class="sidebar-action" id="openCommandFromSidebar" type="button"><span class="nav-icon" aria-hidden="true">⌘</span><span id="commandNavLabel">Command center</span></button>
+        <button class="sidebar-action" id="promptLibraryNav" type="button"><span class="nav-icon" aria-hidden="true">✦</span><span id="promptLibraryNavLabel">Prompt library</span></button>
+        <button class="sidebar-action" id="savedChatsNav" type="button"><span class="nav-icon" aria-hidden="true">▣</span><span id="savedChatsNavLabel">Saved chats</span><span class="nav-count" id="savedNavCount">0</span></button>
+        <button class="sidebar-action" id="accountCenterNav" type="button"><span class="nav-icon" aria-hidden="true">♙</span><span id="accountCenterLabel">Account &amp; sync</span></button>
       </nav>
 
       <div class="sidebar-section grow">
-        <div class="history-head"><span class="section-label">RECENT CHATS</span><button class="mini-action" type="button" id="focusHistory" aria-label="Search recent chats">⌕</button></div>
+        <div class="history-head"><span class="section-label" id="sidebarHistoryTitle">RECENT CHATS</span><button class="mini-action" type="button" id="focusHistory" aria-label="Search recent chats">⌕</button></div>
         <input id="historySearch" class="history-search" type="search" placeholder="Find a conversation..." aria-label="Search conversations" autocomplete="off">
         <div class="history-list" id="historyList"></div>
       </div>
@@ -71,6 +72,7 @@
         <div class="topbar-actions">
           <button class="command-trigger" id="commandButton" type="button" aria-label="Open command center"><span>⌕</span> Quick actions <kbd>⌘ K</kbd></button>
           <button class="topbar-button" id="searchToggle" type="button" aria-pressed="false">⌕ <span>Search</span></button>
+          <button class="language-switcher" id="languageButton" type="button" title="Languages" aria-label="Languages">🌐 <span id="languageButtonLabel">EN</span></button>
           <button class="icon-button theme-switch" id="themeButton" type="button" aria-label="Toggle light and dark theme">☼</button>
           <button class="model-pill" id="modelPill" type="button" aria-label="Current AI model"><span class="status-dot"></span><span id="modelLabel">Alenaz</span><small id="modelName">loading…</small></button>
         </div>
@@ -87,10 +89,10 @@
               <div class="hero-editorial">
                 <p class="hero-eyebrow" id="timeGreeting">YOUR SPACE TO THINK BIG</p>
                 <h1>Where good ideas<br>become <span class="headline-highlight">great things<span class="headline-period">.</span></span></h1>
-                <p class="hero-intro">Meet your new creative sidekick. For the questions, the big plans, and everything you haven't imagined yet.</p>
+                <p class="hero-intro" id="heroIntro">Meet your new creative sidekick. For the questions, the big plans, and everything you haven't imagined yet.</p>
                 <div class="hero-ctas">
-                  <button class="hero-start" id="heroStart" type="button">Start creating <span aria-hidden="true">↗</span></button>
-                  <button class="hero-explore" id="heroExplore" type="button">Explore ideas <span aria-hidden="true">↓</span></button>
+                  <button class="hero-start" id="heroStart" type="button"><span id="heroStartLabel">Start creating</span> <span aria-hidden="true">↗</span></button>
+                  <button class="hero-explore" id="heroExplore" type="button"><span id="heroExploreLabel">Explore ideas</span> <span aria-hidden="true">↓</span></button>
                 </div>
                 <div class="hero-meta"><span class="hero-meta-circle">✳</span><span>YOUR IDEAS, WITHOUT LIMITS</span></div>
               </div>
@@ -103,7 +105,7 @@
             </section>
 
             <section class="tools-section" id="toolsSection" aria-label="AI tools">
-              <div class="section-heading"><div><p class="eyebrow">THE TOOLKIT</p><h2>What do you feel like doing?</h2></div><span class="section-heading-side">FOUR WAYS TO GET STARTED <span aria-hidden="true">↙</span></span></div>
+              <div class="section-heading"><div><p class="eyebrow">THE TOOLKIT</p><h2 id="toolsHeading">What do you feel like doing?</h2></div><span class="section-heading-side">FOUR WAYS TO GET STARTED <span aria-hidden="true">↙</span></span></div>
               <div class="starter-grid">
                 <button class="starter-card tool-talk" data-prompt="Let's brainstorm. Help me come up with three original ideas for something exciting." type="button">
                   <span class="tool-top"><span class="tool-symbol" aria-hidden="true">✳</span><span class="tool-arrow" aria-hidden="true">↗</span></span>
@@ -199,7 +201,7 @@
             <div class="composer-actions"><span class="composer-hint">ENTER ↵</span><button class="composer-icon" id="voiceButton" type="button" title="Dictate using microphone" aria-label="Voice input">◉</button><button class="send-button" id="sendButton" type="button" aria-label="Send message">↑</button></div>
           </div>
         </div>
-        <p class="disclaimer">Alenaz can make mistakes. Verify information that matters.</p>
+        <p class="disclaimer" id="alDisclaimer">Alenaz can make mistakes. Verify information that matters.</p>
       </div>
     </main>
   </div>
@@ -207,12 +209,13 @@
   <div class="modal-backdrop hidden" id="settingsModal">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
       <div class="modal-head"><div><p class="eyebrow">MY WORKSPACE</p><h2 id="settingsTitle">Preferences</h2></div><button class="icon-button" id="closeSettings" type="button" aria-label="Close settings">×</button></div>
-      <label class="setting-field"><span>What should Alenaz call you?</span><input id="displayNameInput" maxlength="30" placeholder="Guest"></label>
-      <label class="setting-row"><span><strong>Read answers aloud</strong><small>Use your device's built-in text-to-speech voice.</small></span><input type="checkbox" id="speakToggle"></label>
-      <label class="setting-row"><span><strong>Compact conversations</strong><small>Display messages closer together.</small></span><input type="checkbox" id="compactToggle"></label>
+      <label class="setting-field"><span id="profileNameInputTitle">What should Alenaz call you?</span><input id="displayNameInput" maxlength="30" placeholder="Guest"></label>
+      <label class="setting-row"><span><strong id="readAloudLabel">Read answers aloud</strong><small id="readAloudDesc">Use your device's built-in text-to-speech voice.</small></span><input type="checkbox" id="speakToggle"></label>
+      <label class="setting-row"><span><strong id="compactLabel">Compact conversations</strong><small id="compactDesc">Display messages closer together.</small></span><input type="checkbox" id="compactToggle"></label>
+      <button class="setting-language-button" id="languageSettingButton" type="button"><span><strong id="languageSettingTitle">🌐 Languages</strong><small id="languageSettingDescription">Interface &amp; AI response language</small></span><span id="languageCurrentChoice">English</span></button>
       <div class="settings-privacy-note" role="note">
-        <strong>About Alenaz &amp; privacy</strong>
-        <p>Alenaz is an AI assistant application created by David Vardanyan and powered by an external AI provider. Your chat history and preferences are saved in this browser, not in a cloud account. When you send messages, use web search, or upload files, that content is processed by the configured AI service. You can export your chats from Saved Chats or clear locally saved conversations here.</p>
+        <strong id="privacyTitle">About Alenaz &amp; privacy</strong>
+        <p id="privacyDescription">Alenaz is an AI assistant application created by David Vardanyan and powered by an external AI provider. Your chat history and preferences are saved in this browser, not in a cloud account. When you send messages, use web search, or upload files, that content is processed by the configured AI service. You can export your chats from Saved Chats or clear locally saved conversations here.</p>
       </div>
       <div class="danger-zone"><button class="secondary-button" id="clearHistoryButton" type="button">Clear all local conversations</button></div>
       <button class="primary-button" id="saveSettings" type="button">Save preferences</button>
@@ -272,7 +275,34 @@
     </section>
   </div>
 
+  <div class="language-overlay hidden" id="languageModal" role="dialog" aria-modal="true" aria-labelledby="languageTitle">
+    <section class="language-dialog">
+      <header class="language-dialog-head">
+        <div><p class="language-kicker">ALENAZ · WORLD LANGUAGES</p>
+          <h2 id="languageTitle">Languages</h2>
+          <p id="languageSubtitle">Choose the language Alenaz speaks with you.</p>
+        </div>
+        <button type="button" id="languageModalClose" aria-label="Close language selector">Close</button>
+      </header>
+      <div class="language-selected-pill"><span id="languageCurrentTitle">Current language</span><strong id="languageCurrent">English</strong></div>
+      <label class="language-search"><span aria-hidden="true">⌕</span><input id="languageSearch" type="search" autocomplete="off" placeholder="Search languages by name or code…" aria-label="Search languages"></label>
+      <div class="language-scroll">
+        <section id="languageVipSection" aria-labelledby="languageVipTitle"><h3 class="language-group-title language-vip-title" id="languageVipTitle">✦ VIP PRIORITY</h3><div class="language-vip-grid" id="languageVipList"></div></section>
+        <h3 class="language-group-title" id="languageAllTitle">ALL LANGUAGES</h3>
+        <div class="language-standard-grid" id="languageAllList"></div>
+        <p class="language-empty hidden" id="languageEmpty">No matches. Enter another language below.</p>
+        <section class="language-custom"><label id="languageCustomTitle" for="customLanguageInput">Can't find it? Enter another language</label>
+          <div class="language-custom-row"><input id="customLanguageInput" type="text" maxlength="60" placeholder="e.g. Western Armenian, Hmong" autocomplete="off">
+          <button id="languageCustomButton" type="button">Choose language</button></div>
+          <p id="languageCustomError" class="language-error hidden" role="alert"></p>
+        </section>
+      </div>
+      <footer class="language-dialog-foot"><p id="languageNote">Armenian, Russian and English have priority interface translations. Other languages change AI replies; some interface text stays in English. Model accuracy and voice support may vary.</p><small id="languageCountLabel">184 standard choices, plus other languages by name</small><small id="languageFoundCount"></small></footer>
+    </section>
+  </div>
+
   <script src="{{ url_for('static', filename='app.js') }}?v=features-v1"></script>
+  <script src="{{ url_for('static', filename='languages.js') }}?v=languages-v1"></script>
   <script src="{{ url_for('static', filename='studio.js') }}?v=studio-v3" defer></script>
   <script src="{{ url_for('static', filename='library.js') }}?v=library-v1" defer></script>
   <script src="{{ url_for('static', filename='features.js') }}?v=features-v1" defer></script>
