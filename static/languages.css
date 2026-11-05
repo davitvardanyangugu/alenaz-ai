@@ -47,3 +47,7 @@
 .language-dialog-foot small{white-space:nowrap;font:400 9px var(--mono);color:var(--soft)}
 @media(max-width:700px){.topbar-actions{gap:5px}.language-switcher{padding:0 8px}.language-dialog-head{padding:18px 16px 13px}.language-scroll{padding:2px 16px 16px}.language-selected-pill{margin:0 16px 10px}.language-search{margin:0 16px 9px}.language-dialog-foot{padding:10px 16px 14px;flex-direction:column;align-items:flex-start}.language-vip-grid{grid-template-columns:1fr}.language-standard-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:430px){.language-dialog{max-height:94dvh}.language-dialog-head h2{font-size:23px}.language-vip-grid,.language-standard-grid{grid-template-columns:1fr}.language-custom-row{flex-direction:column}.language-option{padding:9px 10px}.language-selected-pill{align-items:flex-start;flex-wrap:wrap}.language-selected-pill strong{margin-left:0}}
+
+/* Keep existing CTA icon styling while translating the text labels. */
+.hero-start #heroStartLabel,.hero-explore #heroExploreLabel{font-size:12px;line-height:1.4}
+@media(max-width:520px){.language-switcher{height:34px;min-width:44px;justify-content:center}.language-switcher span{font-size:9px}.hero-start #heroStartLabel,.hero-explore #heroExploreLabel{font-size:11px}}
