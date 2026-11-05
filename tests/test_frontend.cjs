@@ -180,7 +180,20 @@ test("Swearing mode selects a real chat style and can be switched off", async ()
   await vm.runInContext("sendMessage()",context);
   assert.equal(payload.mode,"swear");
   assert.equal(payload.message,"Explain this with some swearing, please.");
+  // The selected tone must be visible and stay active after submitting.
+  assert.equal(elements.get("modeSelect").value,"swear");
+  assert.equal(elements.get("modeBanner").classList.contains("hidden"),false);
+  assert.equal(elements.get("sidebarSwear").attributes["aria-pressed"],"true");
+  // An ordinary follow-up should use the same mode even without another click.
+  elements.get("promptInput").value = "How are things?";
+  await vm.runInContext("sendMessage()",context);
+  assert.equal(payload.mode,"swear");
   elements.get("sidebarSwear").click();
   assert.equal(elements.get("modeSelect").value,"auto");
   assert.equal(elements.get("sidebarSwear").attributes["aria-pressed"],"false");
+  elements.get("modeSelect").value = "swear";
+  elements.get("modeSelect").listeners.change[0]();
+  elements.get("clearMode").click();
+  assert.equal(elements.get("modeSelect").value,"auto");
+  assert.equal(elements.get("modeBanner").classList.contains("hidden"),true);
 });

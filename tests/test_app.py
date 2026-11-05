@@ -298,8 +298,9 @@ class AlenazAPITests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Damn", response.get_data(as_text=True))
         guidance = fake.responses.create.call_args.kwargs["instructions"]
-        self.assertIn("Swearing mode is on", guidance)
-        self.assertIn("Never use slurs", guidance)
+        self.assertIn("deliberately enabled Swearing mode", guidance)
+        self.assertIn("at least one non-targeted casual swear word", guidance)
+        self.assertIn("Never use hateful slurs", guidance)
 
     def test_rare_language_names_are_not_opaque_codes(self):
         self.assertEqual(len(server.ALL_LANGUAGE_NAMES), len(server.LANGUAGE_CODES))
