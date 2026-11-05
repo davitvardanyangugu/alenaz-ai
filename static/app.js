@@ -15,7 +15,8 @@ let settings = Object.assign({
   displayName: "Guest",
   speak: false,
   compact: false,
-  theme: "dark"
+  theme: "dark",
+  language: "en"
 }, loadJSON(SETTINGS_KEY, {}));
 
 function loadJSON(key, fallback) {
@@ -438,6 +439,7 @@ async function sendMessage() {
     message: userText,
     history: requestHistory,
     mode: $("modeSelect").value,
+    language: settings.language || "en",
     attachment: attachmentForRequest
   };
 
@@ -596,7 +598,7 @@ async function sendImage(conversation, prompt) {
 
   const assistantMessage = {
     role: "assistant",
-    text: "Here is the image I created from your prompt.",
+    text: settings.language === "hy" ? "Ահա քո նկարագրությամբ ստեղծված նկարը։" : settings.language === "ru" ? "Вот изображение, которое я создал по твоему запросу." : "Here is the image I created from your prompt.",
     image: data.image,
     imageAlt: prompt
   };
@@ -751,7 +753,7 @@ function startVoice() {
   }
 
   const recognition = new SpeechRecognition();
-  recognition.lang = navigator.language || "en-US";
+  recognition.lang = window.AlenazLanguages?.speechLocale() || navigator.language || "en-US";
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
 
@@ -778,7 +780,7 @@ function speakIfEnabled(text) {
   if (!settings.speak || !("speechSynthesis" in window) || !text) return;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text.slice(0, 5000));
-  utterance.lang = navigator.language || "en-US";
+  utterance.lang = window.AlenazLanguages?.speechLocale() || navigator.language || "en-US";
   utterance.rate = 1;
   window.speechSynthesis.speak(utterance);
 }
