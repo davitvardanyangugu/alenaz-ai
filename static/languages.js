@@ -324,28 +324,28 @@
   "personalSpaceDesc": "Personal space",
   "recentChatsCount": "chats",
   "searchLabel": "Search",
-  "modeSwear": "⚡ Swearing mode",
-  "swearMode": "Swearing mode",
-  "swearCardTitle": "Swearing mode",
-  "swearCardDesc": "Playful profanity is welcome. Abuse and slurs aren't.",
-  "swearBanner": "Swearing tone is on. Casual profanity is okay; harmful abuse is not.",
-  "swearPlaceholder": "Ask anything — natural swearing is okay",
+  "modeSwear": "⚡ Strong swearing mode",
+  "swearMode": "Strong swearing mode",
+  "swearCardTitle": "Strong swearing mode",
+  "swearCardDesc": "Bold, uncensored profanity and playful banter. No hate or threats.",
+  "swearBanner": "Strong swearing is ON — no censored curses or pointless apologies.",
+  "swearPlaceholder": "Say whatever the fuck you want…",
   "imageCreated": "Here is the image I created from your prompt.",
   "searchPlaceholder": "Search with Alenaz",
   "imagePlaceholder": "Describe the image you want"
 });
   Object.assign(STRINGS.hy,{
-    modeSwear:"⚡ Հայհոյանքի ռեժիմ",swearMode:"Հայհոյանքի ռեժիմ",
-    swearCardTitle:"Հայհոյանքի ռեժիմ",swearCardDesc:"Ազատ խոսիր՝ առանց վիրավորանքի կամ ատելության։",
-    swearBanner:"Հայհոյանքի ռեժիմը միացված է։ Կարելի է ազատ արտահայտվել՝ առանց վիրավորանքների։",
+    modeSwear:"⚡ Ուժեղ հայհոյանքներ",swearMode:"Ուժեղ հայհոյանքներ",
+    swearCardTitle:"Ուժեղ հայհոյանքներ",swearCardDesc:"Ազատ ու համարձակ խոսք, առանց ատելության կամ սպառնալիքների։",
+    swearBanner:"Ուժեղ հայհոյանքներն ակտիվ են՝ առանց անհարկի ներողությունների։",
     swearPlaceholder:"Հարցրու ինչ ուզում ես՝ ազատ ոճով",
     imageCreated:"Ահա քո նկարագրությամբ ստեղծված նկարը։",
     searchPlaceholder:"Որոնել Alenaz-ի օգնությամբ",imagePlaceholder:"Նկարագրիր ցանկալի նկարը"
   });
   Object.assign(STRINGS.ru,{
-    modeSwear:"⚡ Режим с матом",swearMode:"Режим с матом",
-    swearCardTitle:"Режим с матом",swearCardDesc:"Допустима разговорная ругань, но не травля и не угрозы.",
-    swearBanner:"Режим с матом включён. Ругаться можно, оскорблять и угрожать нельзя.",
+    modeSwear:"⚡ Жёсткий мат",swearMode:"Жёсткий мат",
+    swearCardTitle:"Жёсткий мат",swearCardDesc:"Свободная матерная речь без ненависти и угроз.",
+    swearBanner:"Жёсткий мат включён — без цензуры и лишних извинений.",
     swearPlaceholder:"Спроси что угодно — ругательства допустимы",
     imageCreated:"Вот изображение, которое я создал по твоему запросу.",
     searchPlaceholder:"Поиск с Alenaz",imagePlaceholder:"Опиши изображение, которое хочешь создать"
