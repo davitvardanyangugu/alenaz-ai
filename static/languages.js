@@ -166,7 +166,7 @@
     [".tool-art .tool-bottom strong","art"],[".tool-build .tool-bottom strong","build"],
     [".tool-talk .tool-bottom small","askDesc"],[".tool-research .tool-bottom small","researchDesc"],
     [".tool-art .tool-bottom small","artDesc"],[".tool-build .tool-bottom small","buildDesc"],
-    ["#heroStartLabel","start"],["#heroExploreLabel","explore"],
+    ["#heroStartLabel","start"],["#heroExploreLabel","explore"],["#searchToggle span","searchButton"],
     ["#languageModalClose","close"]
   ];
   function updateLanguageUI() {
@@ -192,7 +192,7 @@
     placeholders.forEach(([id,key])=>{const el=$(id);if(el) el.placeholder=ui(key);});
     [["sidebarSearch","webSearch"],["sidebarImage","images"],["openCommandFromSidebar","command"],
       ["promptLibraryNav","promptLibrary"],["savedChatsNav","savedChats"],["accountCenterNav","account"],
-      ["homeNav","home"],["searchToggle","searchButton"]].forEach(([id,key])=>{
+      ["homeNav","home"]].forEach(([id,key])=>{
         if(!$(id)?.querySelector("[id$='Label']"))replaceButtonText(id,key);
       });
     const mode = $("modeSelect");
