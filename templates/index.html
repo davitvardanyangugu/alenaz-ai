@@ -36,6 +36,7 @@
         <button class="sidebar-action nav-home" id="homeNav" type="button"><span class="nav-icon" aria-hidden="true">⌂</span><span id="homeNavLabel">Home</span><span class="nav-hint">↗</span></button>
         <button class="sidebar-action" id="sidebarSearch" type="button"><span class="nav-icon" aria-hidden="true">⌕</span><span id="sidebarSearchLabel">Web search</span></button>
         <button class="sidebar-action" id="sidebarImage" type="button"><span class="nav-icon" aria-hidden="true">◇</span><span id="sidebarImageLabel">Image generation</span></button>
+        <button class="sidebar-action" id="sidebarSwear" type="button" aria-pressed="false" title="Allow casual swearing in AI replies"><span class="nav-icon" aria-hidden="true">⚡</span><span id="sidebarSwearLabel" data-alenaz-i18n="swearMode">Swearing mode</span></button>
         <button class="sidebar-action" id="openCommandFromSidebar" type="button"><span class="nav-icon" aria-hidden="true">⌘</span><span id="commandNavLabel">Command center</span></button>
         <button class="sidebar-action" id="promptLibraryNav" type="button"><span class="nav-icon" aria-hidden="true">✦</span><span id="promptLibraryNavLabel">Prompt library</span></button>
         <button class="sidebar-action" id="savedChatsNav" type="button"><span class="nav-icon" aria-hidden="true">▣</span><span id="savedChatsNavLabel">Saved chats</span><span class="nav-count" id="savedNavCount">0</span></button>
@@ -132,6 +133,11 @@
                   <span class="tool-bottom"><strong>Build something</strong><small>From the first line to a finished project.</small></span>
                   <span class="tool-index">04 / CODE</span>
                 </button>
+                <button class="starter-card tool-swear" data-set-mode="swear" type="button">
+                  <span class="tool-top"><span class="tool-symbol" aria-hidden="true">⚡</span><span class="tool-arrow" aria-hidden="true">↗</span></span>
+                  <span class="tool-bottom"><strong data-alenaz-i18n="swearCardTitle">Swearing mode</strong><small data-alenaz-i18n="swearCardDesc">Allow a playful, unfiltered tone—not harmful abuse.</small></span>
+                  <span class="tool-index">05 / TONE</span>
+                </button>
               </div>
             </section>
 
@@ -201,7 +207,7 @@
             <div class="composer-bottom-left">
               <button class="composer-icon attach-action" id="attachButton" type="button" aria-label="Attach a file" title="Attach a file">＋</button>
               <input type="file" id="fileInput" hidden accept="image/*,.pdf,.txt,.md,.csv,.json,.doc,.docx,.ppt,.pptx">
-              <select id="modeSelect" aria-label="AI mode"><option value="auto">✳ Auto mode</option><option value="study">◎ Study mode</option><option value="creative">✿ Creative mode</option><option value="code">⌘ Code mode</option></select>
+              <select id="modeSelect" aria-label="AI mode"><option value="auto">✳ Auto mode</option><option value="study">◎ Study mode</option><option value="creative">✿ Creative mode</option><option value="code">⌘ Code mode</option><option value="swear">⚡ Swearing mode</option></select>
             </div>
             <div class="composer-actions"><span class="composer-hint">ENTER ↵</span><button class="composer-icon" id="voiceButton" type="button" title="Dictate using microphone" aria-label="Voice input">◉</button><button class="send-button" id="sendButton" type="button" aria-label="Send message">↑</button></div>
           </div>
@@ -306,7 +312,7 @@
     </section>
   </div>
 
-  <script src="{{ url_for('static', filename='app.js') }}?v=languages-v1"></script>
+  <script src="{{ url_for('static', filename='app.js') }}?v=tone-v1"></script>
   <script src="{{ url_for('static', filename='languages.js') }}?v=languages-v3"></script>
   <script src="{{ url_for('static', filename='studio.js') }}?v=studio-v4" defer></script>
   <script src="{{ url_for('static', filename='library.js') }}?v=library-v1" defer></script>
