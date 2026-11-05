@@ -20,6 +20,9 @@ except ImportError:
 load_dotenv()
 
 app = Flask(__name__)
+
+from video_studio import video_studio
+app.register_blueprint(video_studio)
 app.config["MAX_CONTENT_LENGTH"] = 12 * 1024 * 1024
 app.config["JSON_SORT_KEYS"] = False
 
