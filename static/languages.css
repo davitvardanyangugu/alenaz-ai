@@ -55,3 +55,9 @@
 /* All priority languages share exactly the same card appearance. */
 .language-option.priority-language{background:var(--surface);border-color:var(--stroke)}
 .language-option.priority-language.selected{border-color:var(--accent);background:#423165;box-shadow:none}
+
+/* Dashboard translation feedback is separate from chat errors. */
+.language-translation-status{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:8px auto 0;padding:9px 13px;max-width:850px;background:var(--surface);border:1px solid var(--stroke-strong);border-radius:10px;color:var(--muted);font-size:11px;line-height:1.5;text-align:center}
+.language-translation-status button{padding:6px 11px;border:1px solid var(--accent);border-radius:8px;background:var(--surface-2);color:var(--text);font-size:11px;cursor:pointer}
+.language-translation-status button:hover{background:var(--surface-3)}
+.language-translation-status.hidden,.language-translation-status .hidden{display:none!important}
