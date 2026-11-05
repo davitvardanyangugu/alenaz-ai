@@ -137,8 +137,33 @@
   "personalSpace": "My workspace",
   "personalSpaceDesc": "Personal space",
   "recentChatsCount": "chats",
-  "searchLabel": "Search"
+  "searchLabel": "Search",
+  "modeSwear": "⚡ Swearing mode",
+  "swearMode": "Swearing mode",
+  "swearCardTitle": "Swearing mode",
+  "swearCardDesc": "Playful profanity is welcome. Abuse and slurs aren't.",
+  "swearBanner": "Swearing tone is on. Casual profanity is okay; harmful abuse is not.",
+  "swearPlaceholder": "Ask anything — natural swearing is okay",
+  "imageCreated": "Here is the image I created from your prompt.",
+  "searchPlaceholder": "Search with Alenaz",
+  "imagePlaceholder": "Describe the image you want"
 });
+  Object.assign(STRINGS.hy,{
+    modeSwear:"⚡ Հայհոյանքի ռեժիմ",swearMode:"Հայհոյանքի ռեժիմ",
+    swearCardTitle:"Հայհոյանքի ռեժիմ",swearCardDesc:"Ազատ խոսիր՝ առանց վիրավորանքի կամ ատելության։",
+    swearBanner:"Հայհոյանքի ռեժիմը միացված է։ Կարելի է ազատ արտահայտվել՝ առանց վիրավորանքների։",
+    swearPlaceholder:"Հարցրու ինչ ուզում ես՝ ազատ ոճով",
+    imageCreated:"Ահա քո նկարագրությամբ ստեղծված նկարը։",
+    searchPlaceholder:"Որոնել Alenaz-ի օգնությամբ",imagePlaceholder:"Նկարագրիր ցանկալի նկարը"
+  });
+  Object.assign(STRINGS.ru,{
+    modeSwear:"⚡ Режим с матом",swearMode:"Режим с матом",
+    swearCardTitle:"Режим с матом",swearCardDesc:"Допустима разговорная ругань, но не травля и не угрозы.",
+    swearBanner:"Режим с матом включён. Ругаться можно, оскорблять и угрожать нельзя.",
+    swearPlaceholder:"Спроси что угодно — ругательства допустимы",
+    imageCreated:"Вот изображение, которое я создал по твоему запросу.",
+    searchPlaceholder:"Поиск с Alenaz",imagePlaceholder:"Опиши изображение, которое хочешь создать"
+  });
   const ui = (key) => (STRINGS[activeUi()] || STRINGS.en)[key] || STRINGS.en[key] || key;
   const activeUi = () => STRINGS[settings.language] ? settings.language : "en";
   function validCustom(name) {
@@ -198,7 +223,7 @@
     ["#languageTitle","languages"],["#languageSubtitle","languageSub"],["#languageVipTitle","vip"],["#languageAllTitle","allLanguages"],
     ["#languageCustomTitle","custom"],["#languageCustomButton","useCustom"],["#languageNote","languageNote"],
     ["#languageCurrentTitle","current"],["#languageCountLabel","allCount"],
-    ["#sidebarSearchLabel","webSearch"],["#sidebarImageLabel","images"],
+    ["#sidebarSearchLabel","webSearch"],["#sidebarImageLabel","images"],["#sidebarSwearLabel","swearMode"],
     ["#commandNavLabel","command"],["#promptLibraryNavLabel","promptLibrary"],
     ["#savedChatsNavLabel","savedChats"],["#accountCenterLabel","account"],
     ["#homeNavLabel","home"],["#sidebarHistoryTitle","recentChats"],
@@ -243,7 +268,7 @@
         if(!$(id)?.querySelector("[id$='Label']"))replaceButtonText(id,key);
       });
     const mode = $("modeSelect");
-    if(mode) [["auto","modeAuto"],["study","modeStudy"],["creative","modeCreative"],["code","modeCode"]]
+    if(mode) [["auto","modeAuto"],["study","modeStudy"],["creative","modeCreative"],["code","modeCode"],["swear","modeSwear"]]
       .forEach(([value,key])=>{const opt=mode.querySelector('option[value="'+value+'"]');if(opt)opt.textContent=ui(key);});
     const head = $("languageButtonLabel");
     if(head) head.textContent = code.startsWith("custom:") ? "🌐" : code.toUpperCase();
@@ -266,7 +291,7 @@
     const intro = $("langScreenDescription");
     if(intro) intro.textContent = ui("languageSub");
   }
-  const CACHE_PREFIX = "alenaz_dashboard_locale_v1_";
+  const CACHE_PREFIX = "alenaz_dashboard_locale_v2_";
   const I18N_EXCEPTIONS = new Set(["en","az","tr"]);
   let translationRequest = 0;
   let translationController = null;
@@ -286,14 +311,14 @@
     try {
       const raw = localStorage.getItem(CACHE_PREFIX + encodeURIComponent(language));
       const parsed = raw ? JSON.parse(raw) : null;
-      return parsed && parsed.version === 1 && parsed.translations && typeof parsed.translations === "object"
+      return parsed && parsed.version === 2 && parsed.translations && typeof parsed.translations === "object"
         ? parsed.translations : null;
     } catch (_) { return null; }
   }
   function saveTranslationCache(language,translations) {
     try {
       localStorage.setItem(CACHE_PREFIX + encodeURIComponent(language),
-        JSON.stringify({version:1,translations}));
+        JSON.stringify({version:2,translations}));
     } catch (_) { /* Browser storage is optional; the translation still works. */ }
   }
   function applyRemoteTranslations(language,values) {
