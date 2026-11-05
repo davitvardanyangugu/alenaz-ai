@@ -10,7 +10,7 @@
   "close": "Close",
   "selected": "Selected",
   "count": "standard language options",
-  "languageNote": "Priority determines display order only, not AI capabilities. All languages remain selectable. Armenian, Russian and English have translations for the main interface; other choices use the English interface with AI responses requested in the selected language. Quality and voice support may vary.",
+  "languageNote": "Priority only controls menu order; all languages remain selectable. The dashboard offers on-demand translations for prioritized languages and may fall back to English if a translation fails. AI fluency and voice support vary.",
   "current": "Current language",
   "newChat": "New conversation",
   "home": "Home",
