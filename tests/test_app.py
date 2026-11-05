@@ -202,6 +202,7 @@ class AlenazAPITests(unittest.TestCase):
                 "/api/chat_stream", json={"message": "Hello", "language": "hy", "mode": "study"}
             )
         self.assertEqual(response.status_code, 200)
+        self.assertIn("Ողջույն", response.get_data(as_text=True))
         instructions = fake.responses.create.call_args.kwargs["instructions"]
         self.assertIn("Eastern Armenian", instructions)
         self.assertIn("patient tutor", instructions)
