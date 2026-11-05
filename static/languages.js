@@ -29,7 +29,7 @@
       languages:"Languages", languageSub:"Choose the language Alenaz speaks with you.", vip:"PRIORITY LANGUAGES", allLanguages:"OTHER LANGUAGES",
       search:"Search languages by name or code…", custom:"Can't find it? Enter another language", customPlaceholder:"e.g. Western Armenian, Hmong, K'iche'",
       useCustom:"Choose language", close:"Close", selected:"Selected", count:"standard language options",
-      languageNote:"Priority determines display order only, not AI capabilities. All languages remain selectable. Armenian, Russian and English have translations for the main interface; other choices use the English interface with AI responses requested in the selected language. Quality and voice support may vary.",
+      languageNote:"Priority only controls menu order; all languages remain selectable. The dashboard offers on-demand translations for prioritized languages and may fall back to English if a translation fails. AI fluency and voice support vary.",
       current:"Current language", newChat:"New conversation", home:"Home", webSearch:"Web search", images:"Image generation",
       command:"Command center", promptLibrary:"Prompt library", savedChats:"Saved chats", account:"Account & sync",
       overview:"Overview", quickActions:"Quick actions", searchButton:"Search", recentChats:"RECENT CHATS",
@@ -54,7 +54,7 @@
       languages:"Լեզուներ", languageSub:"Ընտրիր, թե ինչ լեզվով խոսի քեզ հետ Alenaz-ը։",vip:"ԱՌԱՋՆԱՀԵՐԹ ԼԵԶՈՒՆԵՐ",allLanguages:"ԱՅԼ ԼԵԶՈՒՆԵՐ",
       search:"Որոնել լեզու՝ անունով կամ կոդով…",custom:"Չկա՞ ցանկում։ Մուտքագրիր այլ լեզու",customPlaceholder:"օրինակ՝ Արևմտահայերեն, Hmong",
       useCustom:"Ընտրել լեզուն",close:"Փակել",selected:"Ընտրված է",count:"ստանդարտ լեզու",
-      languageNote:"Առաջնահերթությունը վերաբերում է միայն ցանկում դասավորությանը, ոչ թե AI-ի հնարավորություններին։ Բոլոր լեզուները հասանելի են։ Հիմնական միջերեսը թարգմանված է հայերեն, ռուսերեն և անգլերեն, իսկ մյուս լեզուների դեպքում այն հիմնականում անգլերեն է։ Պատասխանների ու ձայնի որակը կարող է տարբերվել։",
+      languageNote:"Առաջնահերթությունը միայն փոխում է լեզուների դասավորությունը։ Բոլոր լեզուները հասանելի են։ Առաջնահերթ լեզուների համար գլխավոր էջը կարող է թարգմանվել, բայց սխալի դեպքում կմնա անգլերեն։ AI-ի պատասխանների և ձայնային հնարավորությունների որակը կարող է տարբերվել։",
       current:"Ընտրված լեզու",newChat:"Նոր զրույց",home:"Գլխավոր",webSearch:"Որոնում համացանցում",images:"Նկարների ստեղծում",
       command:"Հրամանների կենտրոն",promptLibrary:"Հուշումների գրադարան",savedChats:"Պահված զրույցներ",account:"Հաշիվ և համաժամեցում",
       overview:"Գլխավոր",quickActions:"Արագ գործողություններ",searchButton:"Որոնել",recentChats:"ՎԵՐՋԻՆ ԶՐՈՒՅՑՆԵՐ",
@@ -79,7 +79,7 @@
       languages:"Языки",languageSub:"Выбери язык, на котором Alenaz будет общаться с тобой.",vip:"ПРИОРИТЕТНЫЕ ЯЗЫКИ",allLanguages:"ДРУГИЕ ЯЗЫКИ",
       search:"Поиск языка по названию или коду…",custom:"Не нашёл язык? Введи его название",customPlaceholder:"Например: западноармянский, Hmong",
       useCustom:"Выбрать язык",close:"Закрыть",selected:"Выбрано",count:"стандартных языков",
-      languageNote:"Приоритет влияет только на порядок показа, а не на возможности ИИ. Все языки доступны. Основной интерфейс переведён на армянский, русский и английский; для других языков интерфейс остаётся в основном на английском, а ответы запрашиваются на выбранном языке. Качество и озвучивание могут различаться.",
+      languageNote:"Приоритет меняет только порядок языков, все языки доступны. Для приоритетных языков перевод панели выполняется по запросу; при сбое останется английский интерфейс. Качество ответов и озвучивания может отличаться.",
       current:"Текущий язык",newChat:"Новый чат",home:"Главная",webSearch:"Поиск в интернете",images:"Генерация изображений",
       command:"Командный центр",promptLibrary:"Библиотека запросов",savedChats:"Сохранённые чаты",account:"Аккаунт и синхронизация",
       overview:"Обзор",quickActions:"Быстрые действия",searchButton:"Поиск",recentChats:"НЕДАВНИЕ ЧАТЫ",
@@ -302,9 +302,8 @@
     if (!box || !message) return;
     box.classList.toggle("hidden", !kind);
     if (!kind) return;
-    message.textContent = kind === "loading"
-      ? "Translating your dashboard…"
-      : "Dashboard translation is unavailable right now. AI replies still use your chosen language.";
+    message.textContent = kind === "loading" ? ui("languagesLoading") : ui("languagesError");
+    if (retry) retry.textContent = ui("languagesRetry");
     if (retry) retry.classList.toggle("hidden",kind !== "error");
   }
   function readTranslationCache(language) {
