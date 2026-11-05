@@ -288,6 +288,26 @@ class AlenazAPITests(unittest.TestCase):
         self.assertEqual(limited.status_code, 429)
         self.assertEqual(limited.json["retry_after"], 45)
 
+    def test_swearing_mode_respects_real_model_instructions(self):
+        chunks = iter([SimpleNamespace(type="response.output_text.delta", delta="Damn, that works.")])
+        fake = self.fake_client(response=chunks)
+        with patch.object(server, "require_client", return_value=(fake, None)):
+            response = self.client.post("/api/chat_stream", json={
+                "message": "Speak casually and swear a bit.", "mode": "swear", "language": "en"
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Damn", response.get_data(as_text=True))
+        guidance = fake.responses.create.call_args.kwargs["instructions"]
+        self.assertIn("Swearing mode is on", guidance)
+        self.assertIn("Never use slurs", guidance)
+
+    def test_rare_language_names_are_not_opaque_codes(self):
+        self.assertEqual(len(server.ALL_LANGUAGE_NAMES), len(server.LANGUAGE_CODES))
+        for code, label in [("aa", "Afar"), ("ab", "Abkhazian"),
+                            ("dv", "Divehi"), ("wo", "Wolof"),
+                            ("zu", "Zulu")]:
+            self.assertIn(label, server.validate_language({"language": code}))
+
     def test_provider_failures_do_not_expose_exception_text(self):
         secret = "SECRET_TEST_DO_NOT_EXPOSE"
         fake = self.fake_client(error=RuntimeError(secret))
