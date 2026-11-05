@@ -49,7 +49,7 @@ User-selected language values are validated on the server before being included 
 
 ## Swearing mode
 
-Choose **⚡ Swearing mode** from the dashboard tool cards, sidebar, composer mode selector, or command center. Alenaz may use casual profanity in replies when it fits the conversation. Users can type swear words normally in any mode. This is a style choice, **not** permission for hate speech, threats, targeted harassment, or unsafe content. Select another AI mode or tap the sidebar toggle again to turn the swearing tone off.
+Choose **⚡ Swearing mode** from the dashboard tool cards, sidebar, composer mode selector, or command center. It now stays visibly enabled across messages and chat switches until you change the mode or press the **×** on the mode banner. Casual, informal replies are guided to use noticeably natural profanity even if you don't repeat the request in each message; serious or sensitive conversations may remain clean. Users can type swear words in any mode. This is a style choice, **not** permission for hate speech, threats, targeted harassment, or unsafe content. Select another AI mode or tap the sidebar toggle again to turn the swearing tone off.
 
 ## Dashboard translations
 
