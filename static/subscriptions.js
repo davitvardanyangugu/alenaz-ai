@@ -124,6 +124,6 @@
   });
   $("subExportReport")?.addEventListener("click", printReport);
   $("subOpenFolders")?.addEventListener("click", () => {close(); $("savedChatsNav")?.click();});
-  window.AlenazSubscriptions = {context, open};
+  window.AlenazSubscriptions = {context, open, plan: () => state.plan};
   render();
 })();
