@@ -268,6 +268,28 @@ function renderAssistantText(container, message) {
   else appendLinkedText(container, message.text || "");
 }
 
+
+function addListenControl(body, message) {
+  if (message.role !== "assistant" || !message.text || message.image) return;
+  const toolbar = document.createElement("div");
+  toolbar.className = "message-toolbar alenaz-listen-toolbar";
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "ai-listen-button";
+  button.textContent = "▶ Listen";
+  button.title = "Listen to this answer with an AI-generated voice";
+  button.setAttribute("aria-pressed", "false");
+  button.addEventListener("click", function () {
+    if (!window.AlenazVoice?.play) {
+      showNotice("AI voice is not available in this browser. Please refresh Alenaz.");
+      return;
+    }
+    window.AlenazVoice.play(message.text, button);
+  });
+  toolbar.appendChild(button);
+  body.appendChild(toolbar);
+}
+
 function createMessageElement(message) {
   const row = document.createElement("div");
   row.className = "message " + message.role;
@@ -331,6 +353,7 @@ function createMessageElement(message) {
     body.appendChild(sourceRow);
   }
 
+  addListenControl(body, message);
   row.appendChild(body);
   return row;
 }
@@ -417,6 +440,7 @@ function showReplyIfActive(conversation, message, live) {
   if (live && live.row.isConnected) {
     live.text.replaceChildren();
     renderAssistantText(live.text, message);
+    addListenControl(live.body, message);
   } else {
     $("messages").appendChild(createMessageElement(message));
   }
@@ -851,6 +875,10 @@ async function handleFile(file) {
 }
 
 function startVoice() {
+  if (window.AlenazVoice?.toggleRecording) {
+    window.AlenazVoice.toggleRecording();
+    return;
+  }
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   if (!SpeechRecognition) {
@@ -883,16 +911,13 @@ function startVoice() {
 }
 
 function speakIfEnabled(text) {
-  if (!settings.speak || !("speechSynthesis" in window) || !text) return;
-  window.speechSynthesis.cancel();
-  // Read natural speech without asking the voice engine to announce emoji names.
-  const spokenText = text.slice(0, 5000)
-    .replace(/\p{Extended_Pictographic}/gu, "")
-    .replace(/[\uFE0E\uFE0F]/g, "");
-  const utterance = new SpeechSynthesisUtterance(spokenText);
-  utterance.lang = window.AlenazLanguages?.speechLocale() || navigator.language || "en-US";
-  utterance.rate = window.AlenazPremiumLab?.voiceRate?.() || 1;
-  window.speechSynthesis.speak(utterance);
+  if (!settings.speak || !text) return;
+  if (window.AlenazVoice?.play) {
+    void window.AlenazVoice.play(text);
+    return;
+  }
+  // Never silently substitute a robotic system voice for the selected AI voice.
+  showNotice("Natural AI voice is still loading. Tap Listen to play this answer.");
 }
 
 function applySettings() {
