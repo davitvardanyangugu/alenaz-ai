@@ -25,7 +25,22 @@ Alenaz is a ChatGPT-style AI assistant prototype built with Flask and the OpenAI
 - Existing Armenian, Russian and English interface translations, plus on-demand translated dashboard labels for other prioritized languages
 - Language preference sent to AI chat and web search and used where supported for voice
 - Prototype chat/image limits
+- Automatic routing of clear image-generation and web-search requests (no tool click required)
+- Clickable safe public website links and verified web-search sources
+- Official Alenaz branding, browser tab icon and a truthful beta-status note
+- Free / Plus / Pro **local-only feature previews** (no real subscriptions, checkout or charges)
+- Plus preview: handwritten Memory+ notes, response personas, guided image prompts, browser voice-speed settings and printable PDF chat reports
+- Pro preview: up to five local assistant presets, guided source-based research prompts, structured coding starters and Plus features
+- Video Studio, advanced image editing, full multi-step Deep Research, cloud agents and higher paid usage limits are **not** active
 - Mobile-responsive UI
+
+## Public beta / advertising readiness
+
+The pricing cards in **Plans & premium** are **illustrative demos**. Anyone can preview their behavior locally; they do not provide a paid entitlement, higher model quotas, or payment processing. Do **not** advertise Plus or Pro as purchasable or promise advanced features that do not actually work. The feature lab only prepares editable prompts. The user must press **Send** to make a real API request, which continues to use the server's existing quotas and model configuration.
+
+**Currently testable:** chat, search with source links, image generation when configured, voice dictation/read-aloud (device dependent), folders, local memory notes, response personas, saved assistant presets, printable PDF chat reports, and guided image/research/code starters. These tools require a supported browser and a working configured AI provider for API-backed requests.
+
+**Before public paid advertising:** establish eligible merchant account ownership, implement verified accounts and secure server-side plan entitlements, install robust abuse/billing controls, assess provider costs, publish clear privacy/terms/cancellation information, and test across devices. Do not collect payment-card details directly in the app or promise video generation until a reliable supported provider is integrated.
 
 ## Prompt library, drafts and Markdown export
 
