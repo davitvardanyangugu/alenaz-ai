@@ -885,9 +885,13 @@ function startVoice() {
 function speakIfEnabled(text) {
   if (!settings.speak || !("speechSynthesis" in window) || !text) return;
   window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text.slice(0, 5000));
+  // Read natural speech without asking the voice engine to announce emoji names.
+  const spokenText = text.slice(0, 5000)
+    .replace(/\p{Extended_Pictographic}/gu, "")
+    .replace(/[\uFE0E\uFE0F]/g, "");
+  const utterance = new SpeechSynthesisUtterance(spokenText);
   utterance.lang = window.AlenazLanguages?.speechLocale() || navigator.language || "en-US";
-  utterance.rate = 1;
+  utterance.rate = window.AlenazPremiumLab?.voiceRate?.() || 1;
   window.speechSynthesis.speak(utterance);
 }
 
