@@ -26,6 +26,34 @@ function readable(input){
     .replace(/\[\d+\]/g,"")
     .replace(/[ \t]{2,}/g," ").trim().slice(0,1300);
 }
+// Keep completed clips in RAM so Listen can be replayed without additional AI charges.
+// Nothing is saved to disk or shared with another session. The cache is bounded.
+const VOICE_CACHE_MAX_ITEMS = 16;
+const VOICE_CACHE_MAX_BYTES = 10 * 1024 * 1024;
+const voiceCache = new Map();
+let voiceCacheBytes = 0;
+function cachedClip(key) {
+  const clip = voiceCache.get(key);
+  if (clip) {
+    voiceCache.delete(key);
+    voiceCache.set(key, clip); // Recently used first when evicting.
+  }
+  return clip || null;
+}
+function rememberClip(key, clip) {
+  if (!clip || !clip.size || clip.size > VOICE_CACHE_MAX_BYTES) return;
+  if (voiceCache.has(key)) {
+    voiceCacheBytes -= voiceCache.get(key).size;
+    voiceCache.delete(key);
+  }
+  while (voiceCache.size && (voiceCache.size >= VOICE_CACHE_MAX_ITEMS || voiceCacheBytes + clip.size > VOICE_CACHE_MAX_BYTES)) {
+    const oldest = voiceCache.keys().next().value;
+    voiceCacheBytes -= voiceCache.get(oldest).size;
+    voiceCache.delete(oldest);
+  }
+  voiceCache.set(key, clip);
+  voiceCacheBytes += clip.size;
+}
 let player=null,url=null,abort=null,activeButton=null;
 function stopSpeech(){
   if(abort){abort.abort();abort=null;}
@@ -40,24 +68,31 @@ async function play(input,button){
   if(!text){status("This message has no text to read.");return;}
   activeButton=button||null;
   if(button){button.textContent="■ Stop";button.setAttribute("aria-pressed","true");}
-  status("Generating a natural AI voice…");
+  const rate=window.AlenazPremiumLab?.voiceRate?.()||1;
+  const cacheKey=JSON.stringify([voice,rate,text]);
+  const fromCache=cachedClip(cacheKey);
+  status(fromCache?"Replaying an AI voice clip (no additional API use)…":"Generating a natural AI voice…");
   abort=new AbortController();
   const signal=abort.signal;
   try{
-    const rate=window.AlenazPremiumLab?.voiceRate?.()||1;
-    const resp=await fetch("/api/voice/speak",{
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({text,voice,speed:rate}),signal
-    });
-    if(!resp.ok){const info=await resp.json().catch(()=>({}));throw new Error(info.error||"AI voice unavailable.");}
-    const blob=await resp.blob();
+    let blob=fromCache;
+    if(!blob){
+      const resp=await fetch("/api/voice/speak",{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({text,voice,speed:rate}),signal
+      });
+      if(!resp.ok){const info=await resp.json().catch(()=>({}));throw new Error(info.error||"AI voice unavailable.");}
+      blob=await resp.blob();
+      if(signal.aborted)return;
+      rememberClip(cacheKey,blob);
+    }
     if(signal.aborted)return;
     url=URL.createObjectURL(blob);
     player=new Audio(url);
     player.onended=()=>{stopSpeech();status("");};
     player.onerror=()=>{stopSpeech();status("Could not play AI audio.");};
     await player.play();
-    status("Playing AI-generated voice.");
+    status(fromCache?"Playing saved AI voice — unlimited replays in this tab.":"Playing newly generated AI voice.");
   }catch(err){
     if(!signal.aborted){
       stopSpeech();
