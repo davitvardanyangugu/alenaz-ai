@@ -591,7 +591,7 @@ def add_security_headers(response):
         "script-src 'self'; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com; "
-        "img-src 'self' data: blob: https:; connect-src 'self'"
+        "img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self'"
     )
     if request.path.startswith("/api/"):
         response.headers["Cache-Control"] = "no-store"
