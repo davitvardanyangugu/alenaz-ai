@@ -230,6 +230,44 @@ function safeExternalUrl(raw) {
   }
 }
 
+// Render only safe HTTP(S) anchors, never raw model HTML.
+function appendLinkedText(container, value) {
+  const pattern = /\[([^\]\n]{1,160})\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<>"']+|www\.[^\s<>"']+)/gi;
+  let position = 0;
+  let match;
+  while ((match = pattern.exec(value)) !== null) {
+    if (match.index > position) container.appendChild(document.createTextNode(value.slice(position, match.index)));
+    const markdown = !!match[1];
+    let rawUrl = markdown ? match[2] : match[3];
+    let suffix = "";
+    if (!markdown) {
+      const trimmed = rawUrl.replace(/[.,;:!?]+$/g, "");
+      suffix = rawUrl.slice(trimmed.length);
+      rawUrl = trimmed;
+    }
+    const href = safeExternalUrl(rawUrl.startsWith("www.") ? "https://" + rawUrl : rawUrl);
+    if (href) {
+      const a = document.createElement("a");
+      a.className = "answer-link";
+      a.href = href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = markdown ? match[1] : rawUrl;
+      a.title = "Open link";
+      container.appendChild(a);
+    } else {
+      container.appendChild(document.createTextNode(match[0].slice(0, match[0].length - suffix.length)));
+    }
+    if (suffix) container.appendChild(document.createTextNode(suffix));
+    position = pattern.lastIndex;
+  }
+  if (position < value.length) container.appendChild(document.createTextNode(value.slice(position)));
+}
+function renderAssistantText(container, message) {
+  if (Array.isArray(message.sources) && message.sources.length) renderCitedText(container, message.text || "", message.sources);
+  else appendLinkedText(container, message.text || "");
+}
+
 function createMessageElement(message) {
   const row = document.createElement("div");
   row.className = "message " + message.role;
@@ -248,11 +286,8 @@ function createMessageElement(message) {
     const text = document.createElement("div");
     text.className = "message-text";
 
-    if (message.role === "assistant" && Array.isArray(message.sources) && message.sources.length) {
-      renderCitedText(text, message.text, message.sources);
-    } else {
-      text.textContent = message.text;
-    }
+    if (message.role === "assistant") renderAssistantText(text, message);
+    else text.textContent = message.text;
 
     body.appendChild(text);
   }
@@ -311,7 +346,7 @@ function renderCitedText(container, text, sources) {
     });
 
   if (!usable.length) {
-    container.textContent = text;
+    appendLinkedText(container, text);
     return;
   }
 
@@ -319,7 +354,7 @@ function renderCitedText(container, text, sources) {
   usable.forEach(function (source, index) {
     const end = Math.max(cursor, Math.min(text.length, source.end_index));
     if (end > cursor) {
-      container.appendChild(document.createTextNode(text.slice(cursor, end)));
+      appendLinkedText(container, text.slice(cursor, end));
     }
 
     const citation = document.createElement("a");
@@ -335,7 +370,7 @@ function renderCitedText(container, text, sources) {
   });
 
   if (cursor < text.length) {
-    container.appendChild(document.createTextNode(text.slice(cursor)));
+    appendLinkedText(container, text.slice(cursor));
   }
 }
 
@@ -380,7 +415,8 @@ function scrollConversation() {
 function showReplyIfActive(conversation, message, live) {
   if (currentId !== conversation.id) return;
   if (live && live.row.isConnected) {
-    live.text.textContent = message.text;
+    live.text.replaceChildren();
+    renderAssistantText(live.text, message);
   } else {
     $("messages").appendChild(createMessageElement(message));
   }
