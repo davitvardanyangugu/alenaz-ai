@@ -1,5 +1,6 @@
 import base64
 import binascii
+import io
 import json
 import os
 import re
@@ -56,6 +57,15 @@ TRANSLATION_MODEL = os.getenv("ALENAZ_TRANSLATION_MODEL", "gpt-4.1-mini")
 IMAGE_MODEL = os.getenv("ALENAZ_IMAGE_MODEL", "gpt-image-2.5-sunburst")
 CHAT_LIMIT = int(os.getenv("ALENAZ_HOURLY_LIMIT", "30"))
 IMAGE_DAILY_LIMIT = int(os.getenv("ALENAZ_IMAGE_DAILY_LIMIT", "3"))
+# Limited beta only. TTS Speech API models sunset 2027-01-06; migrate to Realtime before then.
+TTS_MODEL = os.getenv("ALENAZ_TTS_MODEL", "gpt-4o-mini-tts")
+STT_MODEL = os.getenv("ALENAZ_STT_MODEL", "gpt-transcribe")
+TTS_HOURLY_LIMIT = int(os.getenv("ALENAZ_TTS_HOURLY_LIMIT", "6"))
+STT_HOURLY_LIMIT = int(os.getenv("ALENAZ_STT_HOURLY_LIMIT", "6"))
+VOICE_OPTIONS = frozenset({"marin", "cedar", "coral", "alloy", "sage", "nova"})
+MAX_AUDIO_UPLOAD_BYTES = 2 * 1024 * 1024
+MAX_SPOKEN_CHARS = 1300
+
 
 KEYRING_SERVICE = "Alenaz AI"
 KEYRING_ACCOUNT = "OPENAI_API_KEY"
@@ -190,7 +200,7 @@ MODE_PROMPTS = {
     ),
 }
 
-usage = defaultdict(lambda: {"chat": deque(), "image": deque(), "translation": deque()})
+usage = defaultdict(lambda: {"chat": deque(), "image": deque(), "translation": deque(), "tts": deque(), "stt": deque()})
 UI_TRANSLATION_SOURCE = json.loads((Path(__file__).resolve().parent / "ui_translation_source.json").read_text(encoding="utf-8"))
 ALL_LANGUAGE_NAMES = json.loads((Path(__file__).resolve().parent / "language_names.json").read_text(encoding="utf-8"))
 UI_TRANSLATION_CACHE = {}
@@ -552,7 +562,8 @@ def extract_citations(response):
 @app.before_request
 def reject_cross_origin_api_posts():
     if request.method != "POST" or request.path not in {
-        "/api/chat_stream", "/api/search", "/api/image", "/api/ui_translations"
+        "/api/chat_stream", "/api/search", "/api/image", "/api/ui_translations",
+        "/api/voice/speak", "/api/voice/transcribe"
     }:
         return None
     if request.headers.get("Sec-Fetch-Site") == "cross-site":
@@ -606,6 +617,10 @@ def health():
         "image_model": IMAGE_MODEL,
         "hourly_limit": CHAT_LIMIT,
         "image_daily_limit": IMAGE_DAILY_LIMIT,
+        "voice_speech_model": TTS_MODEL,
+        "voice_transcription_model": STT_MODEL,
+        "voice_speaks_per_hour": TTS_HOURLY_LIMIT,
+        "voice_transcriptions_per_hour": STT_HOURLY_LIMIT,
     })
 
 
@@ -811,6 +826,90 @@ def image():
     except Exception as exc:
         app.logger.warning("Image service failed (%s)", type(exc).__name__)
         return jsonify({"error": "Image generation is temporarily unavailable. Please retry."}), 502
+
+# Beta voice endpoints. These are short recordings, not an unlimited live-call API.
+@app.post("/api/voice/transcribe")
+def voice_transcribe():
+    audio = request.files.get("audio")
+    if audio is None:
+        return jsonify({"error": "Record a short voice message first."}), 400
+    mime = (audio.mimetype or "").lower().split(";")[0]
+    suffixes = {
+        "audio/webm": "webm",
+        "audio/mp4": "m4a",
+        "audio/x-m4a": "m4a",
+        "audio/ogg": "ogg",
+        "audio/wav": "wav",
+        "audio/x-wav": "wav",
+        "audio/mpeg": "mp3",
+    }
+    if mime not in suffixes:
+        return jsonify({"error": "Unsupported recording format. Try WebM, MP4, or WAV."}), 400
+    data = audio.read(MAX_AUDIO_UPLOAD_BYTES + 1)
+    if not data or len(data) > MAX_AUDIO_UPLOAD_BYTES:
+        return jsonify({"error": "Audio must be under 2 MB. Record for at most 20 seconds."}), 400
+    client, missing = require_client()
+    if missing:
+        return missing
+    allowed, retry = take_quota("stt", STT_HOURLY_LIMIT, 3600)
+    if not allowed:
+        return jsonify({"error": "Hourly voice transcription limit reached.", "retry_after": retry}), 429
+    try:
+        file = (f"alenaz-recording.{suffixes[mime]}", io.BytesIO(data), mime)
+        result = client.audio.transcriptions.create(model=STT_MODEL, file=file)
+        transcript = (getattr(result, "text", "") or "").strip()
+        if not transcript:
+            return jsonify({"error": "I couldn't hear clear speech. Try again."}), 422
+        return jsonify({"text": transcript[:MAX_MESSAGE_CHARS]})
+    except Exception as exc:
+        app.logger.warning("Voice transcription failed (%s)", type(exc).__name__)
+        return jsonify({"error": "Voice transcription is temporarily unavailable."}), 502
+
+
+@app.post("/api/voice/speak")
+def voice_speak():
+    try:
+        payload = parse_json_payload()
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    text = payload.get("text")
+    voice = payload.get("voice", "marin")
+    speed = payload.get("speed", 1.0)
+    if not isinstance(text, str) or not text.strip() or len(text) > MAX_SPOKEN_CHARS:
+        return jsonify({"error": "Voice playback supports 1 to 1,300 characters per request."}), 400
+    if voice not in VOICE_OPTIONS:
+        return jsonify({"error": "Invalid voice. Choose one of the available voices."}), 400
+    if isinstance(speed, bool) or not isinstance(speed, (int, float)) or not 0.75 <= speed <= 1.35:
+        return jsonify({"error": "Voice speed must be between 0.75 and 1.35."}), 400
+    client, missing = require_client()
+    if missing:
+        return missing
+    allowed, retry = take_quota("tts", TTS_HOURLY_LIMIT, 3600)
+    if not allowed:
+        return jsonify({"error": "Hourly AI voice playback limit reached.", "retry_after": retry}), 429
+    try:
+        speech = client.audio.speech.create(
+            model=TTS_MODEL,
+            voice=voice,
+            input=text.strip(),
+            instructions=(
+                "Speak in a warm, natural conversational voice, at a comfortable pace. "
+                "Use the language of the input text and pronounce it naturally when supported. "
+                "Do not announce emojis, formatting marks, or citations. "
+                "Speak only the provided text."
+            ),
+            speed=float(speed),
+            response_format="mp3",
+        )
+        audio_bytes = speech.read()
+        if not audio_bytes or len(audio_bytes) > 4 * 1024 * 1024:
+            return jsonify({"error": "Voice audio was too large or unavailable."}), 502
+        return Response(audio_bytes, content_type="audio/mpeg",
+                        headers={"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"})
+    except Exception as exc:
+        app.logger.warning("Voice generation failed (%s)", type(exc).__name__)
+        return jsonify({"error": "AI voice is temporarily unavailable. Check provider access."}), 502
+
 
 
 if __name__ == "__main__":
