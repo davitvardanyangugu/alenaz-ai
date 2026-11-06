@@ -490,6 +490,9 @@ async function sendMessage() {
     language: settings.language || "en",
     attachment: attachmentForRequest
   };
+  // Optional browser-local demo preferences. No plan or payment claims are sent.
+  const previewContext = window.AlenazSubscriptions?.context?.();
+  if (previewContext) payload.personalization = previewContext;
 
   try {
     if (toolForRequest === "search") {

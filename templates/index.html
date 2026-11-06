@@ -13,6 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=brand-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='library.css') }}?v=library-v1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='subscriptions.css') }}?v=subscriptions-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='features.css') }}?v=features-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='languages.css') }}?v=languages-v3">
 </head>
@@ -41,6 +42,7 @@
         <button class="sidebar-action" id="openCommandFromSidebar" type="button"><span class="nav-icon" aria-hidden="true">⌘</span><span id="commandNavLabel">Command center</span></button>
         <button class="sidebar-action" id="promptLibraryNav" type="button"><span class="nav-icon" aria-hidden="true">✦</span><span id="promptLibraryNavLabel">Prompt library</span></button>
         <button class="sidebar-action" id="savedChatsNav" type="button"><span class="nav-icon" aria-hidden="true">▣</span><span id="savedChatsNavLabel">Saved chats</span><span class="nav-count" id="savedNavCount">0</span></button>
+        <button class="sidebar-action" id="subscriptionNav" type="button"><span class="nav-icon" aria-hidden="true">✧</span><span>Plans &amp; premium</span><span class="nav-count">DEMO</span></button>
         <button class="sidebar-action" id="accountCenterNav" type="button"><span class="nav-icon" aria-hidden="true">♙</span><span id="accountCenterLabel">Account &amp; sync</span></button>
       </nav>
 
@@ -287,6 +289,88 @@
     </section>
   </div>
 
+
+  <!-- No billing endpoints or checkout are exposed in this subscription prototype. -->
+  <div class="sub-overlay hidden" id="subscriptionOverlay">
+    <section class="sub-dialog" role="dialog" aria-modal="true" aria-labelledby="subscriptionTitle">
+      <header class="sub-head">
+        <div>
+          <p class="sub-eyebrow">ALENAZ · SUBSCRIPTION STUDIO</p>
+          <h2 id="subscriptionTitle">Find your superpower<span>.</span></h2>
+          <p class="sub-subtitle">Explore Free, Plus and Pro before real subscriptions launch.</p>
+        </div>
+        <button class="icon-button" id="subscriptionClose" type="button" aria-label="Close subscription plans">×</button>
+      </header>
+      <p class="sub-safety" role="note"><strong>Demo only — no charges.</strong> These are proposed prices. Switching plans here is a local preview, not a purchase or verified subscription. Server usage limits stay the same for everyone.</p>
+      <div class="sub-grid" role="group" aria-label="Preview a plan">
+        <article class="sub-plan" data-preview-card="free">
+          <p class="sub-plan-kicker">START HERE</p><h3>Free</h3><p class="sub-price">$0 <small>/ month</small></p>
+          <p>Chat, web search, saved chats, basic images and the existing folders.</p>
+          <button type="button" data-preview-plan="free">Preview Free</button>
+        </article>
+        <article class="sub-plan sub-plus" data-preview-card="plus">
+          <p class="sub-plan-kicker">PERSONALIZE</p><h3>Plus ✦</h3><p class="sub-price">$4.99 <small>/ month*</small></p>
+          <p>Everything in Free, plus Memory+ notes, AI personalities and report export preview.</p>
+          <button type="button" data-preview-plan="plus">Preview Plus</button>
+        </article>
+        <article class="sub-plan sub-pro" data-preview-card="pro">
+          <p class="sub-plan-kicker">CREATE MORE</p><h3>Pro ♛</h3><p class="sub-price">$9.99 <small>/ month*</small></p>
+          <p>Everything in Plus, plus a reusable assistant preset and planned creator tools.</p>
+          <button type="button" data-preview-plan="pro">Preview Pro</button>
+        </article>
+      </div>
+      <p class="sub-note">*Illustrative prices; no payment method is connected and no subscription is activated.</p>
+      <section class="sub-workspace" aria-labelledby="subWorkspaceTitle">
+        <div class="sub-workspace-head">
+          <div><h3 id="subWorkspaceTitle">Personal AI workspace</h3><p id="subActiveDescription">Preview Plus or Pro to try browser-only personalization.</p></div>
+          <span class="sub-status" id="subCurrentPlan">FREE PREVIEW</span>
+        </div>
+        <div class="sub-controls">
+          <label class="sub-field" for="subPersona"><span>Custom AI personality <small>Plus &amp; Pro preview</small></span>
+            <select id="subPersona">
+              <option value="balanced">Balanced (default)</option>
+              <option value="friendly">Friendly companion</option>
+              <option value="teacher">Patient tutor</option>
+              <option value="concise">Concise and focused</option>
+              <option value="creative">Creative collaborator</option>
+              <option value="developer">Coding partner</option>
+            </select>
+          </label>
+          <label class="sub-field" for="subMemory"><span>Memory+ notes <small>Plus &amp; Pro preview · written by you</small></span>
+            <textarea id="subMemory" rows="4" maxlength="1000" placeholder="Optional: your preferences, goals or project details. Alenaz uses these notes when you send a chat message."></textarea>
+          </label>
+          <div class="sub-agent" id="subAgentGroup">
+            <h4>Your reusable assistant preset <small>Pro preview</small></h4>
+            <label class="sub-field" for="subAgentName"><span>Assistant name</span>
+              <input id="subAgentName" maxlength="60" placeholder="Example: My coding coach" autocomplete="off">
+            </label>
+            <label class="sub-field" for="subAgentInstructions"><span>What should this assistant help with?</span>
+              <textarea id="subAgentInstructions" rows="3" maxlength="700" placeholder="Example: Help me review Python code step by step and write tests."></textarea>
+            </label>
+            <label class="sub-inline-check"><input type="checkbox" id="subAgentEnabled"> Use this assistant preset in chats</label>
+          </div>
+          <div class="sub-buttons">
+            <button type="button" class="sub-primary" id="subSave">Save local preferences</button>
+            <button type="button" class="sub-secondary" id="subClearMemory">Clear memory notes</button>
+            <button type="button" class="sub-secondary" id="subExportReport">Export current chat to PDF</button>
+            <button type="button" class="sub-secondary" id="subOpenFolders">Open saved folders</button>
+          </div>
+          <p class="sub-feedback" id="subFeedback" role="status" aria-live="polite"></p>
+          <p class="sub-privacy">These preferences remain in this browser. When enabled, their text is included with chat or web-search requests and processed by Alenaz's AI provider. Avoid storing sensitive information here. This demo does not provide automatic long-term memory, cloud sync, or real paid entitlement checks. PDF export uses your browser's Print / Save as PDF feature.</p>
+        </div>
+      </section>
+      <section class="sub-roadmap" aria-label="Premium feature roadmap">
+        <h3>Premium roadmap</h3>
+        <div class="sub-roadmap-grid">
+          <p><strong>Already in Alenaz:</strong> Basic voice dictation/read-aloud, local folders, chat and Markdown export.</p>
+          <p><strong>Prototype available:</strong> Memory+ notes, AI personalities, one Pro assistant preset, print-to-PDF reports.</p>
+          <p><strong>Planned:</strong> Image Studio+ editing, premium voice choices, Word DOCX export, full agent management.</p>
+          <p><strong>Advanced research &amp; creation:</strong> Deep Research, multi-file Coding Workspace and AI Video Studio require further engineering and providers.</p>
+        </div>
+      </section>
+    </section>
+  </div>
+
   <div class="language-overlay hidden" id="languageModal" role="dialog" aria-modal="true" aria-labelledby="languageTitle">
     <section class="language-dialog">
       <header class="language-dialog-head">
@@ -318,5 +402,6 @@
   <script src="{{ url_for('static', filename='studio.js') }}?v=studio-v4" defer></script>
   <script src="{{ url_for('static', filename='library.js') }}?v=library-v1" defer></script>
   <script src="{{ url_for('static', filename='features.js') }}?v=features-v1" defer></script>
+  <script src="{{ url_for('static', filename='subscriptions.js') }}?v=subscriptions-v1" defer></script>
 </body>
 </html>
