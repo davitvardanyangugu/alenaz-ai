@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=auto-tools-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='library.css') }}?v=library-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='subscriptions.css') }}?v=subscriptions-v1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='premium-lab.css') }}?v=beta-1">
   <link rel="stylesheet" href="{{ url_for('static', filename='features.css') }}?v=features-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='languages.css') }}?v=languages-v3">
 </head>
@@ -103,12 +104,13 @@
                   <button class="hero-start" id="heroStart" type="button"><span id="heroStartLabel">Start creating</span> <span aria-hidden="true">↗</span></button>
                   <button class="hero-explore" id="heroExplore" type="button"><span id="heroExploreLabel">Explore ideas</span> <span aria-hidden="true">↓</span></button>
                 </div>
-                <div class="hero-meta"><span class="hero-meta-circle">✳</span><span data-alenaz-i18n="heroMeta">YOUR IDEAS, WITHOUT LIMITS</span></div>
+                <div class="hero-meta"><span class="hero-meta-circle">✳</span><span data-alenaz-i18n="heroMeta">YOUR IDEAS, YOUR WORKSPACE</span></div>
+                <div class="launch-note"><span class="launch-dot" aria-hidden="true"></span><span>Public beta · Existing usage limits apply · Paid plans are previews only</span><button id="heroPremium" type="button">Explore plans →</button></div>
               </div>
 
               <aside class="hero-display" aria-label="Workspace activity">
                 <div class="display-top"><span data-alenaz-i18n="displayTop">YOUR CREATIVE SPACE</span><span class="display-top-symbol">✦ ✦</span></div>
-                <div class="display-orbit" aria-hidden="true"><div class="orbit-outline orbit-large"></div><div class="orbit-outline orbit-medium"></div><div class="orbit-outline orbit-small"></div><div class="orbit-center">a<span>.</span></div><div class="orbit-satellite sat-one">✳</div><div class="orbit-satellite sat-two">✺</div></div>
+                <div class="display-orbit" aria-hidden="true"><div class="orbit-outline orbit-large"></div><div class="orbit-outline orbit-medium"></div><div class="orbit-outline orbit-small"></div><div class="orbit-center"><img class="hero-alenaz-symbol" src="{{ url_for('static', filename='alenaz-logo.webp') }}?v=brand-1" alt=""></div><div class="orbit-satellite sat-one">✳</div><div class="orbit-satellite sat-two">✺</div></div>
                 <div class="display-bottom"><div><span class="display-tiny" data-alenaz-i18n="chatsCount">CHATS IN THIS BROWSER</span><strong id="dashboardChatsCount">0</strong></div><div><span class="display-tiny" data-alenaz-i18n="messagesCount">MESSAGES SENT</span><strong id="dashboardMessagesCount">0</strong></div><div class="display-indicator" aria-hidden="true">↗</div></div>
               </aside>
             </section>
@@ -310,12 +312,12 @@
         </article>
         <article class="sub-plan sub-plus" data-preview-card="plus">
           <p class="sub-plan-kicker">PERSONALIZE</p><h3>Plus ✦</h3><p class="sub-price">$4.99 <small>/ month*</small></p>
-          <p>Everything in Free, plus Memory+ notes, AI personalities and report export preview.</p>
+          <p>Everything in Free, plus Memory+ notes, AI personalities, guided image prompts, voice speed controls and PDF report previews.</p>
           <button type="button" data-preview-plan="plus">Preview Plus</button>
         </article>
         <article class="sub-plan sub-pro" data-preview-card="pro">
           <p class="sub-plan-kicker">CREATE MORE</p><h3>Pro ♛</h3><p class="sub-price">$9.99 <small>/ month*</small></p>
-          <p>Everything in Plus, plus a reusable assistant preset and planned creator tools.</p>
+          <p>Everything in Plus, plus up to 5 saved assistant presets and guided research and coding starters. Video remains planned.</p>
           <button type="button" data-preview-plan="pro">Preview Pro</button>
         </article>
       </div>
@@ -363,8 +365,8 @@
         <h3>Premium roadmap</h3>
         <div class="sub-roadmap-grid">
           <p><strong>Already in Alenaz:</strong> Basic voice dictation/read-aloud, local folders, chat and Markdown export.</p>
-          <p><strong>Prototype available:</strong> Memory+ notes, AI personalities, one Pro assistant preset, print-to-PDF reports.</p>
-          <p><strong>Planned:</strong> Image Studio+ editing, premium voice choices, Word DOCX export, full agent management.</p>
+          <p><strong>Prototype available:</strong> Memory+ notes, personalities, five saved Pro assistant presets, guided image/search/coding prompts, voice speed and print-to-PDF reports.</p>
+          <p><strong>Planned:</strong> Image editing, provider-powered voice choices, real Word DOCX exports, secure accounts and cloud agents.</p>
           <p><strong>Advanced research &amp; creation:</strong> Deep Research, multi-file Coding Workspace and AI Video Studio require further engineering and providers.</p>
         </div>
       </section>
@@ -397,11 +399,12 @@
     </section>
   </div>
 
-  <script src="{{ url_for('static', filename='app.js') }}?v=auto-tools-v1"></script>
+  <script src="{{ url_for('static', filename='app.js') }}?v=beta-voice-v1"></script>
   <script src="{{ url_for('static', filename='languages.js') }}?v=languages-v4"></script>
   <script src="{{ url_for('static', filename='studio.js') }}?v=studio-v4" defer></script>
   <script src="{{ url_for('static', filename='library.js') }}?v=library-v1" defer></script>
   <script src="{{ url_for('static', filename='features.js') }}?v=features-v1" defer></script>
-  <script src="{{ url_for('static', filename='subscriptions.js') }}?v=subscriptions-v1" defer></script>
+  <script src="{{ url_for('static', filename='subscriptions.js') }}?v=subscriptions-v2" defer></script>
+  <script src="{{ url_for('static', filename='premium-lab.js') }}?v=beta-1" defer></script>
 </body>
 </html>
