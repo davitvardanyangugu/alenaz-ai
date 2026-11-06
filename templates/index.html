@@ -7,10 +7,11 @@
   <meta name="description" content="Alenaz is your personal AI workspace for chat, research, images, coding and organized saved conversations.">
   <meta name="color-scheme" content="dark light">
   <title>Alenaz — Your creative AI workspace</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='alenaz-favicon.png') }}?v=brand-1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=quality-v1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=brand-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='library.css') }}?v=library-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='features.css') }}?v=features-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='languages.css') }}?v=languages-v3">
@@ -22,7 +23,7 @@
       <div class="sidebar-top">
         <div class="brand-row">
           <button class="brand" id="brandButton" aria-label="Alenaz home">
-            <span class="brand-mark" aria-hidden="true">a<span>.</span></span>
+            <span class="brand-mark" aria-hidden="true"><img src="{{ url_for('static', filename='alenaz-logo.webp') }}?v=brand-1" alt=""></span>
             <span class="brand-word">alenaz<span class="brand-trademark">®</span></span>
           </button>
           <button class="icon-button mobile-only" id="closeSidebar" aria-label="Close sidebar">×</button>
@@ -71,7 +72,7 @@
           <span class="topbar-current" id="viewTitle">Overview</span>
         </div>
         <div class="topbar-actions">
-          <button class="command-trigger" id="commandButton" type="button" aria-label="Open command center"><span>⌕</span> <span data-alenaz-i18n="quickActionsLabel">Quick actions</span> <kbd>⌘ K</kbd></button>
+          <button class="command-trigger" id="commandButton" type="button" aria-label="Open command center"><img class="search-brand-icon" src="{{ url_for('static', filename='alenaz-logo.webp') }}?v=brand-1" alt="" aria-hidden="true"> <span data-alenaz-i18n="quickActionsLabel">Quick actions</span> <kbd>⌘ K</kbd></button>
           <button class="topbar-button" id="searchToggle" type="button" aria-pressed="false">⌕ <span>Search</span></button>
           <button class="language-switcher" id="languageButton" type="button" title="Languages" aria-label="Languages">🌐 <span id="languageButtonLabel">EN</span></button>
           <button class="icon-button theme-switch" id="themeButton" type="button" aria-label="Toggle light and dark theme">☼</button>
@@ -250,7 +251,7 @@
   <div class="account-backdrop hidden" id="accountBackdrop">
     <div class="account-dialog" role="dialog" aria-modal="true" aria-labelledby="accountHeading">
       <div class="account-dialog-top"><span>ALENAZ · YOUR SPACE</span><button type="button" class="icon-button" id="accountClose" aria-label="Close account center">×</button></div>
-      <div class="account-icon">a<span>.</span></div>
+      <div class="account-icon"><img src="{{ url_for('static', filename='alenaz-logo.webp') }}?v=brand-1" alt="Alenaz"></div>
       <h2 id="accountHeading">Make it yours<span>.</span></h2>
       <p class="account-intro">Create a personal profile for this browser. A real online account and device-to-device sync require secure sign-in and a database.</p>
       <div class="account-state"><span class="account-state-dot"></span><div><strong>Local mode</strong><small>Not signed in · Chats stay on this device</small></div></div>

@@ -358,3 +358,9 @@ body.compact .message{margin:13px 0}body.compact .messages{max-width:950px}body.
 .tool-swear{--tone:#ef99d3}
 @media(min-width:1050px){.starter-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media(min-width:821px) and (max-width:1049px){.starter-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Alenaz official gradient-A branding */
+.brand-mark, body.light .brand-mark{background:transparent;color:inherit;transform:none;letter-spacing:normal;overflow:hidden;border-radius:11px}
+.brand-mark img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.command-trigger .search-brand-icon{display:block;width:23px;height:23px;flex:0 0 23px;border-radius:6px;object-fit:cover}
+.account-icon img{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}
