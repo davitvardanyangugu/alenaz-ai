@@ -425,6 +425,24 @@ function setTool(tool) {
   $("promptInput").focus();
 }
 
+// Automatically run clear image and web-search requests; explicit tool buttons override this.
+function detectRequestedTool(raw) {
+  if (typeof raw !== "string") return null;
+  const t = raw.trim().normalize("NFKC").toLowerCase();
+  if (!t || t.length > 2500) return null;
+  if (/\b(search(?:\s+(?:the\s+)?(?:web|internet))?(?:\s+for)?|browse(?:\s+(?:the\s+)?(?:web|internet))?|google|look\s+up|find\s+(?:me\s+)?(?:a\s+)?(?:website|article|link|source))\b/.test(t) &&
+      !/\b(how\s+to|how\s+do\s+i|teach\s+me\s+to)\s+(search|browse|google)\b/.test(t)) return "search";
+  if (/\b(latest|breaking)\s+(news|updates|headlines|reports)\b|\b(what's happening|what is happening|news about)\b|\b(current|live)\s+(weather|score|price|news)\b|\b(official website|source links|sources for)\b/.test(t)) return "search";
+  if (/\b(show|find|get)\s+(me\s+)?(pictures|photos|images)\s+(of|from|online)\b/.test(t)) return "search";
+  if (/(поиск в интернете|найди сайт|найди в интернете|որոնիր ինտերնետում|փնտրիր համացանցում|buscar en internet|recherche sur internet|suche im internet)/.test(t)) return "search";
+  if (/\b(how to|how do i|how can i|teach me to|tutorial for|tutorial on|why does|what is)\b.{0,75}\b(create|generate|draw|make|paint|design|render)\b/.test(t)) return null;
+  if (/\b(don't|do not|without)\s+(create|generate|draw|make|paint|render)\b/.test(t)) return null;
+  if (/\b(generate|create|draw|paint|render|illustrate|sketch|design|make)\b.{0,90}\b(image|picture|photo|illustration|portrait|logo|artwork|wallpaper|poster|icon|banner|drawing)\b/.test(t)) return "image";
+  if (/^(draw|paint|sketch|illustrate)\s+(me\s+)?(a\s+|an\s+)?\w/.test(t)) return "image";
+  if (/(нарисуй|сгенерируй картинк|создай изображен|նկարիր|ստեղծիր նկար|ստեղծիր պատկեր|genera una imagen|crea una imagen|dessine une image|erstelle ein bild)/.test(t)) return "image";
+  return null;
+}
+
 function getHistoryForRequest(conversation) {
   return conversation.messages
     .filter(function (message) {
@@ -455,7 +473,7 @@ async function sendMessage() {
   const conversation = ensureConversation();
   const requestHistory = getHistoryForRequest(conversation);
   const attachmentForRequest = currentAttachment;
-  const toolForRequest = activeTool;
+  const toolForRequest = (activeTool === "search" || activeTool === "image") ? activeTool : detectRequestedTool(text);
 
   const userText = text || "Please analyze this attachment.";
   const userMessage = {
