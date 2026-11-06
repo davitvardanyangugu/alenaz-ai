@@ -92,7 +92,7 @@ async function play(input,button){
     player.onended=()=>{stopSpeech();status("");};
     player.onerror=()=>{stopSpeech();status("Could not play AI audio.");};
     await player.play();
-    status(fromCache?"Playing saved AI voice — unlimited replays in this tab.":"Playing newly generated AI voice.");
+    status(fromCache?"Playing cached AI voice — no new API request.":"Playing newly generated AI voice.");
   }catch(err){
     if(!signal.aborted){
       stopSpeech();
