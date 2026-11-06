@@ -34,6 +34,16 @@ Alenaz is a ChatGPT-style AI assistant prototype built with Flask and the OpenAI
 - Video Studio, advanced image editing, full multi-step Deep Research, cloud agents and higher paid usage limits are **not** active
 - Mobile-responsive UI
 
+## AI voice beta
+
+Alenaz now has an experimental **Listen** button on assistant replies and a **Record voice** button in the composer. A short recording is transcribed with `gpt-transcribe` before the user reviews and sends the text. `Listen` generates a natural AI voice through the configured OpenAI Speech API; the user can choose from six voices in Preferences. Audio is generated on demand (not saved to conversation history). The auto-read setting requires a fresh opt-in after the upgrade because audio generation incurs provider costs.
+
+Current safety limits: maximum 20 seconds of audio capture per recording (2 MB uploaded), up to 1,300 characters per audio playback, and by default six text-to-speech and six transcription requests per hour per IP in each running server process. **These per-process limits are not sufficient as global public-scale financial protection under serverless autoscaling.** Before a broad launch, add persistent per-account quotas, abuse defenses and spending limits.
+
+**Important migration:** OpenAI's `gpt-4o-mini-tts` Speech API model sunsets **January 6, 2027**. Migrate to `gpt-realtime-2.1-mini` and the Realtime API before then. Voice playback quality depends on the input language and model, and Alenaz cannot guarantee perfect support for every language offered in its text selector. The voice is AI-generated, not a human recording. HTTPS and microphone permission are required.
+
+Backend settings: `ALENAZ_TTS_MODEL`, `ALENAZ_STT_MODEL`, `ALENAZ_TTS_HOURLY_LIMIT`, and `ALENAZ_STT_HOURLY_LIMIT`. Keep `OPENAI_API_KEY` exclusively in server environment variables; never put it in browser code.
+
 ## Public beta / advertising readiness
 
 The pricing cards in **Plans & premium** are **illustrative demos**. Anyone can preview their behavior locally; they do not provide a paid entitlement, higher model quotas, or payment processing. Do **not** advertise Plus or Pro as purchasable or promise advanced features that do not actually work. The feature lab only prepares editable prompts. The user must press **Send** to make a real API request, which continues to use the server's existing quotas and model configuration.
