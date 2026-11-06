@@ -507,39 +507,44 @@ def instructions_for(mode, language="English"):
 
 
 def extract_citations(response):
+    """Use actual provider search citations and retrieved sources only."""
     citations = []
     seen = set()
 
+    def add_source(url, title, start_index=None, end_index=None):
+        if not safe_http_url(url) or url in seen or len(citations) >= 12:
+            return
+        seen.add(url)
+        citations.append({
+            "url": url,
+            "title": (title if isinstance(title, str) and title.strip() else url)[:200],
+            "start_index": start_index if isinstance(start_index, int) and start_index >= 0 else None,
+            "end_index": end_index if isinstance(end_index, int) and end_index >= 0 else None,
+        })
+
     for item in getattr(response, "output", []) or []:
-        if getattr(item, "type", None) != "message":
-            continue
-        for part in getattr(item, "content", []) or []:
-            for annotation in getattr(part, "annotations", []) or []:
-                if getattr(annotation, "type", None) != "url_citation":
-                    continue
-
-                url = getattr(annotation, "url", None)
-                title = getattr(annotation, "title", None) or url
-                start_index = getattr(annotation, "start_index", None)
-                end_index = getattr(annotation, "end_index", None)
-
-                nested = getattr(annotation, "url_citation", None)
-                if nested is not None:
-                    url = url or getattr(nested, "url", None)
-                    title = title or getattr(nested, "title", None)
-                    start_index = start_index if start_index is not None else getattr(nested, "start_index", None)
-                    end_index = end_index if end_index is not None else getattr(nested, "end_index", None)
-
-                if not safe_http_url(url) or url in seen:
-                    continue
-
-                seen.add(url)
-                citations.append({
-                    "url": url,
-                    "title": (title if isinstance(title, str) else url)[:200],
-                    "start_index": start_index if isinstance(start_index, int) and start_index >= 0 else None,
-                    "end_index": end_index if isinstance(end_index, int) and end_index >= 0 else None,
-                })
+        kind = getattr(item, "type", None)
+        if kind == "message":
+            for part in getattr(item, "content", []) or []:
+                for annotation in getattr(part, "annotations", []) or []:
+                    if getattr(annotation, "type", None) != "url_citation":
+                        continue
+                    nested = getattr(annotation, "url_citation", None)
+                    url = getattr(annotation, "url", None) or getattr(nested, "url", None)
+                    title = getattr(annotation, "title", None) or getattr(nested, "title", None)
+                    start = getattr(annotation, "start_index", None)
+                    end = getattr(annotation, "end_index", None)
+                    if start is None:
+                        start = getattr(nested, "start_index", None)
+                    if end is None:
+                        end = getattr(nested, "end_index", None)
+                    add_source(url, title, start, end)
+        elif kind == "web_search_call":
+            action = getattr(item, "action", None)
+            for source in getattr(action, "sources", []) or []:
+                url = source.get("url") if isinstance(source, dict) else getattr(source, "url", None)
+                title = source.get("title") if isinstance(source, dict) else getattr(source, "title", None)
+                add_source(url, title)
 
     return citations
 
@@ -761,7 +766,7 @@ def search():
             instructions=instructions_for(mode, language),
             input=model_input,
             tools=[{"type": "web_search", "search_context_size": "low"}],
-            tool_choice="auto",
+            tool_choice="required",
             include=["web_search_call.action.sources"],
         )
         return jsonify({
