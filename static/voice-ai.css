@@ -1,0 +1,13 @@
+/* Alenaz AI Voice beta: accessible controls and explicit AI voice disclosure. */
+.alenaz-ai-voice-field{display:flex;flex-direction:column;gap:8px;margin:15px 0}
+.alenaz-ai-voice-field>span{font-size:13px;font-weight:800}
+.alenaz-ai-voice-field select{width:100%;border-radius:10px;border:1px solid var(--stroke);background:var(--surface-2);color:var(--text);padding:11px 12px;font:inherit;font-size:12px}
+.alenaz-ai-voice-field small{font-size:11px;line-height:1.55;color:var(--muted)}
+.alenaz-listen-toolbar{opacity:1}
+.alenaz-listen-toolbar .ai-listen-button{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:9px;background:var(--surface-2);color:var(--text);border:1px solid var(--stroke);font-size:11px;font-weight:700;cursor:pointer;transition:border-color .15s ease,color .15s ease}
+.alenaz-listen-toolbar .ai-listen-button:hover,.alenaz-listen-toolbar .ai-listen-button:focus-visible{color:var(--accent);border-color:var(--accent)}
+.alenaz-listen-toolbar .ai-listen-button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.alenaz-voice-status{max-width:860px;margin:0 auto;text-align:center;min-height:0;color:var(--muted);font-size:11px;line-height:1.5}
+.alenaz-voice-status:empty{display:none}
+#voiceButton[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+@media(max-width:520px){.alenaz-listen-toolbar .ai-listen-button{min-height:34px}.alenaz-ai-voice-field select{font-size:16px}}
