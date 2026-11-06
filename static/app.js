@@ -911,7 +911,8 @@ function startVoice() {
 }
 
 function speakIfEnabled(text) {
-  if (!settings.speak || !text) return;
+  // Previously enabled browser speech must not silently incur paid AI voice usage.
+  if (!settings.speak || !text || localStorage.getItem("alenaz_ai_voice_auto_optin_v1") !== "1") return;
   if (window.AlenazVoice?.play) {
     void window.AlenazVoice.play(text);
     return;
@@ -930,7 +931,7 @@ function applySettings() {
 
 function openSettings() {
   $("displayNameInput").value = settings.displayName || "Guest";
-  $("speakToggle").checked = !!settings.speak;
+  $("speakToggle").checked = !!settings.speak && localStorage.getItem("alenaz_ai_voice_auto_optin_v1") === "1";
   $("compactToggle").checked = !!settings.compact;
   $("settingsModal").classList.remove("hidden");
 }
@@ -942,6 +943,10 @@ function closeSettings() {
 function saveSettings() {
   settings.displayName = $("displayNameInput").value.trim() || "Guest";
   settings.speak = $("speakToggle").checked;
+  try {
+    if (settings.speak) localStorage.setItem("alenaz_ai_voice_auto_optin_v1", "1");
+    else localStorage.removeItem("alenaz_ai_voice_auto_optin_v1");
+  } catch (_) { settings.speak = false; }
   settings.compact = $("compactToggle").checked;
   saveJSON(SETTINGS_KEY, settings);
   applySettings();
