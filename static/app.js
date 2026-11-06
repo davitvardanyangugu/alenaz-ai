@@ -119,6 +119,25 @@ function loadConversation(id) {
   closeSidebarOnMobile();
 }
 
+function deleteConversation(id) {
+  const conversation = conversations.find(function (item) { return item.id === id; });
+  if (!conversation) return;
+  if (!window.confirm('Permanently delete "' + (conversation.title || "New chat") + '" from this browser? This cannot be undone.')) return;
+  if (currentId === id && currentController) currentController.abort();
+  conversations = conversations.filter(function (item) { return item.id !== id; });
+  if (currentId === id) {
+    currentId = null;
+    currentAttachment = null;
+    updateAttachmentUI();
+    $("promptInput").value = "";
+    resizeTextarea();
+    renderConversation();
+  }
+  saveConversations();
+  renderHistory();
+  window.dispatchEvent(new CustomEvent("alenaz:chat-deleted", { detail: { conversationId: id } }));
+}
+
 function updateTitle(conversation) {
   if (!conversation || conversation.title !== "New chat") return;
   const firstUser = conversation.messages.find(function (message) {
@@ -149,15 +168,35 @@ function renderHistory() {
   }
 
   ordered.forEach(function (conversation) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "history-entry";
+    wrapper.style.display = "flex";
+    wrapper.style.alignItems = "center";
+    wrapper.style.gap = "4px";
     const button = document.createElement("button");
     button.className = "history-item" + (conversation.id === currentId ? " active" : "");
+    button.style.flex = "1";
+    button.style.minWidth = "0";
     button.textContent = (conversation.pinned ? "★ " : "") + (conversation.title || "New chat");
     button.title = conversation.title || "New chat";
     if (conversation.pinned) button.classList.add("pinned");
     button.addEventListener("click", function () {
       loadConversation(conversation.id);
     });
-    list.appendChild(button);
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "mini-action";
+    remove.textContent = "×";
+    remove.title = "Delete conversation";
+    remove.setAttribute("aria-label", "Delete " + (conversation.title || "New chat"));
+    remove.style.flex = "0 0 30px";
+    remove.addEventListener("click", function (event) {
+      event.stopPropagation();
+      deleteConversation(conversation.id);
+    });
+    wrapper.appendChild(button);
+    wrapper.appendChild(remove);
+    list.appendChild(wrapper);
   });
 }
 
@@ -466,6 +505,7 @@ async function sendMessage() {
       role: "assistant",
       text: wasStopped ? "Request stopped." : "I hit an error: " + (error.message || "Please retry.")
     };
+    if (!conversations.some(function (item) { return item.id === conversation.id; })) return;
     conversation.messages.push(errorMessage);
     conversation.updated = Date.now();
     saveConversations();
