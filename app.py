@@ -12,6 +12,7 @@ from urllib.parse import urlsplit
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, render_template, request, stream_with_context
 from openai import OpenAI
+from paypal_sandbox import sandbox_settings, verify_test_subscription
 
 try:
     import keyring
@@ -200,7 +201,7 @@ MODE_PROMPTS = {
     ),
 }
 
-usage = defaultdict(lambda: {"chat": deque(), "image": deque(), "translation": deque(), "tts": deque(), "stt": deque()})
+usage = defaultdict(lambda: {"chat": deque(), "image": deque(), "translation": deque(), "tts": deque(), "stt": deque(), "paypal_verify": deque()})
 UI_TRANSLATION_SOURCE = json.loads((Path(__file__).resolve().parent / "ui_translation_source.json").read_text(encoding="utf-8"))
 ALL_LANGUAGE_NAMES = json.loads((Path(__file__).resolve().parent / "language_names.json").read_text(encoding="utf-8"))
 UI_TRANSLATION_CACHE = {}
@@ -563,7 +564,7 @@ def extract_citations(response):
 def reject_cross_origin_api_posts():
     if request.method != "POST" or request.path not in {
         "/api/chat_stream", "/api/search", "/api/image", "/api/ui_translations",
-        "/api/voice/speak", "/api/voice/transcribe"
+        "/api/voice/speak", "/api/voice/transcribe", "/api/paypal/sandbox-verify"
     }:
         return None
     if request.headers.get("Sec-Fetch-Site") == "cross-site":
@@ -588,10 +589,12 @@ def add_security_headers(response):
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; base-uri 'self'; object-src 'none'; "
         "frame-ancestors 'none'; form-action 'self'; "
-        "script-src 'self'; "
+        "script-src 'self' https://www.paypal.com https://www.paypalobjects.com; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com; "
-        "img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self'"
+        "img-src 'self' data: blob: https:; media-src 'self' blob:; "
+        "connect-src 'self' https://www.paypal.com https://*.paypal.com; "
+        "frame-src https://www.paypal.com https://www.sandbox.paypal.com"
     )
     if request.path.startswith("/api/"):
         response.headers["Cache-Control"] = "no-store"
@@ -622,6 +625,44 @@ def health():
         "voice_speaks_per_hour": TTS_HOURLY_LIMIT,
         "voice_transcriptions_per_hour": STT_HOURLY_LIMIT,
     })
+
+
+@app.get("/api/paypal/sandbox-config")
+def paypal_sandbox_config():
+    """Safe public SDK configuration; intentionally excludes all secret values."""
+    return jsonify(sandbox_settings())
+
+
+@app.post("/api/paypal/sandbox-verify")
+def paypal_sandbox_verify():
+    """Read-only validation of a test subscription. Never unlock Premium here."""
+    settings = sandbox_settings()
+    if not settings["enabled"]:
+        return jsonify({"error": "PayPal Sandbox checkout isn't configured for this preview."}), 503
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict) or set(payload.keys()) != {"subscription_id"}:
+        return jsonify({"error": "A Sandbox subscription ID is required."}), 400
+    subscription_id = payload["subscription_id"]
+    if not isinstance(subscription_id, str) or len(subscription_id) > 48:
+        return jsonify({"error": "Invalid Sandbox subscription ID."}), 400
+    if not re.fullmatch(r"I-[A-Z0-9]{6,45}", subscription_id):
+        return jsonify({"error": "Invalid Sandbox subscription ID."}), 400
+    allowed, retry_after = take_quota("paypal_verify", 8, 3600)
+    if not allowed:
+        return jsonify({"error": "Too many Sandbox status checks. Try again later.",
+                        "retry_after": retry_after}), 429
+    try:
+        result = verify_test_subscription(
+            subscription_id, settings["client_id"],
+            os.getenv("PAYPAL_CLIENT_SECRET", "").strip(), settings["plan_id"]
+        )
+        return jsonify(result)
+    except ValueError as exc:
+        # No sensitive provider messages or tokens are returned.
+        return jsonify({"error": str(exc)}), 400
+    except Exception as exc:
+        app.logger.warning("PayPal Sandbox verification failed (%s)", type(exc).__name__)
+        return jsonify({"error": "Couldn't verify the test subscription with PayPal Sandbox."}), 502
 
 
 @app.post("/api/ui_translations")
