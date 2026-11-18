@@ -238,7 +238,7 @@
           <option value="sage">Sage — composed</option>
           <option value="nova">Nova — lively</option>
         </select>
-        <small>AI voice is available on Free, Plus and Pro. Recently generated clips can be replayed repeatedly while cached in this tab; new AI-generated clips and transcriptions have hourly limits. Pronunciation varies by language, and text or recordings are processed by the configured AI provider.</small>
+        <small>AI voice is available on Free, Plus and Premium. Recently generated clips can be replayed repeatedly while cached in this tab; new AI-generated clips and transcriptions have hourly limits. Pronunciation varies by language, and text or recordings are processed by the configured AI provider.</small>
       </label>
       <label class="setting-row"><span><strong id="compactLabel">Compact conversations</strong><small id="compactDesc">Display messages closer together.</small></span><input type="checkbox" id="compactToggle"></label>
       <button class="setting-language-button" id="languageSettingButton" type="button"><span><strong id="languageSettingTitle">🌐 Languages</strong><small id="languageSettingDescription">Interface &amp; AI response language</small></span><span id="languageCurrentChoice">English</span></button>
@@ -312,7 +312,7 @@
         <div>
           <p class="sub-eyebrow">ALENAZ · SUBSCRIPTION STUDIO</p>
           <h2 id="subscriptionTitle">Find your superpower<span>.</span></h2>
-          <p class="sub-subtitle">Explore Free, Plus and Pro before real subscriptions launch.</p>
+          <p class="sub-subtitle">Explore Free, Plus and Premium before real subscriptions launch.</p>
         </div>
         <button class="icon-button" id="subscriptionClose" type="button" aria-label="Close subscription plans">×</button>
       </header>
@@ -329,19 +329,19 @@
           <button type="button" data-preview-plan="plus">Preview Plus</button>
         </article>
         <article class="sub-plan sub-pro" data-preview-card="pro">
-          <p class="sub-plan-kicker">CREATE MORE</p><h3>Pro ♛</h3><p class="sub-price">$9.99 <small>/ month*</small></p>
+          <p class="sub-plan-kicker">CREATE MORE</p><h3>Premium ♛</h3><p class="sub-price">$9.99 <small>/ month*</small></p>
           <p>Everything in Plus, plus up to 5 saved assistant presets and guided research and coding starters. Video remains planned.</p>
-          <button type="button" data-preview-plan="pro">Preview Pro</button>
+          <button type="button" data-preview-plan="pro">Preview Premium</button>
         </article>
       </div>
       <p class="sub-note">*Illustrative prices; no payment method is connected and no subscription is activated.</p>
       <section class="sub-workspace" aria-labelledby="subWorkspaceTitle">
         <div class="sub-workspace-head">
-          <div><h3 id="subWorkspaceTitle">Personal AI workspace</h3><p id="subActiveDescription">Preview Plus or Pro to try browser-only personalization.</p></div>
+          <div><h3 id="subWorkspaceTitle">Personal AI workspace</h3><p id="subActiveDescription">Preview Plus or Premium to try browser-only personalization.</p></div>
           <span class="sub-status" id="subCurrentPlan">FREE PREVIEW</span>
         </div>
         <div class="sub-controls">
-          <label class="sub-field" for="subPersona"><span>Custom AI personality <small>Plus &amp; Pro preview</small></span>
+          <label class="sub-field" for="subPersona"><span>Custom AI personality <small>Plus &amp; Premium preview</small></span>
             <select id="subPersona">
               <option value="balanced">Balanced (default)</option>
               <option value="friendly">Friendly companion</option>
@@ -351,11 +351,11 @@
               <option value="developer">Coding partner</option>
             </select>
           </label>
-          <label class="sub-field" for="subMemory"><span>Memory+ notes <small>Plus &amp; Pro preview · written by you</small></span>
+          <label class="sub-field" for="subMemory"><span>Memory+ notes <small>Plus &amp; Premium preview · written by you</small></span>
             <textarea id="subMemory" rows="4" maxlength="1000" placeholder="Optional: your preferences, goals or project details. Alenaz uses these notes when you send a chat message."></textarea>
           </label>
           <div class="sub-agent" id="subAgentGroup">
-            <h4>Your reusable assistant preset <small>Pro preview</small></h4>
+            <h4>Your reusable assistant preset <small>Premium preview</small></h4>
             <label class="sub-field" for="subAgentName"><span>Assistant name</span>
               <input id="subAgentName" maxlength="60" placeholder="Example: My coding coach" autocomplete="off">
             </label>
@@ -378,7 +378,7 @@
         <h3>Premium roadmap</h3>
         <div class="sub-roadmap-grid">
           <p><strong>Already in Alenaz:</strong> AI voice and recording for all plans (limited new requests, free replays of recently cached clips), local folders, chat and Markdown export.</p>
-          <p><strong>Prototype available:</strong> Memory+ notes, personalities, five saved Pro assistant presets, guided image/search/coding prompts, voice speed and print-to-PDF reports.</p>
+          <p><strong>Prototype available:</strong> Memory+ notes, personalities, five saved Premium assistant presets, guided image/search/coding prompts, voice speed and print-to-PDF reports.</p>
           <p><strong>Planned:</strong> Image editing, provider-powered voice choices, real Word DOCX exports, secure accounts and cloud agents.</p>
           <p><strong>Advanced research &amp; creation:</strong> Deep Research, multi-file Coding Workspace and AI Video Studio require further engineering and providers.</p>
         </div>
@@ -418,7 +418,7 @@
   <script src="{{ url_for('static', filename='studio.js') }}?v=studio-v4" defer></script>
   <script src="{{ url_for('static', filename='library.js') }}?v=library-v1" defer></script>
   <script src="{{ url_for('static', filename='features.js') }}?v=features-v1" defer></script>
-  <script src="{{ url_for('static', filename='subscriptions.js') }}?v=subscriptions-v2" defer></script>
-  <script src="{{ url_for('static', filename='premium-lab.js') }}?v=beta-1" defer></script>
+  <script src="{{ url_for('static', filename='subscriptions.js') }}?v=rename-premium-v1" defer></script>
+  <script src="{{ url_for('static', filename='premium-lab.js') }}?v=rename-premium-v1" defer></script>
 </body>
 </html>
