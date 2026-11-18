@@ -31,6 +31,8 @@ def sandbox_settings():
         missing.append("PAYPAL_CLIENT_ID (Sandbox)")
     if not secret:
         missing.append("PAYPAL_CLIENT_SECRET (Sandbox)")
+    if len(os.getenv("ALENAZ_SANDBOX_SESSION_SECRET", "")) < 32:
+        missing.append("ALENAZ_SANDBOX_SESSION_SECRET (Preview)")
     if not PLAN_RE.fullmatch(plan_id):
         missing.append("PAYPAL_PREMIUM_PLAN_ID (Sandbox)")
     if missing:
