@@ -27,7 +27,7 @@
   <div class="sub-workspace-head"><div><h3 id="premiumLabTitle">✦ Premium feature lab</h3><p>Useful tools you can try now. Starter prompts are never sent automatically.</p></div><span class="sub-status">EARLY ACCESS</span></div>
   <div class="premium-lab-grid">
     <div class="premium-lab-tile" data-min-tier="plus">
-      <h4>✦ Image Prompt Studio <small>Plus &amp; Pro preview</small></h4>
+      <h4>✦ Image Prompt Studio <small>Plus &amp; Premium preview</small></h4>
       <p>Build a polished image prompt from a simple idea.</p>
       <label for="premiumImageIdea">Your image idea</label><input id="premiumImageIdea" type="text" maxlength="220" placeholder="e.g. a snowy castle" autocomplete="off">
       <label for="premiumImageStyle">Style</label>
@@ -35,26 +35,26 @@
       <button id="premiumImageBuild" type="button">Prepare image prompt</button>
     </div>
     <div class="premium-lab-tile" data-min-tier="plus">
-      <h4>◉ Voice Experience <small>Plus &amp; Pro preview</small></h4>
+      <h4>◉ Voice Experience <small>Plus &amp; Premium preview</small></h4>
       <p>Adjust built-in browser read-aloud speed. Available voices vary by device.</p>
       <label for="premiumVoiceRate">Playback speed <output id="premiumVoiceRateLabel" for="premiumVoiceRate">1.00×</output></label>
       <input id="premiumVoiceRate" type="range" min="0.75" max="1.35" step="0.05" value="1">
       <button id="premiumVoiceSettings" type="button">Open voice settings</button>
     </div>
     <div class="premium-lab-tile" data-min-tier="pro">
-      <h4>⌕ Research Brief <small>Pro preview</small></h4>
+      <h4>⌕ Research Brief <small>Premium preview</small></h4>
       <p>Prepare a sourced web-search question; full Deep Research is planned.</p>
       <label for="premiumResearchTopic">Topic</label><input id="premiumResearchTopic" type="text" maxlength="220" placeholder="e.g. renewable energy in Armenia" autocomplete="off">
       <button id="premiumResearchBuild" type="button">Prepare research prompt</button>
     </div>
     <div class="premium-lab-tile" data-min-tier="pro">
-      <h4>⌘ Coding Starter <small>Pro preview</small></h4>
+      <h4>⌘ Coding Starter <small>Premium preview</small></h4>
       <p>Get a structured coding conversation; repository editing is not enabled.</p>
       <label for="premiumCodeGoal">Coding goal</label><input id="premiumCodeGoal" type="text" maxlength="220" placeholder="e.g. debug a Python function" autocomplete="off">
       <button id="premiumCodeBuild" type="button">Prepare coding prompt</button>
     </div>
     <div class="premium-lab-tile premium-lab-agents" data-min-tier="pro">
-      <h4>✳ Assistant Preset Library <small>Pro preview</small></h4>
+      <h4>✳ Assistant Preset Library <small>Premium preview</small></h4>
       <p>Save up to five assistant profiles locally. Use the Name and Instructions fields above, then save a preset.</p>
       <label for="premiumAgentSelect">Saved profiles</label><select id="premiumAgentSelect"><option value="">Choose a preset</option></select>
       <div class="premium-lab-actions">
@@ -64,7 +64,7 @@
       </div>
     </div>
     <div class="premium-lab-tile premium-lab-soon">
-      <h4>▣ Video Studio <small>Pro · Planned</small></h4>
+      <h4>▣ Video Studio <small>Premium · Planned</small></h4>
       <p>Real AI video generation is not yet connected. We won't pretend a video has been created.</p>
       <span class="premium-lab-coming">COMING LATER</span>
     </div>
