@@ -14,7 +14,7 @@
 
   function loadSdk(clientId) {
     return new Promise(function (resolve, reject) {
-      const src = new URL("https://www.sandbox.paypal.com/sdk/js");
+      const src = new URL("https://sandbox.paypal.com/sdk/js");
       src.searchParams.set("client-id", clientId);
       src.searchParams.set("vault", "true");
       src.searchParams.set("intent", "subscription");
