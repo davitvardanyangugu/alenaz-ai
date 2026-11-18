@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=auto-tools-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='library.css') }}?v=library-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='subscriptions.css') }}?v=subscriptions-v1">
-  <link rel="stylesheet" href="{{ url_for('static', filename='paypal-sandbox.css') }}?v=sandbox-v1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='paypal-sandbox.css') }}?v=sandbox-premium-lock-v3">
   <link rel="stylesheet" href="{{ url_for('static', filename='premium-lab.css') }}?v=beta-1">
   <link rel="stylesheet" href="{{ url_for('static', filename='voice-ai.css') }}?v=ai-voice-v1">
   <link rel="stylesheet" href="{{ url_for('static', filename='features.css') }}?v=features-v1">
@@ -313,29 +313,29 @@
         <div>
           <p class="sub-eyebrow">ALENAZ · SUBSCRIPTION STUDIO</p>
           <h2 id="subscriptionTitle">Find your superpower<span>.</span></h2>
-          <p class="sub-subtitle">Explore Free, Plus and Premium before real subscriptions launch.</p>
+          <p class="sub-subtitle">Choose a plan. Premium test access requires a PayPal Sandbox subscription; Plus checkout is coming later.</p>
         </div>
         <button class="icon-button" id="subscriptionClose" type="button" aria-label="Close subscription plans">×</button>
       </header>
-      <p class="sub-safety" role="note"><strong>Demo only — no charges.</strong> These are proposed prices. Switching plans here is a local preview, not a purchase or verified subscription. Server usage limits stay the same for everyone.</p>
+      <p class="sub-safety" role="note"><strong>PAYPAL SANDBOX · TEST CHECKOUT ONLY.</strong> Premium is locked until an ACTIVE test subscription is verified by PayPal. No real money moves, and API usage limits do not change.</p>
       <div class="sub-grid" role="group" aria-label="Preview a plan">
         <article class="sub-plan" data-preview-card="free">
           <p class="sub-plan-kicker">START HERE</p><h3>Free</h3><p class="sub-price">$0 <small>/ month</small></p>
           <p>Chat, web search, saved chats, images and AI voice for everyone. Recently generated voice clips replay without extra AI calls while cached in this tab; new clips have fair-use limits.</p>
-          <button type="button" data-preview-plan="free">Preview Free</button>
+          <button type="button" data-preview-plan="free" disabled>Current Free plan</button>
         </article>
         <article class="sub-plan sub-plus" data-preview-card="plus">
           <p class="sub-plan-kicker">PERSONALIZE</p><h3>Plus ✦</h3><p class="sub-price">$4.99 <small>/ month*</small></p>
           <p>Everything in Free, plus Memory+ notes, AI personalities, guided image prompts, voice speed controls and PDF report previews.</p>
-          <button type="button" data-preview-plan="plus">Preview Plus</button>
+          <button type="button" data-preview-plan="plus" disabled>Plus · Coming soon</button>
         </article>
         <article class="sub-plan sub-pro" data-preview-card="pro">
           <p class="sub-plan-kicker">CREATE MORE</p><h3>Premium ♛</h3><p class="sub-price">$9.99 <small>/ month*</small></p>
           <p>Everything in Plus, plus up to 5 saved assistant presets and guided research and coding starters. Video remains planned.</p>
-          <button type="button" data-preview-plan="pro">Preview Premium</button>
+          <button type="button" data-preview-plan="pro">Subscribe with PayPal (Sandbox)</button>
         </article>
       </div>
-      <p class="sub-note">*Illustrative prices. Plan preview is local; PayPal Sandbox below is a test only, not a paid subscription.</p>
+      <p class="sub-note">*Prices are proposed. Premium checkout uses $9.99/month in PayPal Sandbox TEST funds, never real payments.</p>
       <section class="paypal-test-panel" aria-labelledby="paypalTestTitle">
         <div class="paypal-test-heading">
           <div><h3 id="paypalTestTitle">PayPal Sandbox · Premium</h3>
@@ -343,13 +343,14 @@
           </div>
           <span class="paypal-test-tag">TEST MODE</span>
         </div>
-        <p id="paypalSandboxStatus" class="paypal-test-status" role="status" aria-live="polite">Open Plans in a Preview deployment to check PayPal Sandbox setup.</p>
+        <p id="paypalSandboxStatus" class="paypal-test-status" role="status" aria-live="polite">Checking Sandbox subscription status…</p>
+        <button type="button" id="paypalSandboxRefresh" class="paypal-test-refresh">Refresh test status</button>
         <div id="paypalSandboxButton" class="paypal-test-buttons" aria-label="PayPal Sandbox Premium checkout"></div>
-        <p class="paypal-test-footnote">A successful Sandbox approval does not activate a real subscription or unlock Premium. Plus checkout is not configured yet.</p>
+        <p class="paypal-test-footnote">Only an ACTIVE subscription confirmed by PayPal can unlock Premium TEST tools for this browser. No real payment, live membership or production privileges. Plus checkout is coming later.</p>
       </section>
       <section class="sub-workspace" aria-labelledby="subWorkspaceTitle">
         <div class="sub-workspace-head">
-          <div><h3 id="subWorkspaceTitle">Personal AI workspace</h3><p id="subActiveDescription">Preview Plus or Premium to try browser-only personalization.</p></div>
+          <div><h3 id="subWorkspaceTitle">Personal AI workspace</h3><p id="subActiveDescription">Premium test access requires PayPal approval and server-side subscription verification.</p></div>
           <span class="sub-status" id="subCurrentPlan">FREE PREVIEW</span>
         </div>
         <div class="sub-controls">
@@ -430,8 +431,8 @@
   <script src="{{ url_for('static', filename='studio.js') }}?v=studio-v4" defer></script>
   <script src="{{ url_for('static', filename='library.js') }}?v=library-v1" defer></script>
   <script src="{{ url_for('static', filename='features.js') }}?v=features-v1" defer></script>
-  <script src="{{ url_for('static', filename='subscriptions.js') }}?v=rename-premium-v1" defer></script>
-  <script src="{{ url_for('static', filename='paypal-sandbox.js') }}?v=sandbox-v1" defer></script>
+  <script src="{{ url_for('static', filename='subscriptions.js') }}?v=sandbox-premium-lock-v3" defer></script>
+  <script src="{{ url_for('static', filename='paypal-sandbox.js') }}?v=sandbox-premium-lock-v3" defer></script>
   <script src="{{ url_for('static', filename='premium-lab.js') }}?v=rename-premium-v1" defer></script>
 </body>
 </html>
