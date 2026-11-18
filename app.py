@@ -680,6 +680,10 @@ def _sandbox_test_entitled():
     checked = session.get("sandbox_active_checked_at", 0)
     if isinstance(checked, (int, float)) and 0 <= time.time() - checked < 60:
         return True
+    last_checked = session.get("sandbox_last_checked_at", 0)
+    if (isinstance(last_checked, (int, float))
+            and 0 <= time.time() - last_checked < 12):
+        return False
     settings = sandbox_settings()
     if not settings["enabled"]:
         return False
@@ -689,9 +693,11 @@ def _sandbox_test_entitled():
             os.getenv("PAYPAL_CLIENT_SECRET", "").strip(), settings["plan_id"],
             expected_checkout_ref=checkout_ref
         )
+        session["sandbox_last_checked_at"] = int(time.time())
         if not result["sandbox_verified"]:
-            session.pop("sandbox_subscription_id", None)
             session.pop("sandbox_active_checked_at", None)
+            if result["status"] not in {"APPROVED", "APPROVAL_PENDING"}:
+                session.pop("sandbox_subscription_id", None)
             return False
         session["sandbox_active_checked_at"] = int(time.time())
         return True
@@ -728,6 +734,7 @@ def paypal_sandbox_start():
     session["sandbox_checkout_ref"] = ref
     session.pop("sandbox_subscription_id", None)
     session.pop("sandbox_active_checked_at", None)
+    session.pop("sandbox_last_checked_at", None)
     return jsonify({"checkout_ref": ref})
 
 
@@ -759,8 +766,10 @@ def paypal_sandbox_verify():
             expected_checkout_ref=checkout_ref
         )
         result["test_premium_active"] = bool(result["sandbox_verified"])
-        if result["sandbox_verified"]:
+        if result["status"] in {"ACTIVE", "APPROVED", "APPROVAL_PENDING"}:
             session["sandbox_subscription_id"] = subscription_id
+            session.pop("sandbox_last_checked_at", None)
+        if result["sandbox_verified"]:
             session["sandbox_active_checked_at"] = int(time.time())
             result["message"] = "Sandbox subscription verified. Premium TEST tools unlocked for this browser."
         return jsonify(result)
