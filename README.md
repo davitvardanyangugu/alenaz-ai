@@ -197,3 +197,18 @@ bash public_mac.sh
 The script starts Alenaz on port 5050, checks that it is healthy, and then creates a temporary `trycloudflare.com` tunnel. Keep the terminal open while the public site is online. Press Control+C to stop both.
 
 For a permanent custom domain, use a named Cloudflare Tunnel and connect a domain you control. Do not expose the OpenAI API key in browser-side code.
+
+## PayPal Sandbox subscription preview
+
+This is a **Preview-only test checkout**. The public Production site is unchanged. There are no real payments and no secure paid entitlement system. Do not attempt to use Live credentials or Live plan IDs, and do not treat a successful Sandbox approval as a paid account.
+
+In **Vercel → Project → Settings → Environment Variables**, configure the following with **Preview** target only:
+- \`PAYPAL_MODE=sandbox\`
+- \`PAYPAL_CLIENT_ID\` — from the PayPal **Sandbox** app (public client ID, but enter through Vercel).
+- \`PAYPAL_CLIENT_SECRET\` — from the Sandbox app, **Sensitive** type; never paste it in chat, browser code, or GitHub.
+- \`PAYPAL_PREMIUM_PLAN_ID\` — a separately-created **Sandbox** subscription plan ID, beginning with \`P-\`. The prior Live plan ID will not work.
+
+Redeploy the \`paypal-sandbox-checkout\` branch as a **Preview** build after adding the Sandbox Plan ID. Open the preview and choose **Plans & premium → PayPal Sandbox · Premium**. Test using a PayPal **Sandbox personal buyer** account, not a real PayPal account. The backend requests credentials from \`https://api-m.sandbox.paypal.com\` exclusively, looks up the subscription ID and checks the expected plan and ACTIVE state. It does **not** store buyer info, enable a paid plan, use webhooks, or make any Live PayPal requests. PayPal may report \`APPROVAL_PENDING\`, \`APPROVED\`, or other intermediate states before ACTIVE.
+
+The Premium and Plus plan cards are still browser-local feature previews (not a secured authorization system). Real launch requires eligible adult merchant ownership, verified receiving capability in the merchant's registration country, authenticated customer accounts, durable account-to-subscription mapping, verified webhook processing, cancellation/failed-payment handling, and complete Sandbox end-to-end tests. None of that is implied by a PayPal plan being marked Active.
+
