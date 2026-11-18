@@ -149,7 +149,7 @@ class SandboxCheckoutTests(unittest.TestCase):
                 "message": "Hello", "personalization": {"memory": "my secret notes"}
             })
         self.assertEqual(response.status_code, 403)
-        self.assertIn(b"requires a verified", response.data)
+        self.assertIn(b"require a verified", response.data)
 
     def test_checkout_returns_random_session_reference_not_membership(self):
         with patch.dict(os.environ, self.env, clear=True), patch.object(
