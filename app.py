@@ -4,13 +4,14 @@ import io
 import json
 import os
 import re
+import secrets
 import time
 from collections import defaultdict, deque
 from pathlib import Path, PurePath
 from urllib.parse import urlsplit
 
 from dotenv import load_dotenv
-from flask import Flask, Response, jsonify, render_template, request, stream_with_context
+from flask import Flask, Response, jsonify, render_template, request, session, stream_with_context
 from openai import OpenAI
 from paypal_sandbox import sandbox_settings, verify_sandbox_plan, verify_test_subscription
 
@@ -22,6 +23,10 @@ except ImportError:
 load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = os.getenv("ALENAZ_SANDBOX_SESSION_SECRET") or None
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = bool(os.getenv("VERCEL_ENV"))
 app.config["MAX_CONTENT_LENGTH"] = 12 * 1024 * 1024
 app.config["JSON_SORT_KEYS"] = False
 
@@ -201,7 +206,7 @@ MODE_PROMPTS = {
     ),
 }
 
-usage = defaultdict(lambda: {"chat": deque(), "image": deque(), "translation": deque(), "tts": deque(), "stt": deque(), "paypal_verify": deque(), "paypal_config": deque()})
+usage = defaultdict(lambda: {"chat": deque(), "image": deque(), "translation": deque(), "tts": deque(), "stt": deque(), "paypal_verify": deque(), "paypal_config": deque(), "paypal_start": deque()})
 UI_TRANSLATION_SOURCE = json.loads((Path(__file__).resolve().parent / "ui_translation_source.json").read_text(encoding="utf-8"))
 ALL_LANGUAGE_NAMES = json.loads((Path(__file__).resolve().parent / "language_names.json").read_text(encoding="utf-8"))
 UI_TRANSLATION_CACHE = {}
@@ -564,7 +569,8 @@ def extract_citations(response):
 def reject_cross_origin_api_posts():
     if request.method != "POST" or request.path not in {
         "/api/chat_stream", "/api/search", "/api/image", "/api/ui_translations",
-        "/api/voice/speak", "/api/voice/transcribe", "/api/paypal/sandbox-verify"
+        "/api/voice/speak", "/api/voice/transcribe", "/api/paypal/sandbox-verify",
+        "/api/paypal/sandbox-start"
     }:
         return None
     if request.headers.get("Sec-Fetch-Site") == "cross-site":
@@ -655,12 +661,85 @@ def paypal_sandbox_config():
     return jsonify(settings)
 
 
+
+def _sandbox_mode():
+    return (os.getenv("VERCEL_ENV", "").lower() == "preview"
+            and os.getenv("PAYPAL_MODE", "").lower() == "sandbox"
+            and bool(app.secret_key))
+
+
+def _sandbox_test_entitled():
+    """Signed browser-session Sandbox entitlement with a 60-second refresh window."""
+    if not _sandbox_mode():
+        return False
+    sid = session.get("sandbox_subscription_id")
+    checkout_ref = session.get("sandbox_checkout_ref")
+    if (not isinstance(sid, str) or not re.fullmatch(r"I-[A-Z0-9]{6,45}", sid)
+            or not isinstance(checkout_ref, str) or len(checkout_ref) < 24):
+        return False
+    checked = session.get("sandbox_active_checked_at", 0)
+    if isinstance(checked, (int, float)) and 0 <= time.time() - checked < 60:
+        return True
+    settings = sandbox_settings()
+    if not settings["enabled"]:
+        return False
+    try:
+        result = verify_test_subscription(
+            sid, settings["client_id"],
+            os.getenv("PAYPAL_CLIENT_SECRET", "").strip(), settings["plan_id"],
+            expected_checkout_ref=checkout_ref
+        )
+        if not result["sandbox_verified"]:
+            session.pop("sandbox_subscription_id", None)
+            session.pop("sandbox_active_checked_at", None)
+            return False
+        session["sandbox_active_checked_at"] = int(time.time())
+        return True
+    except Exception as exc:
+        app.logger.warning("Sandbox entitlement refresh failed (%s)", type(exc).__name__)
+        return False
+
+
+@app.get("/api/paypal/sandbox-entitlement")
+def paypal_sandbox_entitlement():
+    return jsonify({"sandbox": True, "test_premium_active": _sandbox_test_entitled(),
+                    "real_payment": False})
+
+
+@app.post("/api/paypal/sandbox-start")
+def paypal_sandbox_start():
+    settings = sandbox_settings()
+    if not _sandbox_mode() or not settings["enabled"]:
+        return jsonify({"error": "PayPal Sandbox is not configured for this Preview."}), 503
+    allowed, retry = take_quota("paypal_start", 8, 3600)
+    if not allowed:
+        return jsonify({"error": "Too many test checkouts. Try later.",
+                        "retry_after": retry}), 429
+    try:
+        verify_sandbox_plan(settings["client_id"],
+                            os.getenv("PAYPAL_CLIENT_SECRET", "").strip(),
+                            settings["plan_id"])
+    except Exception as exc:
+        app.logger.warning("Sandbox checkout plan failed preflight (%s)", type(exc).__name__)
+        return jsonify({"error": "PayPal could not confirm this plan with the Sandbox merchant credentials."}), 503
+    if _sandbox_test_entitled():
+        return jsonify({"error": "Premium Sandbox test access is already active."}), 409
+    ref = secrets.token_urlsafe(24)
+    session["sandbox_checkout_ref"] = ref
+    session.pop("sandbox_subscription_id", None)
+    session.pop("sandbox_active_checked_at", None)
+    return jsonify({"checkout_ref": ref})
+
+
 @app.post("/api/paypal/sandbox-verify")
 def paypal_sandbox_verify():
     """Read-only validation of a test subscription. Never unlock Premium here."""
     settings = sandbox_settings()
-    if not settings["enabled"]:
+    if not _sandbox_mode() or not settings["enabled"]:
         return jsonify({"error": "PayPal Sandbox checkout isn't configured for this preview."}), 503
+    checkout_ref = session.get("sandbox_checkout_ref")
+    if not isinstance(checkout_ref, str) or len(checkout_ref) < 24:
+        return jsonify({"error": "Start test checkout in this browser first."}), 403
     payload = request.get_json(silent=True)
     if not isinstance(payload, dict) or set(payload.keys()) != {"subscription_id"}:
         return jsonify({"error": "A Sandbox subscription ID is required."}), 400
@@ -676,8 +755,14 @@ def paypal_sandbox_verify():
     try:
         result = verify_test_subscription(
             subscription_id, settings["client_id"],
-            os.getenv("PAYPAL_CLIENT_SECRET", "").strip(), settings["plan_id"]
+            os.getenv("PAYPAL_CLIENT_SECRET", "").strip(), settings["plan_id"],
+            expected_checkout_ref=checkout_ref
         )
+        result["test_premium_active"] = bool(result["sandbox_verified"])
+        if result["sandbox_verified"]:
+            session["sandbox_subscription_id"] = subscription_id
+            session["sandbox_active_checked_at"] = int(time.time())
+            result["message"] = "Sandbox subscription verified. Premium TEST tools unlocked for this browser."
         return jsonify(result)
     except ValueError as exc:
         # No sensitive provider messages or tokens are returned.
@@ -775,6 +860,8 @@ def ui_translations():
 def chat_stream():
     try:
         payload = parse_json_payload()
+        if _sandbox_mode() and payload.get("personalization") and not _sandbox_test_entitled():
+            return jsonify({"error": "Premium tools require a verified PayPal Sandbox test subscription."}), 403
         mode = validate_mode(payload)
         language = validate_language(payload)
         model_input = build_input(payload)
@@ -824,6 +911,8 @@ def chat_stream():
 def search():
     try:
         payload = parse_json_payload()
+        if _sandbox_mode() and payload.get("personalization") and not _sandbox_test_entitled():
+            return jsonify({"error": "Premium tools require a verified PayPal Sandbox test subscription."}), 403
         mode = validate_mode(payload)
         language = validate_language(payload)
         model_input = build_input(payload)
