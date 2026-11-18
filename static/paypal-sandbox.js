@@ -14,7 +14,7 @@
 
   function loadSdk(clientId) {
     return new Promise(function (resolve, reject) {
-      const src = new URL("https://www.paypal.com/sdk/js");
+      const src = new URL("https://www.sandbox.paypal.com/sdk/js");
       src.searchParams.set("client-id", clientId);
       src.searchParams.set("vault", "true");
       src.searchParams.set("intent", "subscription");
@@ -59,7 +59,7 @@
           setStatus("Setup needed: add " + config.missing.join(", ") +
                     " to Vercel Preview and redeploy. The plan ID must be from PayPal Sandbox, not Live.");
         } else {
-          setStatus("Sandbox checkout is disabled. Only Preview deployments with PAYPAL_MODE=sandbox can use it.");
+          setStatus(config.message || "Sandbox checkout is disabled. Only Preview deployments with PAYPAL_MODE=sandbox can use it.");
         }
         return;
       }
