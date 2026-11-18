@@ -70,7 +70,7 @@
     </div>
   </div>
   <p class="premium-lab-message" id="premiumLabStatus" role="status" aria-live="polite"></p>
-  <p class="premium-lab-disclosure">This is a demo, not a paid subscription. Chat, search and images retain their existing server limits. No checkout, cloud sync or premium AI capacity is enabled.</p>
+  <p class="premium-lab-disclosure">Premium TEST tools require a verified ACTIVE PayPal Sandbox subscription in this browser. No real money is charged and there are no real paid accounts. Chat, search and images retain existing server usage limits.</p>
   `;
   const roadmap = document.querySelector(".sub-roadmap");
   if (!roadmap) return;
