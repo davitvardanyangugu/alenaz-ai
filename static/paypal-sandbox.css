@@ -9,3 +9,7 @@
 .paypal-test-buttons{max-width:410px;min-height:0;margin:10px auto 6px}
 .paypal-test-footnote{font-size:11px;line-height:1.6;color:#b1c0df;margin:13px 0 0}
 @media(max-width:520px){.paypal-test-heading{flex-direction:column;gap:9px}.paypal-test-panel{padding:16px}.paypal-test-tag{font-size:9px}}
+
+.paypal-test-refresh{display:inline-flex;align-items:center;justify-content:center;margin:0 0 12px;padding:9px 13px;border:1px solid #6d84b8;border-radius:10px;background:#26385e;color:#e5efff;font:700 12px/1.4 var(--mono);cursor:pointer}
+.paypal-test-refresh:hover,.paypal-test-refresh:focus-visible{background:#35538d;border-color:#a8d1ff}
+.sub-plan button:disabled{cursor:not-allowed;opacity:.63}
