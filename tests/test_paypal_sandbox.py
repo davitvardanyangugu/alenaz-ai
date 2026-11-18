@@ -52,7 +52,8 @@ class SandboxCheckoutTests(unittest.TestCase):
         self.assertNotIn("client_id", response.json)
 
     def test_configured_preview_only_shares_public_client_id(self):
-        with patch.dict(os.environ, self.env, clear=True):
+        with patch.dict(os.environ, self.env, clear=True), patch.object(
+                server, "verify_sandbox_plan", return_value=True):
             response = self.client.get("/api/paypal/sandbox-config")
         self.assertTrue(response.json["enabled"])
         self.assertEqual(response.json["client_id"], "A" * 40)
