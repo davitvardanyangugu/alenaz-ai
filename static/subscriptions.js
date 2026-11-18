@@ -3,6 +3,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const KEY = "alenaz_subscriptions_demo_v1";
+  // Preview checkout: payment state is never loaded from local storage.
   const VALID_PLANS = ["free", "plus", "pro"];
   const VALID_PERSONAS = ["balanced", "friendly", "teacher", "concise", "creative", "developer"];
   const defaults = {plan:"free", persona:"balanced", memory:"", agent_name:"", agent_instructions:"", agent_enabled:false};
@@ -10,7 +11,6 @@
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) || "{}");
     if (raw && typeof raw === "object" && !Array.isArray(raw)) {
-      if (VALID_PLANS.includes(raw.plan)) state.plan = raw.plan;
       if (VALID_PERSONAS.includes(raw.persona)) state.persona = raw.persona;
       if (typeof raw.memory === "string") state.memory = raw.memory.slice(0,1000);
       if (typeof raw.agent_name === "string") state.agent_name = raw.agent_name.slice(0,60);
@@ -25,7 +25,7 @@
   const planLabel = key => key === "pro" ? "Premium" : key === "plus" ? "Plus" : "Free";
   const showFeedback = (message) => { if ($("subFeedback")) $("subFeedback").textContent = message; };
   const save = () => {
-    try { localStorage.setItem(KEY, JSON.stringify(state)); return true; }
+    try { localStorage.setItem(KEY, JSON.stringify({...state, plan:"free"})); return true; }
     catch (_) { showFeedback("Could not save locally. Check browser storage settings."); return false; }
   };
   function readFields() {
@@ -38,15 +38,27 @@
   function render() {
     const plan = state.plan;
     document.querySelectorAll("[data-preview-card]").forEach(card => {
-      const active = card.getAttribute("data-preview-card") === plan;
+      const tier = card.getAttribute("data-preview-card");
+      const active = tier === state.plan;
       card.classList.toggle("selected", active);
       const button = card.querySelector("button");
-      if (button) { button.textContent = active ? "Previewing " + planLabel(plan) + " ✓" : "Preview " + planLabel(card.getAttribute("data-preview-card")); button.setAttribute("aria-pressed", String(active)); }
+      if (!button) return;
+      if (tier === "plus") {
+        button.textContent = "Plus · Coming soon";
+        button.disabled = true;
+      } else if (tier === "pro") {
+        button.textContent = active ? "Premium TEST active ✓" : "Subscribe with PayPal (Sandbox)";
+        button.disabled = active;
+      } else {
+        button.textContent = active ? "Current Free plan ✓" : "Free plan";
+        button.disabled = true;
+      }
+      button.setAttribute("aria-pressed", String(active));
     });
-    $("subCurrentPlan").textContent = planLabel(plan).toUpperCase() + " PREVIEW";
-    $("subActiveDescription").textContent = plan === "free"
-      ? "Preview Plus or Premium to try browser-only personalization."
-      : "Selected features can be tried in this browser; they are not paid entitlements.";
+    $("subCurrentPlan").textContent = state.plan === "pro" ? "PREMIUM TEST ✓" : "FREE";
+    $("subActiveDescription").textContent = state.plan === "pro"
+      ? "PayPal Sandbox subscription verified. Test Premium tools are enabled in this browser; no real payment was made."
+      : "Premium tools are locked until the PayPal Sandbox checkout is approved and verified.";
     $("subPersona").value = state.persona;
     $("subMemory").value = state.memory;
     $("subAgentName").value = state.agent_name;
@@ -110,12 +122,26 @@
   $("subscriptionOverlay")?.addEventListener("click", event => { if (event.target === $("subscriptionOverlay")) close(); });
   document.addEventListener("keydown", event => { if (event.key === "Escape" && !$("subscriptionOverlay")?.classList.contains("hidden")) close(); });
   document.querySelectorAll("[data-preview-plan]").forEach(button => button.addEventListener("click", () => {
-    if (paidPreview()) readFields();
     const next = button.getAttribute("data-preview-plan");
-    if (!VALID_PLANS.includes(next)) return;
-    state.plan = next;
-    save(); render(); showFeedback("Preview changed to " + planLabel(next) + ". No payment was made and server limits did not change.");
+    if (next !== "pro") return;
+    $("paypalTestTitle")?.scrollIntoView?.({behavior:"smooth",block:"center"});
+    showFeedback("Use the PayPal Sandbox button below to activate the Premium test. No real money is charged.");
   }));
+  async function refreshEntitlement() {
+    try {
+      const response = await fetch("/api/paypal/sandbox-entitlement", {cache:"no-store"});
+      if (!response.ok) throw new Error("Unable to check PayPal Sandbox test subscription.");
+      const current = await response.json();
+      state.plan = current.test_premium_active === true ? "pro" : "free";
+    } catch (error) {
+      state.plan = "free";
+      showFeedback("Couldn't verify Premium test access. Try again later.");
+    }
+    render();
+    window.AlenazPremiumLab?.refresh?.();
+    return state.plan === "pro";
+  }
+  window.addEventListener("alenaz:sandbox-entitlement-changed", () => {void refreshEntitlement();});
   $("subSave")?.addEventListener("click", () => {
     if (!paidPreview()) return;
     readFields();
@@ -127,6 +153,7 @@
   });
   $("subExportReport")?.addEventListener("click", printReport);
   $("subOpenFolders")?.addEventListener("click", () => {close(); $("savedChatsNav")?.click();});
-  window.AlenazSubscriptions = {context, open, plan: () => state.plan};
+  window.AlenazSubscriptions = {context, open, plan: () => state.plan, refreshEntitlement};
   render();
+  void refreshEntitlement();
 })();
