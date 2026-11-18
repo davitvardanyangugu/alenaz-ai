@@ -212,3 +212,11 @@ Redeploy the \`paypal-sandbox-checkout\` branch as a **Preview** build after add
 
 The Premium and Plus plan cards are still browser-local feature previews (not a secured authorization system). Real launch requires eligible adult merchant ownership, verified receiving capability in the merchant's registration country, authenticated customer accounts, durable account-to-subscription mapping, verified webhook processing, cancellation/failed-payment handling, and complete Sandbox end-to-end tests. None of that is implied by a PayPal plan being marked Active.
 
+
+## Protected Premium test checkout (paypal-sandbox-checkout Preview branch)
+
+The PayPal Preview now removes the free Premium plan-selector shortcut. Free stays the default; Plus payment is coming later. The website renders a PayPal Sandbox subscribe button only after the backend checks the active monthly USD 9.99 Sandbox merchant plan. The PayPal JavaScript SDK uses the public client ID from the validated Sandbox environment.
+
+A customer must complete PayPal Sandbox checkout. The server issues a random checkout reference in a signed, HttpOnly, Secure (on Vercel) browser session and sends it to PayPal as the subscription `custom_id`. On approval, the server verifies the subscription ID, matching plan, matching `custom_id`, and `ACTIVE` status directly against the PayPal Sandbox API. Only then does the signed session unlock the TEST Premium personalization and starter tools. It checks PayPal again after a short cache period (60 seconds). APPROVED or APPROVAL_PENDING alone never unlocks Premium; the session can recheck later. Existing localStorage plan previews do not authorize access, and server-side chat/search personalization is denied without the verified test subscription.
+
+The additional required Preview variable is `ALENAZ_SANDBOX_SESSION_SECRET`: a strong, random, private signing secret. It is set only in Vercel Preview. Do not copy it into source code. PayPal Sandbox credentials and the Sandbox plan must belong to the SAME TEST merchant account. A Live Client ID or Live Plan ID is rejected by the Sandbox verification step. No Live payment routes, subscription webhooks, production customer accounts or real entitlements are enabled. This is still a test, not a production billing system.
