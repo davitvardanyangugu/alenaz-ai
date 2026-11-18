@@ -53,6 +53,57 @@ def _fetch_json(request):
         raise RuntimeError("PayPal Sandbox request failed.") from exc
 
 
+
+def verify_sandbox_plan(client_id, secret, plan_id):
+    """Verify the plan exists in this merchant's PayPal Sandbox and matches $9.99/month.
+
+    Prevents putting a Live Plan ID (or another merchant's plan) into a test button.
+    Only fixed Sandbox API endpoints are used, with no buyer charge.
+    """
+    from decimal import Decimal, InvalidOperation
+
+    if not CLIENT_RE.fullmatch(client_id) or not secret or not PLAN_RE.fullmatch(plan_id):
+        raise ValueError("Sandbox credentials or plan are not configured.")
+    basic = base64.b64encode(f"{client_id}:{secret}".encode()).decode("ascii")
+    auth = Request(
+        SANDBOX_API + "/v1/oauth2/token",
+        data=b"grant_type=client_credentials",
+        method="POST",
+        headers={"Authorization": "Basic " + basic,
+                 "Content-Type": "application/x-www-form-urlencoded",
+                 "Accept": "application/json"},
+    )
+    token = _fetch_json(auth).get("access_token")
+    if not isinstance(token, str) or not token:
+        raise RuntimeError("PayPal Sandbox authentication failed.")
+    request = Request(
+        SANDBOX_API + "/v1/billing/plans/" + plan_id,
+        method="GET",
+        headers={"Authorization": "Bearer " + token,
+                 "Accept": "application/json"},
+    )
+    plan = _fetch_json(request)
+    if plan.get("id") != plan_id or plan.get("status") != "ACTIVE":
+        raise ValueError("Plan is not active in the configured PayPal Sandbox merchant account.")
+    cycles = plan.get("billing_cycles") or []
+    regular = [x for x in cycles if x.get("tenure_type") == "REGULAR"]
+    if len(regular) != 1 or len(cycles) != 1:
+        raise ValueError("Expected one monthly billing cycle with no trial.")
+    billing = regular[0]
+    frequency = billing.get("frequency") or {}
+    price = (billing.get("pricing_scheme") or {}).get("fixed_price") or {}
+    try:
+        correct_price = price.get("currency_code") == "USD" and Decimal(str(price.get("value"))) == Decimal("9.99")
+    except (InvalidOperation, TypeError, ValueError):
+        correct_price = False
+    if (frequency.get("interval_unit") != "MONTH"
+            or frequency.get("interval_count") != 1
+            or billing.get("total_cycles") != 0
+            or not correct_price):
+        raise ValueError("Expected an unlimited $9.99 USD monthly Sandbox plan without a trial.")
+    return True
+
+
 def verify_test_subscription(subscription_id, client_id, secret, expected_plan_id):
     """Query PayPal server-to-server. Does not grant access or retain PII."""
     if not SUBSCRIPTION_RE.fullmatch(subscription_id):
