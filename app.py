@@ -12,7 +12,7 @@ from urllib.parse import urlsplit
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, render_template, request, stream_with_context
 from openai import OpenAI
-from paypal_sandbox import sandbox_settings, verify_test_subscription
+from paypal_sandbox import sandbox_settings, verify_sandbox_plan, verify_test_subscription
 
 try:
     import keyring
@@ -201,7 +201,7 @@ MODE_PROMPTS = {
     ),
 }
 
-usage = defaultdict(lambda: {"chat": deque(), "image": deque(), "translation": deque(), "tts": deque(), "stt": deque(), "paypal_verify": deque()})
+usage = defaultdict(lambda: {"chat": deque(), "image": deque(), "translation": deque(), "tts": deque(), "stt": deque(), "paypal_verify": deque(), "paypal_config": deque()})
 UI_TRANSLATION_SOURCE = json.loads((Path(__file__).resolve().parent / "ui_translation_source.json").read_text(encoding="utf-8"))
 ALL_LANGUAGE_NAMES = json.loads((Path(__file__).resolve().parent / "language_names.json").read_text(encoding="utf-8"))
 UI_TRANSLATION_CACHE = {}
@@ -589,7 +589,7 @@ def add_security_headers(response):
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; base-uri 'self'; object-src 'none'; "
         "frame-ancestors 'none'; form-action 'self'; "
-        "script-src 'self' https://www.paypal.com https://www.paypalobjects.com; "
+        "script-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://www.paypalobjects.com; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com; "
         "img-src 'self' data: blob: https:; media-src 'self' blob:; "
@@ -629,8 +629,30 @@ def health():
 
 @app.get("/api/paypal/sandbox-config")
 def paypal_sandbox_config():
-    """Safe public SDK configuration; intentionally excludes all secret values."""
-    return jsonify(sandbox_settings())
+    """Only enable the TEST button after verifying credentials and plan in Sandbox."""
+    settings = sandbox_settings()
+    if not settings["enabled"]:
+        return jsonify(settings)
+    allowed, retry_after = take_quota("paypal_config", 20, 3600)
+    if not allowed:
+        return jsonify({"enabled": False, "mode": "sandbox",
+                        "message": "Too many Sandbox configuration checks. Please try again later.",
+                        "retry_after": retry_after}), 429
+    try:
+        verify_sandbox_plan(
+            settings["client_id"],
+            os.getenv("PAYPAL_CLIENT_SECRET", "").strip(),
+            settings["plan_id"],
+        )
+    except Exception as exc:
+        app.logger.warning("PayPal Sandbox plan preflight failed (%s)", type(exc).__name__)
+        return jsonify({
+            "enabled": False, "mode": "sandbox",
+            "message": "PayPal Sandbox could not confirm this plan for the configured test account. "
+                       "Check that the Client ID and Secret are Sandbox credentials, "
+                       "and that the plan is ACTIVE at $9.99 USD per month in the same Sandbox account."
+        })
+    return jsonify(settings)
 
 
 @app.post("/api/paypal/sandbox-verify")
