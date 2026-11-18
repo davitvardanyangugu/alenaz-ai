@@ -99,7 +99,7 @@
   }
 
   plansTrigger.addEventListener("click", function () {
-    if (!initializing || !rendered) {
+    if (!initializing && !rendered) {
       initializing = initialize().finally(function () { initializing = null; });
     }
   });
