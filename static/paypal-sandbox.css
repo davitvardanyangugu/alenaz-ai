@@ -1,0 +1,11 @@
+/* Preview-only PayPal Sandbox checkout in the Plans dialog. */
+.paypal-test-panel{margin:22px 0;border:1px solid #5b6d9e;border-radius:17px;background:linear-gradient(135deg,#1d325d,#1c2143);padding:19px 20px;color:#f6f7ff}
+.paypal-test-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.paypal-test-heading h3{font-size:17px;font-weight:800;margin:0 0 8px;letter-spacing:-.35px}
+.paypal-test-heading p{font-size:12px;color:#ccd7f0;line-height:1.65;margin:0;max-width:620px}
+.paypal-test-heading strong{color:#fff}
+.paypal-test-tag{display:inline-flex;white-space:nowrap;border:1px solid #74b7f4;background:#235680;color:#e1f5ff;font:800 10px/1.4 var(--mono);letter-spacing:1px;padding:7px 10px;border-radius:999px}
+.paypal-test-status{border:1px solid #52628d;border-radius:10px;padding:12px 14px;margin:17px 0 11px;background:#131e3e;color:#e1e9ff;font-size:12px;line-height:1.7;overflow-wrap:anywhere}
+.paypal-test-buttons{max-width:410px;min-height:0;margin:10px auto 6px}
+.paypal-test-footnote{font-size:11px;line-height:1.6;color:#b1c0df;margin:13px 0 0}
+@media(max-width:520px){.paypal-test-heading{flex-direction:column;gap:9px}.paypal-test-panel{padding:16px}.paypal-test-tag{font-size:9px}}
