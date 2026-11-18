@@ -19,7 +19,10 @@
     }
   } catch (_) {}
   const paidPreview = () => state.plan !== "free";
+  // Keep the saved internal "pro" key so previous local preferences still work.
+  // Only the customer-facing display name changes to Alenaz Premium.
   const proPreview = () => state.plan === "pro";
+  const planLabel = key => key === "pro" ? "Premium" : key === "plus" ? "Plus" : "Free";
   const showFeedback = (message) => { if ($("subFeedback")) $("subFeedback").textContent = message; };
   const save = () => {
     try { localStorage.setItem(KEY, JSON.stringify(state)); return true; }
@@ -38,11 +41,11 @@
       const active = card.getAttribute("data-preview-card") === plan;
       card.classList.toggle("selected", active);
       const button = card.querySelector("button");
-      if (button) { button.textContent = active ? "Previewing " + plan[0].toUpperCase()+plan.slice(1) + " ✓" : "Preview " + card.getAttribute("data-preview-card")[0].toUpperCase() + card.getAttribute("data-preview-card").slice(1); button.setAttribute("aria-pressed", String(active)); }
+      if (button) { button.textContent = active ? "Previewing " + planLabel(plan) + " ✓" : "Preview " + planLabel(card.getAttribute("data-preview-card")); button.setAttribute("aria-pressed", String(active)); }
     });
-    $("subCurrentPlan").textContent = plan.toUpperCase() + " PREVIEW";
+    $("subCurrentPlan").textContent = planLabel(plan).toUpperCase() + " PREVIEW";
     $("subActiveDescription").textContent = plan === "free"
-      ? "Preview Plus or Pro to try browser-only personalization."
+      ? "Preview Plus or Premium to try browser-only personalization."
       : "Selected features can be tried in this browser; they are not paid entitlements.";
     $("subPersona").value = state.persona;
     $("subMemory").value = state.memory;
@@ -111,7 +114,7 @@
     const next = button.getAttribute("data-preview-plan");
     if (!VALID_PLANS.includes(next)) return;
     state.plan = next;
-    save(); render(); showFeedback("Preview changed to " + next + ". No payment was made and server limits did not change.");
+    save(); render(); showFeedback("Preview changed to " + planLabel(next) + ". No payment was made and server limits did not change.");
   }));
   $("subSave")?.addEventListener("click", () => {
     if (!paidPreview()) return;
