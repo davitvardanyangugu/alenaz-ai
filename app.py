@@ -589,7 +589,7 @@ def add_security_headers(response):
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; base-uri 'self'; object-src 'none'; "
         "frame-ancestors 'none'; form-action 'self'; "
-        "script-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://www.paypalobjects.com; "
+        "script-src 'self' https://www.paypal.com https://sandbox.paypal.com https://www.paypalobjects.com; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com; "
         "img-src 'self' data: blob: https:; media-src 'self' blob:; "
