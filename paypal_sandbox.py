@@ -104,7 +104,7 @@ def verify_sandbox_plan(client_id, secret, plan_id):
     return True
 
 
-def verify_test_subscription(subscription_id, client_id, secret, expected_plan_id):
+def verify_test_subscription(subscription_id, client_id, secret, expected_plan_id, expected_checkout_ref=None):
     """Query PayPal server-to-server. Does not grant access or retain PII."""
     if not SUBSCRIPTION_RE.fullmatch(subscription_id):
         raise ValueError("Invalid Sandbox subscription ID.")
@@ -131,6 +131,8 @@ def verify_test_subscription(subscription_id, client_id, secret, expected_plan_i
     details = _fetch_json(details_request)
     if details.get("plan_id") != expected_plan_id:
         raise ValueError("This Sandbox subscription belongs to a different plan.")
+    if expected_checkout_ref is not None and details.get("custom_id") != expected_checkout_ref:
+        raise ValueError("Sandbox subscription does not belong to this checkout session.")
     state = details.get("status", "UNKNOWN")
     if state not in {"APPROVAL_PENDING", "APPROVED", "ACTIVE", "SUSPENDED", "CANCELLED", "EXPIRED"}:
         state = "UNKNOWN"
