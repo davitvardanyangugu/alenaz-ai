@@ -219,5 +219,8 @@ def mcp():
         # Never return secrets, traces or provider response bodies.
         return jsonify({"jsonrpc":"2.0","id":ident,"error":{"code":-32603,"message":"Sandbox server error"}}),500
 
+from mobile_dashboard import install_mobile_dashboard
+install_mobile_dashboard(app, invoke_tool)
+
 if __name__=="__main__":
     app.run(port=5051,debug=False)
