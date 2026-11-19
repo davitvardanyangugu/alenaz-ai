@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10172b">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Alenaz · PayPal Sandbox</title>
+  <style>
+    :root { color-scheme:dark; --bg:#10172b; --panel:#19233a; --panel2:#202c47; --line:#35445f; --text:#f5f7ff; --sub:#b7c3dc; --purple:#b79afa; --mint:#8fe2d2; --red:#ffa5ad }
+    * { box-sizing:border-box }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:radial-gradient(ellipse at 70% 0%,#2a2658 0%,var(--bg) 45%); color:var(--text); min-height:100vh; padding:env(safe-area-inset-top) 16px calc(36px + env(safe-area-inset-bottom)) }
+    main { max-width:580px; margin:0 auto }
+    header { padding:34px 4px 22px; display:flex; align-items:center; gap:13px }
+    .logo { width:48px; height:48px; border-radius:15px; background:linear-gradient(125deg,#bba1ff,#77d6e9); display:grid; place-items:center; color:#171833; font-size:24px; font-weight:900; flex:0 0 48px }
+    h1 { margin:0; font-size:1.4rem; letter-spacing:-.04em }
+    h2 { margin:0 0 11px; font-size:1.07rem }
+    p { margin:8px 0 12px; color:var(--sub); line-height:1.5 }
+    .sub { color:var(--sub); font-size:.88rem; margin-top:4px }
+    .pill { margin-left:auto; font-size:.71rem; color:#031e1b; font-weight:800; background:var(--mint); padding:6px 9px; border-radius:999px; white-space:nowrap }
+    .card { background:linear-gradient(150deg,var(--panel),#182136); border:1px solid var(--line); border-radius:21px; padding:21px; margin-bottom:15px; box-shadow:0 6px 20px rgba(0,0,0,.12) }
+    label { display:block; font-weight:600; font-size:.88rem; margin:14px 0 8px; }
+    input[type=password],input[type=text] { width:100%; min-height:51px; background:#0e172a; border:1px solid #53617e; border-radius:12px; color:var(--text); font:inherit; padding:12px 13px; outline-offset:3px }
+    input:focus-visible,button:focus-visible,a:focus-visible { outline:3px solid var(--purple); outline-offset:3px }
+    button { border:0; border-radius:13px; min-height:49px; padding:11px 16px; width:100%; background:var(--purple); color:#16112b; font:700 .96rem -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; cursor:pointer; margin-top:12px; transition:opacity .14s }
+    button:disabled { opacity:.5; cursor:wait }
+    button.secondary { background:var(--panel2); color:var(--text); border:1px solid #576784 }
+    button.outline { background:transparent; color:var(--sub); border:1px solid var(--line) }
+    a { color:#c9afff; text-decoration:underline; text-underline-offset:3px }
+    .note { font-size:.82rem; color:var(--sub) }
+    .status { min-height:23px; font-size:.9rem; margin-top:12px; line-height:1.4; overflow-wrap:anywhere; white-space:pre-wrap }
+    .status.ok { color:var(--mint) }
+    .status.error { color:var(--red) }
+    .check { display:flex; align-items:flex-start; gap:12px; color:var(--text); line-height:1.43; font-size:.9rem; margin:16px 0 4px; cursor:pointer }
+    .check input { accent-color:var(--purple); margin:4px 0 0; width:19px; height:19px; flex:0 0 19px }
+    .detail { padding:12px; border:1px solid var(--line); border-radius:12px; background:#0e172a; color:var(--mint); font-size:.88rem; overflow-wrap:anywhere; white-space:pre-wrap }
+    .hidden { display:none }
+    .actions { display:flex; gap:8px }
+    .actions button { width:auto; flex:1 }
+    footer { text-align:center; margin-top:22px; font-size:.8rem; color:#a9b8d1 }
+    code { color:#e7d8ff; font-size:.94em; word-break:break-word }
+    @media(min-width:680px) { header { padding-top:55px } .card { padding:26px } h1 {font-size:1.6rem} }
+    @media(prefers-reduced-motion:reduce) { * {transition:none!important} }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="logo" aria-hidden="true">A</div>
+    <div><h1>Alenaz Sandbox</h1><div class="sub">PayPal test subscriptions · Mobile</div></div>
+    <span class="pill">TEST ONLY</span>
+  </header>
+  {% if setup_needed %}
+  <section class="card">
+    <h2>One-time password setup</h2>
+    <p>This dashboard is ready for your iPhone, but it needs a private password before anyone can sign in.</p>
+    <p>Open the <a href="https://vercel.com/dashboard">Vercel Dashboard</a> on your phone. In the project <strong>alenaz-paypal-sandbox-mcp</strong>, open <strong>Settings → Environment Variables</strong>.</p>
+    <p>Add <code>ALENAZ_DASHBOARD_PASSWORD</code>, choose a strong password of at least <strong>16 characters</strong>, mark it <strong>Sensitive</strong>, and target <strong>Production</strong>. Then redeploy this separate Sandbox server.</p>
+    <p class="note">Never paste your password or PayPal Secret into chat. No Live PayPal payments are enabled.</p>
+  </section>
+  {% elif not authenticated %}
+  <section class="card">
+    <h2>Welcome back 👋</h2>
+    <p>Sign in with the private dashboard password you set in Vercel. Your PayPal credentials never leave the server.</p>
+    <form id="login-form">
+      <label for="pw">Dashboard password</label>
+      <input id="pw" type="password" autocomplete="current-password" minlength="16" required>
+      <button id="login-btn" type="submit">Unlock Sandbox dashboard</button>
+      <div id="login-status" class="status" role="status" aria-live="polite"></div>
+    </form>
+    <p class="note">Your session expires after four hours. Use a trusted device.</p>
+  </section>
+  {% else %}
+  <section class="card">
+    <h2>Connection check</h2>
+    <p>Verify that your server can authenticate with the PayPal Sandbox account. No test plan is created by this check.</p>
+    <button id="check-btn">Check Sandbox connection</button>
+    <div class="status" id="check-status" role="status" aria-live="polite"></div>
+  </section>
+  <section class="card">
+    <h2>Inspect a test plan</h2>
+    <p>Check the status of an existing PayPal test subscription plan.</p>
+    <label for="plan-id">Sandbox Plan ID</label>
+    <input id="plan-id" type="text" placeholder="P-XXXXXXXXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">
+    <button id="inspect-btn" class="secondary">Look up plan</button>
+    <div id="inspect-status" class="status" role="status" aria-live="polite"></div>
+    <div id="plan-details" class="detail hidden"></div>
+  </section>
+  <section class="card">
+    <h2>Create Alenaz Premium</h2>
+    <p>Creates a <strong>$9.99/month</strong> subscription product and plan in <strong>PayPal Sandbox</strong> only. There is no charge to real payment accounts.</p>
+    <label class="check" for="confirm-create">
+      <input id="confirm-create" type="checkbox">
+      <span>I approve creating one new <strong>Sandbox test product and plan</strong>.</span>
+    </label>
+    <button id="create-btn">Create $9.99 test plan</button>
+    <div id="create-status" class="status" role="status" aria-live="polite"></div>
+    <div id="create-result" class="hidden">
+      <div id="created-id" class="detail"></div>
+      <button id="copy-btn" class="secondary">Copy Plan ID</button>
+      <p class="note">After creation, we'll add this Plan ID to your Alenaz <strong>Preview</strong> settings, not the public site.</p>
+    </div>
+  </section>
+  <button class="outline" id="logout-btn">Sign out of this phone</button>
+  {% endif %}
+  <footer>🔒 Private dashboard · PayPal Sandbox only · No real payments</footer>
+</main>
+<script>
+(() => {
+  "use strict";
+  const csrf = {{ csrf_token|tojson }};
+  const $ = (s) => document.getElementById(s);
+  function status(node, text, success) {
+    if (!node) return;
+    node.textContent = text;
+    node.className = "status " + (success === true ? "ok" : success === false ? "error" : "");
+  }
+  async function send(path, payload, requireCsrf=true) {
+    const headers = {"Content-Type":"application/json"};
+    if (requireCsrf) headers["X-CSRF-Token"] = csrf;
+    const response = await fetch(path, {
+      method:"POST", credentials:"same-origin", headers, body:JSON.stringify(payload)
+    });
+    let data = {};
+    try { data = await response.json(); } catch (_) {}
+    if (!response.ok) throw new Error(data.error || "Server request failed.");
+    return data;
+  }
+  async function busy(button, node, message, action) {
+    button.disabled = true;
+    status(node, message);
+    try { await action(); } catch (err) { status(node, err.message || "Something went wrong.", false); }
+    finally { button.disabled = false; }
+  }
+  if ($("login-form")) $("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    await busy($("login-btn"), $("login-status"), "Signing in…", async () => {
+      await send("/mobile/login", {password:$("pw").value}, false);
+      location.replace("/mobile");
+    });
+  });
+  if ($("check-btn")) $("check-btn").addEventListener("click", async () => {
+    await busy($("check-btn"), $("check-status"), "Checking PayPal Sandbox…", async () => {
+      const result = await send("/mobile/api/check",{});
+      status($("check-status"), result.sandbox_connected ? "✅ Connected to PayPal Sandbox. No real payments." : "⚠️ " + (result.setup_required || "Not connected"), result.sandbox_connected);
+    });
+  });
+  if ($("inspect-btn")) $("inspect-btn").addEventListener("click", async () => {
+    await busy($("inspect-btn"), $("inspect-status"), "Looking up test plan…", async () => {
+      $("plan-details").classList.add("hidden");
+      const data = await send("/mobile/api/plan",{plan_id:$("plan-id").value.trim().toUpperCase()});
+      status($("inspect-status"), data.status === "ACTIVE" ? "✅ Active Sandbox plan" : "Plan status: " + data.status, data.status === "ACTIVE");
+      const summary = "Plan ID: " + data.plan_id + "\nStatus: " + data.status + "\nName: " + data.name;
+      $("plan-details").textContent = summary;
+      $("plan-details").classList.remove("hidden");
+    });
+  });
+  let requestId;
+  try { requestId = sessionStorage.getItem("alenaz-sandbox-create-ref"); } catch (_) {}
+  if (!requestId) {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    requestId = "alenaz_mobile_" + Array.from(bytes, b => b.toString(16).padStart(2,"0")).join("");
+    try { sessionStorage.setItem("alenaz-sandbox-create-ref",requestId); } catch (_) {}
+  }
+  let createdId="";
+  if ($("create-btn")) $("create-btn").addEventListener("click", async () => {
+    if (!$("confirm-create").checked) {
+      status($("create-status"),"Please check the Sandbox-only confirmation first.", false);
+      return;
+    }
+    if (!window.confirm("Create a new $9.99/month test subscription plan in PayPal Sandbox? No real money is charged.")) return;
+    await busy($("create-btn"), $("create-status"), "Creating Sandbox product and plan…", async () => {
+      const data = await send("/mobile/api/create",{
+        confirm_sandbox_creation:true, idempotency_key:requestId
+      });
+      createdId = data.plan_id || "";
+      status($("create-status"), "✅ Sandbox plan created successfully!",true);
+      $("created-id").textContent = "Plan ID: " + createdId + "\nProduct ID: " + data.product_id + "\nStatus: " + data.status + "\nMonthly price: $9.99 (TEST)";
+      $("create-result").classList.remove("hidden");
+      // Keep the idempotency reference so double taps/retries cannot create duplicates.
+    });
+  });
+  if ($("copy-btn")) $("copy-btn").addEventListener("click", async () => {
+    if (!createdId) return;
+    try { await navigator.clipboard.writeText(createdId); $("copy-btn").textContent="Copied!"; }
+    catch (_) { $("copy-btn").textContent="Select Plan ID above to copy"; }
+  });
+  if ($("logout-btn")) $("logout-btn").addEventListener("click", async () => {
+    await busy($("logout-btn"), null, "", async () => {
+      await send("/mobile/logout",{});
+      location.replace("/mobile");
+    });
+  });
+})();
+</script>
+</body>
+</html>
